@@ -1,293 +1,154 @@
-const { dummyAnalytics } = require('../data/dummyData');
-const QuizResult = require('../models/QuizResult');
-const Story = require('../models/Story');
-const College = require('../models/College');
-const Faq = require('../models/Faq');
+const User = require("../models/User");
 
-// Get analytics dashboard data
-const getAnalytics = async (req, res) => {
+// Get user analytics
+const getUserAnalytics = async (req, res) => {
   try {
-    // Try to get real data from database first
-    let analytics;
-    try {
-      const totalUsers = await User.countDocuments({ isActive: true });
-      const totalQuizAttempts = await QuizResult.countDocuments();
-      const totalStories = await Story.countDocuments({ isActive: true, isApproved: true });
-      const totalColleges = await College.countDocuments({ isActive: true });
-      const totalFaqs = await Faq.countDocuments({ isActive: true });
+    const userId = req.user.id;
 
-      // Get monthly stats (last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Find user and populate analytics
+    const user = await User.findById(userId).select("analytics");
 
-      const monthlyStats = {
-        newUsers: await User.countDocuments({ 
-          createdAt: { $gte: thirtyDaysAgo },
-          isActive: true 
-        }),
-        quizCompletions: await QuizResult.countDocuments({ 
-          submittedAt: { $gte: thirtyDaysAgo } 
-        }),
-        storyViews: await Story.aggregate([
-          { $match: { isActive: true, isApproved: true } },
-          { $group: { _id: null, totalViews: { $sum: '$views' } } }
-        ]).then(result => result[0]?.totalViews || 0),
-        collegeSearches: Math.floor(Math.random() * 1000) + 5000 // Simulated data
-      };
-
-      // Get popular courses from quiz results
-      const popularCourses = await QuizResult.aggregate([
-        { $unwind: '$recommendedCourses' },
-        { $group: { 
-          _id: '$recommendedCourses.courseName', 
-          searches: { $sum: 1 } 
-        }},
-        { $sort: { searches: -1 } },
-        { $limit: 10 }
-      ]);
-
-      // Get top colleges by views
-      const topColleges = await College.aggregate([
-        { $match: { isActive: true } },
-        { $project: { name: 1, views: { $size: '$reviews' } } },
-        { $sort: { views: -1 } },
-        { $limit: 10 }
-      ]);
-
-      analytics = {
-        totalUsers,
-        totalQuizAttempts,
-        totalStories,
-        totalColleges,
-        totalFaqs,
-        monthlyStats,
-        popularCourses,
-        topColleges
-      };
-    } catch (dbError) {
-      console.log('Database not connected, using dummy data');
-      analytics = dummyAnalytics;
-    }
-
-    res.json({
-      success: true,
-      data: analytics
-    });
-
-  } catch (error) {
-    console.error('Get analytics error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-};
-
-// Get user engagement metrics
-const getUserEngagement = async (req, res) => {
-  try {
-    const { period = '30d' } = req.query;
-    
-    // Calculate date range based on period
-    const endDate = new Date();
-    const startDate = new Date();
-    
-    switch (period) {
-      case '7d':
-        startDate.setDate(endDate.getDate() - 7);
-        break;
-      case '30d':
-        startDate.setDate(endDate.getDate() - 30);
-        break;
-      case '90d':
-        startDate.setDate(endDate.getDate() - 90);
-        break;
-      default:
-        startDate.setDate(endDate.getDate() - 30);
-    }
-
-    // Try to get real data from database first
-    let engagement;
-    try {
-      const quizCompletions = await QuizResult.countDocuments({
-        submittedAt: { $gte: startDate, $lte: endDate }
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
+    }
 
-      const storyViews = await Story.aggregate([
-        { 
-          $match: { 
-            isActive: true, 
-            isApproved: true,
-            publishedAt: { $gte: startDate, $lte: endDate }
-          } 
-        },
-        { $group: { _id: null, totalViews: { $sum: '$views' } } }
-      ]).then(result => result[0]?.totalViews || 0);
-
-      const faqViews = await Faq.aggregate([
-        { 
-          $match: { 
-            isActive: true,
-            lastUpdated: { $gte: startDate, $lte: endDate }
-          } 
-        },
-        { $group: { _id: null, totalViews: { $sum: '$views' } } }
-      ]).then(result => result[0]?.totalViews || 0);
-
-      engagement = {
-        period,
-        quizCompletions,
-        storyViews,
-        faqViews,
-        totalEngagement: quizCompletions + storyViews + faqViews
+    // Initialize analytics if not exists
+    if (!user.analytics) {
+      user.analytics = {
+        totalInteractions: 0,
+        completedCourses: 0,
+        appliedInternships: 0,
+        appliedScholarships: 0,
+        totalHours: 0,
+        achievements: 0,
+        lastUpdated: new Date(),
       };
-    } catch (dbError) {
-      console.log('Database not connected, using dummy data');
-      engagement = {
-        period,
-        quizCompletions: Math.floor(Math.random() * 500) + 200,
-        storyViews: Math.floor(Math.random() * 2000) + 1000,
-        faqViews: Math.floor(Math.random() * 1000) + 500,
-        totalEngagement: Math.floor(Math.random() * 3500) + 1700
-      };
+      await user.save();
     }
 
     res.json({
       success: true,
-      data: engagement
+      data: user.analytics,
     });
-
   } catch (error) {
-    console.error('Get user engagement error:', error);
+    console.error("Get user analytics error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
 
-// Get content performance metrics
-const getContentPerformance = async (req, res) => {
+// Update user analytics
+const updateUserAnalytics = async (req, res) => {
   try {
-    // Try to get real data from database first
-    let performance;
-    try {
-      // Top performing stories
-      const topStories = await Story.find({ 
-        isActive: true, 
-        isApproved: true 
-      })
-      .sort({ views: -1, likes: -1 })
-      .limit(5)
-      .select('title views likes category');
+    const userId = req.user.id;
+    const { field, increment = 1 } = req.body;
 
-      // Most searched courses
-      const popularCourses = await QuizResult.aggregate([
-        { $unwind: '$recommendedCourses' },
-        { $group: { 
-          _id: '$recommendedCourses.courseName', 
-          count: { $sum: 1 },
-          avgMatch: { $avg: '$recommendedCourses.matchPercentage' }
-        }},
-        { $sort: { count: -1 } },
-        { $limit: 5 }
-      ]);
+    const validFields = [
+      "totalInteractions",
+      "completedCourses",
+      "appliedInternships",
+      "appliedScholarships",
+      "totalHours",
+      "achievements",
+    ];
 
-      // Most viewed colleges
-      const topColleges = await College.find({ isActive: true })
-      .sort({ 'reviews.length': -1 })
-      .limit(5)
-      .select('name location reviews');
+    if (!validFields.includes(field)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid field name",
+      });
+    }
 
-      // Most helpful FAQs
-      const topFaqs = await Faq.find({ isActive: true })
-      .sort({ 'helpful.yes': -1, views: -1 })
-      .limit(5)
-      .select('question helpful views category');
+    const user = await User.findById(userId);
 
-      performance = {
-        topStories,
-        popularCourses,
-        topColleges,
-        topFaqs
-      };
-    } catch (dbError) {
-      console.log('Database not connected, using dummy data');
-      performance = {
-        topStories: [
-          {
-            title: "From Small Town to Silicon Valley",
-            views: 1250,
-            likes: 245,
-            category: "Success Story"
-          }
-        ],
-        popularCourses: [
-          { _id: "Computer Science Engineering", count: 4500, avgMatch: 92 },
-          { _id: "Mechanical Engineering", count: 3200, avgMatch: 88 }
-        ],
-        topColleges: [
-          { name: "IIT Delhi", location: { city: "New Delhi" }, reviews: [] }
-        ],
-        topFaqs: [
-          { question: "What is the eligibility criteria for JEE Advanced?", helpful: { yes: 150 }, views: 2500, category: "Admissions" }
-        ]
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Initialize analytics if not exists
+    if (!user.analytics) {
+      user.analytics = {
+        totalInteractions: 0,
+        completedCourses: 0,
+        appliedInternships: 0,
+        appliedScholarships: 0,
+        totalHours: 0,
+        achievements: 0,
+        lastUpdated: new Date(),
       };
     }
 
+    // Update the specific field
+    user.analytics[field] = (user.analytics[field] || 0) + increment;
+    user.analytics.lastUpdated = new Date();
+
+    await user.save();
+
     res.json({
       success: true,
-      data: performance
+      data: user.analytics,
+      message: `${field} updated successfully`,
     });
-
   } catch (error) {
-    console.error('Get content performance error:', error);
+    console.error("Update user analytics error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
 
-// Get system health metrics
-const getSystemHealth = async (req, res) => {
+// Reset user analytics to 0
+const resetUserAnalytics = async (req, res) => {
   try {
-    const health = {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
-        external: Math.round(process.memoryUsage().external / 1024 / 1024)
-      },
-      database: {
-        connected: true, // This would be checked against actual DB connection
-        responseTime: Math.floor(Math.random() * 50) + 10 // Simulated
-      },
-      api: {
-        responseTime: Math.floor(Math.random() * 100) + 50, // Simulated
-        errorRate: Math.random() * 0.1 // Simulated
-      }
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Reset all analytics to 0
+    user.analytics = {
+      totalInteractions: 0,
+      completedCourses: 0,
+      appliedInternships: 0,
+      appliedScholarships: 0,
+      totalHours: 0,
+      achievements: 0,
+      lastUpdated: new Date(),
     };
 
+    await user.save();
+
     res.json({
       success: true,
-      data: health
+      data: user.analytics,
+      message: "Analytics reset successfully",
     });
-
   } catch (error) {
-    console.error('Get system health error:', error);
+    console.error("Reset user analytics error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
 
 module.exports = {
-  getAnalytics,
-  getUserEngagement,
-  getContentPerformance,
-  getSystemHealth
+  getUserAnalytics,
+  updateUserAnalytics,
+  resetUserAnalytics,
 };

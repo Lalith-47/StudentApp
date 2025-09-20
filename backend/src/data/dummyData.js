@@ -149,6 +149,7 @@ const dummyColleges = [
 
 const dummyStories = [
   {
+    _id: "1",
     title: "From Small Town to Silicon Valley: My Journey as a Software Engineer",
     author: {
       name: "Priya Sharma",
@@ -205,6 +206,114 @@ const dummyStories = [
       }
     ],
     isFeatured: true,
+    isApproved: true
+  },
+  {
+    _id: "2",
+    title: "From Dropout to Data Science Success: My Unconventional Journey",
+    author: {
+      name: "Rahul Kumar",
+      currentRole: "Senior Data Scientist",
+      company: "Microsoft",
+      experience: "4 years",
+      profileImage: "rahul-kumar.jpg",
+      socialLinks: {
+        linkedin: "https://linkedin.com/in/rahul-kumar",
+        twitter: "https://twitter.com/rahul_kumar"
+      }
+    },
+    content: "I dropped out of college after my second year, but that didn't stop me from pursuing my passion for data science. Through online courses, personal projects, and sheer determination, I built a successful career in one of the most competitive fields...",
+    summary: "An inspiring story of how self-learning and determination led to a successful career in data science without a formal degree.",
+    category: "Career Change",
+    tags: ["data science", "self-learning", "career change"],
+    course: {
+      name: "Self-taught Data Science",
+      college: "Online Learning",
+      year: 2020
+    },
+    careerPath: {
+      from: "College Dropout",
+      to: "Senior Data Scientist",
+      timeline: "4 years"
+    },
+    keyAchievements: [
+      "Completed 20+ online courses",
+      "Built 50+ data science projects",
+      "Landed job at Microsoft",
+      "Mentored 100+ aspiring data scientists"
+    ],
+    challenges: [
+      "Learning without formal structure",
+      "Proving skills to employers",
+      "Building credibility in the field",
+      "Staying updated with latest trends"
+    ],
+    advice: [
+      "Focus on practical projects",
+      "Build a strong portfolio",
+      "Network with professionals",
+      "Never stop learning"
+    ],
+    images: ["rahul-journey-1.jpg", "rahul-journey-2.jpg"],
+    readTime: 12,
+    likes: 189,
+    views: 890,
+    comments: [],
+    isFeatured: true,
+    isApproved: true
+  },
+  {
+    _id: "3",
+    title: "Building a Tech Startup: Lessons from the Trenches",
+    author: {
+      name: "Anita Singh",
+      currentRole: "Founder & CEO",
+      company: "TechStart India",
+      experience: "3 years",
+      profileImage: "anita-singh.jpg",
+      socialLinks: {
+        linkedin: "https://linkedin.com/in/anita-singh",
+        twitter: "https://twitter.com/anita_singh"
+      }
+    },
+    content: "Starting a tech company was never part of my plan, but when I saw a problem that needed solving, I couldn't ignore it. Here's my journey from idea to a successful startup that's now helping thousands of students...",
+    summary: "A candid account of the challenges and triumphs of building a tech startup from scratch.",
+    category: "Entrepreneurship",
+    tags: ["startup", "entrepreneurship", "technology"],
+    course: {
+      name: "Computer Science Engineering",
+      college: "IIT Bombay",
+      year: 2018
+    },
+    careerPath: {
+      from: "Software Engineer",
+      to: "Founder & CEO",
+      timeline: "3 years"
+    },
+    keyAchievements: [
+      "Raised $2M in funding",
+      "Built team of 25+ people",
+      "Served 10,000+ students",
+      "Expanded to 3 cities"
+    ],
+    challenges: [
+      "Finding product-market fit",
+      "Raising initial funding",
+      "Building the right team",
+      "Scaling the business"
+    ],
+    advice: [
+      "Start with a real problem",
+      "Validate before building",
+      "Focus on customer feedback",
+      "Be prepared for long hours"
+    ],
+    images: ["anita-startup-1.jpg", "anita-startup-2.jpg"],
+    readTime: 15,
+    likes: 156,
+    views: 720,
+    comments: [],
+    isFeatured: false,
     isApproved: true
   }
 ];
