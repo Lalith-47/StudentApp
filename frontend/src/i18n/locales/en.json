@@ -1,0 +1,151 @@
+{
+  "nav": {
+    "home": "Home",
+    "quiz": "Career Quiz",
+    "roadmap": "Roadmap",
+    "colleges": "Colleges",
+    "stories": "Success Stories",
+    "chatbot": "Chatbot",
+    "dashboard": "Dashboard",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Find Your Perfect Career Path",
+    "subtitle": "Discover your potential with our comprehensive career guidance platform",
+    "cta": "Start Your Journey",
+    "features": {
+      "quiz": {
+        "title": "Career Assessment Quiz",
+        "description": "Take our comprehensive quiz to discover your ideal career path"
+      },
+      "roadmap": {
+        "title": "Detailed Roadmaps",
+        "description": "Get step-by-step guidance for your chosen career"
+      },
+      "colleges": {
+        "title": "College Finder",
+        "description": "Find and compare colleges that match your goals"
+      },
+      "stories": {
+        "title": "Success Stories",
+        "description": "Learn from real people who achieved their dreams"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Career Assessment Quiz",
+    "subtitle": "Answer these questions to discover your ideal career path",
+    "start": "Start Quiz",
+    "next": "Next Question",
+    "previous": "Previous",
+    "submit": "Submit Quiz",
+    "progress": "Progress",
+    "question": "Question",
+    "of": "of",
+    "results": {
+      "title": "Your Career Assessment Results",
+      "personality": "Your Personality Type",
+      "strengths": "Your Strengths",
+      "improvements": "Areas for Improvement",
+      "recommendations": "Recommended Courses",
+      "nextSteps": "Next Steps"
+    }
+  },
+  "roadmap": {
+    "title": "Career Roadmaps",
+    "subtitle": "Detailed guides for your chosen career path",
+    "search": "Search roadmaps...",
+    "category": "Category",
+    "difficulty": "Difficulty",
+    "duration": "Duration",
+    "view": "View Roadmap",
+    "timeline": "Timeline",
+    "resources": "Resources",
+    "careerPaths": "Career Paths"
+  },
+  "colleges": {
+    "title": "Colleges & Universities",
+    "subtitle": "Find and compare colleges that match your goals",
+    "search": "Search colleges...",
+    "filter": "Filter",
+    "compare": "Compare",
+    "viewDetails": "View Details",
+    "addToCompare": "Add to Compare",
+    "removeFromCompare": "Remove from Compare",
+    "comparison": {
+      "title": "College Comparison",
+      "fees": "Fees",
+      "placement": "Placement",
+      "facilities": "Facilities",
+      "ranking": "Ranking"
+    }
+  },
+  "stories": {
+    "title": "Success Stories",
+    "subtitle": "Real stories from people who achieved their dreams",
+    "readMore": "Read More",
+    "readLess": "Read Less",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "category": "Category",
+    "featured": "Featured Stories"
+  },
+  "chatbot": {
+    "title": "Career Guidance Chatbot",
+    "subtitle": "Ask me anything about careers and education",
+    "placeholder": "Type your question here...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "suggestions": "Suggested Questions",
+    "helpful": "Was this helpful?",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "dashboard": {
+    "title": "Analytics Dashboard",
+    "subtitle": "Platform insights and statistics",
+    "totalUsers": "Total Users",
+    "quizAttempts": "Quiz Attempts",
+    "stories": "Success Stories",
+    "colleges": "Colleges",
+    "engagement": "User Engagement",
+    "performance": "Content Performance"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "clear": "Clear",
+    "apply": "Apply",
+    "reset": "Reset",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "All rights reserved"
+  }
+}
