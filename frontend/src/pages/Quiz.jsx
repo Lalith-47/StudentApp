@@ -40,19 +40,29 @@ const Quiz = () => {
     data: questionsData,
     isLoading: questionsLoading,
     error: questionsError,
-  } = useQuery("quizQuestions", () => apiService.getQuizQuestions(), {
-    enabled: !quizStarted, // Only fetch when quiz hasn't started
-    onSuccess: (response) => {
-      console.log('Quiz questions response:', response);
-      if (response && response.data && response.data.questions) {
-        setQuestions(response.data.questions);
-        setQuizData(response.data);
-      } else {
-        console.error('Invalid quiz questions response:', response);
-        setQuestions([]);
-      }
-    },
-  });
+  } = useQuery(
+    ["quizQuestions", isAuthenticated], // Include auth status in query key
+    () => apiService.getQuizQuestions(),
+    {
+      enabled: !quizStarted, // Only fetch when quiz hasn't started
+      staleTime: 0, // Always fetch fresh data
+      cacheTime: 0, // Don't cache
+      onSuccess: (response) => {
+        console.log("Quiz questions response:", response);
+        if (response && response.data && response.data.questions) {
+          console.log("Setting questions:", response.data.questions.length);
+          setQuestions(response.data.questions);
+          setQuizData(response.data);
+        } else {
+          console.error("Invalid quiz questions response:", response);
+          setQuestions([]);
+        }
+      },
+      onError: (error) => {
+        console.error("Quiz questions fetch error:", error);
+      },
+    }
+  );
 
   const submitQuizMutation = useMutation(
     (quizData) => apiService.submitQuiz(quizData),
@@ -114,12 +124,23 @@ const Quiz = () => {
   };
 
   // Fallback: Use questionsData if questions state is empty
-  const actualQuestions = questions.length > 0 ? questions : (questionsData?.data?.questions || []);
-  
+  const actualQuestions =
+    questions.length > 0 ? questions : questionsData?.data?.questions || [];
+
+  // Debug logging
+  console.log("Debug - questions.length:", questions.length);
+  console.log("Debug - questionsData:", questionsData);
+  console.log("Debug - actualQuestions.length:", actualQuestions.length);
+  console.log("Debug - questionsLoading:", questionsLoading);
+  console.log("Debug - questionsError:", questionsError);
+
   const progress =
-    actualQuestions.length > 0 ? ((currentQuestion + 1) / actualQuestions.length) * 100 : 0;
+    actualQuestions.length > 0
+      ? ((currentQuestion + 1) / actualQuestions.length) * 100
+      : 0;
   const canProceed =
-    actualQuestions[currentQuestion] && answers[actualQuestions[currentQuestion]?.id];
+    actualQuestions[currentQuestion] &&
+    answers[actualQuestions[currentQuestion]?.id];
 
   if (showResults) {
     return <QuizResults />;
@@ -202,7 +223,9 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {actualQuestions.length > 0 ? actualQuestions.length : "Loading..."}{" "}
+                    {actualQuestions.length > 0
+                      ? actualQuestions.length
+                      : "Loading..."}{" "}
                     questions
                   </span>
                 </div>
@@ -228,6 +251,17 @@ const Quiz = () => {
                     : "Start Quick Quiz"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
+
+                {actualQuestions.length === 0 && (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={() => window.location.reload()}
+                    className="mt-4"
+                  >
+                    Refresh Page
+                  </Button>
+                )}
 
                 {!isAuthenticated && (
                   <div className="text-center">
@@ -346,8 +380,9 @@ const Quiz = () => {
                           <div className="flex items-center relative z-10">
                             <div
                               className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                                answers[actualQuestions[currentQuestion]?.id] ===
-                                option.id
+                                answers[
+                                  actualQuestions[currentQuestion]?.id
+                                ] === option.id
                                   ? "border-primary-500 bg-primary-500"
                                   : "border-gray-300 dark:border-gray-500"
                               }`}
