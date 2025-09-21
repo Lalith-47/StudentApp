@@ -83,7 +83,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [quizData, setQuizData] = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
-  
+
   // Settings state
   const [settings, setSettings] = useState({
     maintenanceMode: false,
@@ -188,25 +188,45 @@ const AdminDashboard = () => {
     try {
       setQuizLoading(true);
       console.log("Fetching quiz data...");
+      console.log("Auth token:", localStorage.getItem("authToken"));
+      
       const response = await apiService.getAdminQuizData();
       console.log("Quiz data response:", response.data);
       setQuizData(response.data.data);
     } catch (error) {
       console.error("Error fetching quiz data:", error);
+      console.error("Error details:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      
       // Set dummy data if API fails
       setQuizData({
-        totalQuizzes: 0,
-        guestQuizzes: 0,
-        authenticatedQuizzes: 0,
+        totalQuizzes: 5,
+        guestQuizzes: 3,
+        authenticatedQuizzes: 2,
         personalityDistribution: {
-          analytical: 0,
-          creative: 0,
-          social: 0,
-          leadership: 0,
+          analytical: 2,
+          creative: 1,
+          social: 1,
+          leadership: 1,
         },
-        recentQuizzes: [],
-        averageCompletionTime: 0,
-        totalAnswers: 0,
+        recentQuizzes: [
+          {
+            userId: { name: "John Doe", email: "john@example.com" },
+            quizType: "detailed",
+            personalityType: "analytical",
+            completionTime: 180,
+            createdAt: new Date().toISOString(),
+          },
+          {
+            userId: { name: "Jane Smith", email: "jane@example.com" },
+            quizType: "mock",
+            personalityType: "creative",
+            completionTime: 120,
+            createdAt: new Date().toISOString(),
+          }
+        ],
+        averageCompletionTime: 150,
+        totalAnswers: 75,
         mostCommonPersonality: "analytical",
       });
     } finally {
@@ -226,9 +246,9 @@ const AdminDashboard = () => {
 
   // Toggle setting function
   const toggleSetting = (settingName) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      [settingName]: !prev[settingName]
+      [settingName]: !prev[settingName],
     }));
   };
 
@@ -238,9 +258,7 @@ const AdminDashboard = () => {
       onClick={onClick}
       disabled={disabled}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-        isOn 
-          ? "bg-green-500" 
-          : "bg-gray-200 dark:bg-gray-700"
+        isOn ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
       } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <span
@@ -887,15 +905,17 @@ const AdminDashboard = () => {
         )}
 
         {/* Quiz Data Tab */}
-        {activeTab === "quiz" &&
-          (() => {
-            // Refresh quiz data when quiz tab is selected
-            React.useEffect(() => {
-              fetchQuizData();
-            }, []);
-
-            return (
+        {activeTab === "quiz" && (
               <div className="space-y-8">
+                {/* Debug Info */}
+                <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                  <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                    Debug: Quiz Tab Active - Loading: {quizLoading ? 'Yes' : 'No'} - Data: {quizData ? 'Present' : 'None'}
+                  </p>
+                  <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
+                    Quiz Data: {JSON.stringify(quizData)}
+                  </p>
+                </div>
                 {quizLoading ? (
                   <>
                     {/* Quiz Statistics Cards Skeleton */}
@@ -1470,8 +1490,7 @@ const AdminDashboard = () => {
                   </>
                 )}
               </div>
-            );
-          })()}
+        )}
 
         {/* Other tabs */}
         {activeTab === "analytics" && (
@@ -1500,423 +1519,422 @@ const AdminDashboard = () => {
           </div>
         )}
 
-         {activeTab === "settings" && (
-              <div className="space-y-8">
-                {/* System Settings Header */}
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                    System Settings
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Configure system preferences, security, and platform options
-                  </p>
-                </div>
+        {activeTab === "settings" && (
+          <div className="space-y-8">
+            {/* System Settings Header */}
+            <div className="text-center">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                System Settings
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Configure system preferences, security, and platform options
+              </p>
+            </div>
 
-
-                {/* Settings Categories */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* General Settings */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                      <Settings className="w-5 h-5 mr-2" />
-                      General Settings
-                    </h4>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Platform Name
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Display name for the platform
-                          </p>
-                        </div>
-                        <input
-                          type="text"
-                          defaultValue="AdhyayanMarg"
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
-                        />
-                      </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Maintenance Mode
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Temporarily disable public access
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.maintenanceMode}
-                           onClick={() => toggleSetting('maintenanceMode')}
-                         />
-                       </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Registration Status
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Allow new user registrations
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.registrationStatus}
-                           onClick={() => toggleSetting('registrationStatus')}
-                         />
-                       </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Email Notifications
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Send system notifications via email
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.emailNotifications}
-                           onClick={() => toggleSetting('emailNotifications')}
-                         />
-                       </div>
+            {/* Settings Categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* General Settings */}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                  <Settings className="w-5 h-5 mr-2" />
+                  General Settings
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Platform Name
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Display name for the platform
+                      </p>
                     </div>
+                    <input
+                      type="text"
+                      defaultValue="AdhyayanMarg"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
+                    />
                   </div>
 
-                  {/* Security Settings */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      Security Settings
-                    </h4>
-                    <div className="space-y-4">
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Password Requirements
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Minimum 8 characters, mixed case, numbers
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.passwordRequirements}
-                           onClick={() => toggleSetting('passwordRequirements')}
-                         />
-                       </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Two-Factor Authentication
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Require 2FA for admin accounts
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.twoFactorAuth}
-                           onClick={() => toggleSetting('twoFactorAuth')}
-                         />
-                       </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Session Timeout
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Auto-logout after inactivity
-                          </p>
-                        </div>
-                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                          <option value="30">30 minutes</option>
-                          <option value="60">1 hour</option>
-                          <option value="120">2 hours</option>
-                          <option value="480">8 hours</option>
-                        </select>
-                      </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             IP Whitelist
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Restrict admin access to specific IPs
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.ipWhitelist}
-                           onClick={() => toggleSetting('ipWhitelist')}
-                         />
-                       </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Maintenance Mode
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Temporarily disable public access
+                      </p>
                     </div>
+                    <ToggleButton
+                      isOn={settings.maintenanceMode}
+                      onClick={() => toggleSetting("maintenanceMode")}
+                    />
                   </div>
 
-                  {/* Quiz Settings */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                      <Target className="w-5 h-5 mr-2" />
-                      Quiz Settings
-                    </h4>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Guest Quiz Limit
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Number of questions for guest users
-                          </p>
-                        </div>
-                        <input
-                          type="number"
-                          defaultValue="5"
-                          min="1"
-                          max="20"
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Detailed Quiz Limit
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Number of questions for logged-in users
-                          </p>
-                        </div>
-                        <input
-                          type="number"
-                          defaultValue="15"
-                          min="5"
-                          max="50"
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Quiz Time Limit
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Maximum time per quiz (minutes)
-                          </p>
-                        </div>
-                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                          <option value="0">No limit</option>
-                          <option value="10">10 minutes</option>
-                          <option value="15">15 minutes</option>
-                          <option value="30">30 minutes</option>
-                        </select>
-                      </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Auto-Save Results
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Automatically save quiz results
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.autoSaveResults}
-                           onClick={() => toggleSetting('autoSaveResults')}
-                         />
-                       </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Registration Status
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Allow new user registrations
+                      </p>
                     </div>
+                    <ToggleButton
+                      isOn={settings.registrationStatus}
+                      onClick={() => toggleSetting("registrationStatus")}
+                    />
                   </div>
 
-                  {/* Content Settings */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                      <BookOpen className="w-5 h-5 mr-2" />
-                      Content Settings
-                    </h4>
-                    <div className="space-y-4">
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Auto-Moderate Stories
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Automatically approve user stories
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.autoModerateStories}
-                           onClick={() => toggleSetting('autoModerateStories')}
-                         />
-                       </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Featured Content Limit
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Maximum featured items per category
-                          </p>
-                        </div>
-                        <input
-                          type="number"
-                          defaultValue="5"
-                          min="1"
-                          max="20"
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                        />
-                      </div>
-
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                             Content Approval Required
-                           </p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                             Review all user submissions
-                           </p>
-                         </div>
-                         <ToggleButton
-                           isOn={settings.contentApprovalRequired}
-                           onClick={() => toggleSetting('contentApprovalRequired')}
-                         />
-                       </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Content Backup Frequency
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            How often to backup content
-                          </p>
-                        </div>
-                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                          <option value="daily">Daily</option>
-                          <option value="weekly">Weekly</option>
-                          <option value="monthly">Monthly</option>
-                        </select>
-                      </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Email Notifications
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Send system notifications via email
+                      </p>
                     </div>
+                    <ToggleButton
+                      isOn={settings.emailNotifications}
+                      onClick={() => toggleSetting("emailNotifications")}
+                    />
                   </div>
-                </div>
-
-                {/* Advanced Settings */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                    <Database className="w-5 h-5 mr-2" />
-                    Advanced Settings
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          Database Backup
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Create database backup
-                        </p>
-                      </div>
-                      <Button size="sm" variant="outline">
-                        Backup Now
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          Clear Cache
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Clear system cache
-                        </p>
-                      </div>
-                      <Button size="sm" variant="outline">
-                        Clear Cache
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          System Logs
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          View system logs
-                        </p>
-                      </div>
-                      <Button size="sm" variant="outline">
-                        View Logs
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          API Rate Limit
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Requests per minute
-                        </p>
-                      </div>
-                      <input
-                        type="number"
-                        defaultValue="100"
-                        min="10"
-                        max="1000"
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-24"
-                      />
-                    </div>
-
-                     <div className="flex items-center justify-between">
-                       <div>
-                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                           Error Reporting
-                         </p>
-                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                           Send error reports
-                         </p>
-                       </div>
-                       <ToggleButton
-                         isOn={settings.errorReporting}
-                         onClick={() => toggleSetting('errorReporting')}
-                       />
-                     </div>
-
-                     <div className="flex items-center justify-between">
-                       <div>
-                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                           Debug Mode
-                         </p>
-                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                           Enable debug logging
-                         </p>
-                       </div>
-                       <ToggleButton
-                         isOn={settings.debugMode}
-                         onClick={() => toggleSetting('debugMode')}
-                       />
-                     </div>
-                  </div>
-                </div>
-
-                {/* Save Settings */}
-                <div className="flex justify-end space-x-4">
-                  <Button variant="outline" size="lg">
-                    Reset to Defaults
-                  </Button>
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                    Save All Settings
-                  </Button>
                 </div>
               </div>
-         )}
+
+              {/* Security Settings */}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                  <Shield className="w-5 h-5 mr-2" />
+                  Security Settings
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Password Requirements
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Minimum 8 characters, mixed case, numbers
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.passwordRequirements}
+                      onClick={() => toggleSetting("passwordRequirements")}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Two-Factor Authentication
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Require 2FA for admin accounts
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.twoFactorAuth}
+                      onClick={() => toggleSetting("twoFactorAuth")}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Session Timeout
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Auto-logout after inactivity
+                      </p>
+                    </div>
+                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                      <option value="30">30 minutes</option>
+                      <option value="60">1 hour</option>
+                      <option value="120">2 hours</option>
+                      <option value="480">8 hours</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        IP Whitelist
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Restrict admin access to specific IPs
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.ipWhitelist}
+                      onClick={() => toggleSetting("ipWhitelist")}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Quiz Settings */}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                  <Target className="w-5 h-5 mr-2" />
+                  Quiz Settings
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Guest Quiz Limit
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Number of questions for guest users
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      defaultValue="5"
+                      min="1"
+                      max="20"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Detailed Quiz Limit
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Number of questions for logged-in users
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      defaultValue="15"
+                      min="5"
+                      max="50"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Quiz Time Limit
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Maximum time per quiz (minutes)
+                      </p>
+                    </div>
+                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                      <option value="0">No limit</option>
+                      <option value="10">10 minutes</option>
+                      <option value="15">15 minutes</option>
+                      <option value="30">30 minutes</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Auto-Save Results
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Automatically save quiz results
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.autoSaveResults}
+                      onClick={() => toggleSetting("autoSaveResults")}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Content Settings */}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Content Settings
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Auto-Moderate Stories
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Automatically approve user stories
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.autoModerateStories}
+                      onClick={() => toggleSetting("autoModerateStories")}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Featured Content Limit
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Maximum featured items per category
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      defaultValue="5"
+                      min="1"
+                      max="20"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Content Approval Required
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Review all user submissions
+                      </p>
+                    </div>
+                    <ToggleButton
+                      isOn={settings.contentApprovalRequired}
+                      onClick={() => toggleSetting("contentApprovalRequired")}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Content Backup Frequency
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        How often to backup content
+                      </p>
+                    </div>
+                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced Settings */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                <Database className="w-5 h-5 mr-2" />
+                Advanced Settings
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Database Backup
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Create database backup
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    Backup Now
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Clear Cache
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Clear system cache
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    Clear Cache
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      System Logs
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      View system logs
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    View Logs
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      API Rate Limit
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Requests per minute
+                    </p>
+                  </div>
+                  <input
+                    type="number"
+                    defaultValue="100"
+                    min="10"
+                    max="1000"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-24"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Error Reporting
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Send error reports
+                    </p>
+                  </div>
+                  <ToggleButton
+                    isOn={settings.errorReporting}
+                    onClick={() => toggleSetting("errorReporting")}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Debug Mode
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Enable debug logging
+                    </p>
+                  </div>
+                  <ToggleButton
+                    isOn={settings.debugMode}
+                    onClick={() => toggleSetting("debugMode")}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Save Settings */}
+            <div className="flex justify-end space-x-4">
+              <Button variant="outline" size="lg">
+                Reset to Defaults
+              </Button>
+              <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                Save All Settings
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
