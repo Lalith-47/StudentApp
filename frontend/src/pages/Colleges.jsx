@@ -737,16 +737,18 @@ const Colleges = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-4 sm:py-6 lg:py-12">
+      <div className="container-custom px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 lg:mb-12"
         >
-          <h1 className="heading-2 mb-4">{t("colleges.title")}</h1>
-          <p className="text-body max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 lg:mb-6">
+            {t("colleges.title")}
+          </h1>
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed px-4">
             {t("colleges.subtitle")}
           </p>
         </motion.div>
@@ -756,23 +758,24 @@ const Colleges = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8 lg:mb-10"
         >
-          <Card>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-2">
+          <Card className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="sm:col-span-2 lg:col-span-2">
                 <Input
                   placeholder={t("colleges.search")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                  className="w-full touch-target min-h-[44px]"
                 />
               </div>
 
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="input"
+                className="input w-full touch-target min-h-[44px] text-sm sm:text-base"
               >
                 <option value="">City</option>
                 {cities.map((city) => (
@@ -785,7 +788,7 @@ const Colleges = () => {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="input"
+                className="input w-full touch-target min-h-[44px] text-sm sm:text-base"
               >
                 <option value="">Type</option>
                 {types.map((type) => (
@@ -803,22 +806,23 @@ const Colleges = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
-            <Card className="bg-primary-50 border-primary-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <BarChart3 className="w-5 h-5 text-primary-600" />
-                  <span className="font-medium text-primary-900">
+            <Card className="bg-primary-50 border-primary-200 dark:bg-primary-900/20 dark:border-primary-700 p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <BarChart3 className="w-5 h-5 text-primary-600 flex-shrink-0" />
+                  <span className="font-medium text-primary-900 dark:text-primary-100 text-sm sm:text-base">
                     {compareList.length} colleges selected for comparison
                   </span>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 sm:space-x-3">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowComparison(true)}
                     disabled={compareList.length < 2}
+                    className="w-full sm:w-auto touch-target min-h-[40px] text-xs sm:text-sm"
                   >
                     Compare Now
                   </Button>
@@ -826,6 +830,7 @@ const Colleges = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setCompareList([])}
+                    className="w-full sm:w-auto touch-target min-h-[40px] text-xs sm:text-sm"
                   >
                     Clear All
                   </Button>
@@ -836,7 +841,7 @@ const Colleges = () => {
         )}
 
         {/* Colleges Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredColleges.map((college, index) => (
             <motion.div
               key={college._id}
@@ -844,103 +849,122 @@ const Colleges = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card hover className="h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="heading-4 mb-1">{college.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {college.shortName}
-                    </p>
-                    <div className="flex items-center space-x-1 text-sm text-gray-500">
-                      <MapPin className="w-3 h-3" />
-                      <span>
-                        {college.location.city}, {college.location.state}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium">4.8</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="badge-primary">{college.type}</span>
-                  <span className="badge-secondary">
-                    Est. {college.established}
-                  </span>
-                  {college.accreditation.nirf && (
-                    <span className="badge-success">
-                      NIRF #{college.accreditation.nirf.rank}
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {college.placement.averagePackage}
-                    </div>
-                    <div className="text-xs text-gray-500">Avg Package</div>
-                  </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <Users className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {college.placement.placementPercentage}%
-                    </div>
-                    <div className="text-xs text-gray-500">Placement</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Top Recruiters:
-                  </h4>
-                  <div className="flex flex-wrap gap-1">
-                    {college.placement.topRecruiters
-                      .slice(0, 3)
-                      .map((recruiter, recruiterIndex) => (
-                        <span
-                          key={recruiterIndex}
-                          className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded"
-                        >
-                          {recruiter}
+              <Card hover className="h-full p-4 sm:p-6">
+                <div className="flex flex-col h-full">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-3 sm:mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 leading-tight">
+                          {college.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 sm:mb-3">
+                          {college.shortName}
+                        </p>
+                        <div className="flex items-center space-x-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {college.location.city}, {college.location.state}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-xs sm:text-sm font-medium">
+                          4.8
                         </span>
-                      ))}
-                  </div>
-                </div>
+                      </div>
+                    </div>
 
-                <div className="flex space-x-2">
-                  <Button className="flex-1">
-                    {t("colleges.viewDetails")}
-                  </Button>
-                  {canAddToCompare(college._id) ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addToCompare(college)}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  ) : isInCompareList(college._id) ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeFromCompare(college._id)}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled
-                      title="Maximum 4 colleges can be compared"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  )}
+                    <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                      <span className="badge-primary text-xs px-2 py-1">
+                        {college.type}
+                      </span>
+                      <span className="badge-secondary text-xs px-2 py-1">
+                        Est. {college.established}
+                      </span>
+                      {college.accreditation.nirf && (
+                        <span className="badge-success text-xs px-2 py-1">
+                          NIRF #{college.accreditation.nirf.rank}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="text-center p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mx-auto mb-1" />
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                          {college.placement.averagePackage}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Avg Package
+                        </div>
+                      </div>
+                      <div className="text-center p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mx-auto mb-1" />
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                          {college.placement.placementPercentage}%
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Placement
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">
+                        Top Recruiters:
+                      </h4>
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
+                        {college.placement.topRecruiters
+                          .slice(0, 3)
+                          .map((recruiter, recruiterIndex) => (
+                            <span
+                              key={recruiterIndex}
+                              className="px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-xs rounded"
+                            >
+                              {recruiter}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+                      <Button className="flex-1 w-full sm:w-auto touch-target min-h-[44px] text-sm">
+                        {t("colleges.viewDetails")}
+                      </Button>
+                      <div className="flex gap-2">
+                        {canAddToCompare(college._id) ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addToCompare(college)}
+                            className="touch-target min-h-[44px] min-w-[44px] flex-shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        ) : isInCompareList(college._id) ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeFromCompare(college._id)}
+                            className="touch-target min-h-[44px] min-w-[44px] flex-shrink-0"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled
+                            title="Maximum 4 colleges can be compared"
+                            className="touch-target min-h-[44px] min-w-[44px] flex-shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </Card>
             </motion.div>

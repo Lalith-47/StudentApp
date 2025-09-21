@@ -141,23 +141,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md sm:max-w-lg"
       >
-        <Card className="p-8 shadow-2xl">
+        <Card className="p-6 sm:p-8 lg:p-10 shadow-2xl">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-white" />
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <User className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
               {mode === "login" ? t("auth.signIn") : t("auth.createAccount")}
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed px-2">
               {mode === "login"
                 ? t("auth.signInSubtitle")
                 : t("auth.createAccountSubtitle")}
@@ -165,10 +165,10 @@ const Login = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* General Error */}
             {errors.general && (
-              <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-xs sm:text-sm">
                 {errors.general}
               </div>
             )}
@@ -188,6 +188,7 @@ const Login = () => {
                   leftIcon={<User className="w-4 h-4 text-gray-400" />}
                   error={errors.name}
                   required
+                  className="touch-target min-h-[44px]"
                 />
               </div>
             )}
@@ -206,6 +207,7 @@ const Login = () => {
                 leftIcon={<Mail className="w-4 h-4 text-gray-400" />}
                 error={errors.email}
                 required
+                className="touch-target min-h-[44px]"
               />
             </div>
 
@@ -225,7 +227,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 touch-target min-h-[40px] min-w-[40px] flex items-center justify-center"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -236,6 +238,7 @@ const Login = () => {
                 }
                 error={errors.password}
                 required
+                className="touch-target min-h-[44px]"
               />
             </div>
 
@@ -258,7 +261,7 @@ const Login = () => {
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 touch-target min-h-[40px] min-w-[40px] flex items-center justify-center"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -269,6 +272,7 @@ const Login = () => {
                   }
                   error={errors.confirmPassword}
                   required
+                  className="touch-target min-h-[44px]"
                 />
               </div>
             )}
@@ -277,7 +281,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full"
+              className="w-full touch-target min-h-[48px] text-sm sm:text-base"
               size="lg"
             >
               {loading ? (
@@ -299,13 +303,13 @@ const Login = () => {
 
             {/* Switch Mode */}
             <div className="text-center">
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 {mode === "login" ? t("auth.noAccount") : t("auth.haveAccount")}
               </p>
               <button
                 type="button"
                 onClick={switchMode}
-                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium mt-1"
+                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium mt-1 touch-target min-h-[44px] px-2 py-1"
               >
                 {mode === "login" ? t("auth.createAccount") : t("auth.signIn")}
               </button>
@@ -313,10 +317,10 @@ const Login = () => {
           </form>
 
           {/* Back to Home */}
-          <div className="mt-6 text-center">
+          <div className="mt-4 sm:mt-6 text-center">
             <button
               onClick={() => navigate("/")}
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-sm"
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-sm touch-target min-h-[44px] px-2 py-1"
             >
               ← Back to Home
             </button>

@@ -99,59 +99,184 @@ const Navbar = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                {/* Background circle */}
-                <circle cx="16" cy="16" r="16" fill="#f59e0b" />
+                <defs>
+                  <radialGradient id="bookGradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#fbbf24" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                  </radialGradient>
+                  <radialGradient id="leafGradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#34d399" />
+                    <stop offset="100%" stopColor="#10b981" />
+                  </radialGradient>
+                  <filter
+                    id="shadow"
+                    x="-20%"
+                    y="-20%"
+                    width="140%"
+                    height="140%"
+                  >
+                    <feDropShadow
+                      dx="1"
+                      dy="2"
+                      stdDeviation="2"
+                      floodColor="#000000"
+                      floodOpacity="0.1"
+                    />
+                  </filter>
+                </defs>
 
-                {/* Open Book (golden-orange with 3D effect) */}
+                {/* Open Book with enhanced 3D effect and shadow */}
                 <path
-                  d="M8 20C8 18.5 9.5 17 11 17H21C22.5 17 24 18.5 24 20V24C24 25.5 22.5 27 21 27H11C9.5 27 8 25.5 8 24V20Z"
-                  fill="#f59e0b"
+                  d="M6 22C6 20.5 7.5 19 9 19H23C24.5 19 26 20.5 26 22V28C26 29.5 24.5 31 23 31H9C7.5 31 6 29.5 6 28V22Z"
+                  fill="url(#bookGradient)"
                   stroke="#d97706"
-                  stroke-width="0.5"
+                  strokeWidth="0.3"
+                  filter="url(#shadow)"
                 />
 
-                {/* Book spine (darker orange) */}
-                <rect x="15" y="17" width="2" height="10" fill="#d97706" />
-
-                {/* Book pages with 3D effect */}
+                {/* Book pages with depth */}
                 <path
-                  d="M9 19L23 19M9 21L23 21M9 23L23 23"
+                  d="M7 23L25 23M7 25L25 25M7 27L25 27M7 29L25 29"
                   stroke="#d97706"
-                  stroke-width="0.3"
+                  strokeWidth="0.2"
+                  opacity="0.6"
                 />
 
-                {/* Tree trunk growing from book center */}
-                <path d="M15 20L17 20L17 24L15 24Z" fill="#f59e0b" />
-
-                {/* Tree branches (golden-orange) */}
-                <path
-                  d="M13 18L15 20L17 18L19 20L17 22L15 20Z"
-                  fill="#f59e0b"
-                />
-                <path
-                  d="M12 16L14 18L16 16L18 18L16 20L14 18Z"
-                  fill="#f59e0b"
-                />
-                <path
-                  d="M11 14L13 16L15 14L17 16L15 18L13 16Z"
-                  fill="#f59e0b"
+                {/* Book spine with shadow */}
+                <rect x="15.5" y="19" width="1" height="12" fill="#d97706" />
+                <rect
+                  x="15.7"
+                  y="19"
+                  width="0.3"
+                  height="12"
+                  fill="#92400e"
+                  opacity="0.5"
                 />
 
-                {/* Tree leaves (bright green with 3D effect) */}
-                <circle cx="11" cy="12" r="1.5" fill="#10b981" />
-                <circle cx="13" cy="10" r="1.5" fill="#10b981" />
-                <circle cx="15" cy="12" r="1.5" fill="#10b981" />
-                <circle cx="17" cy="10" r="1.5" fill="#10b981" />
-                <circle cx="19" cy="12" r="1.5" fill="#10b981" />
-                <circle cx="12" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="14" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="16" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="18" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="13" cy="16" r="1" fill="#10b981" />
-                <circle cx="15" cy="16" r="1" fill="#10b981" />
-                <circle cx="17" cy="16" r="1" fill="#10b981" />
-                <circle cx="14" cy="18" r="0.8" fill="#10b981" />
-                <circle cx="16" cy="18" r="0.8" fill="#10b981" />
+                {/* Tree trunk with gradient */}
+                <rect
+                  x="15"
+                  y="22"
+                  width="2"
+                  height="6"
+                  fill="url(#bookGradient)"
+                />
+                <rect
+                  x="15.2"
+                  y="22"
+                  width="0.3"
+                  height="6"
+                  fill="#92400e"
+                  opacity="0.3"
+                />
+
+                {/* Main tree branches with enhanced styling */}
+                <path
+                  d="M13 20L15 22L17 20L19 22L17 24L15 22Z"
+                  fill="url(#bookGradient)"
+                  stroke="#d97706"
+                  strokeWidth="0.2"
+                />
+                <path
+                  d="M12 18L14 20L16 18L18 20L16 22L14 20Z"
+                  fill="url(#bookGradient)"
+                  stroke="#d97706"
+                  strokeWidth="0.2"
+                />
+                <path
+                  d="M11 16L13 18L15 16L17 18L15 20L13 18Z"
+                  fill="url(#bookGradient)"
+                  stroke="#d97706"
+                  strokeWidth="0.2"
+                />
+                <path
+                  d="M10 14L12 16L14 14L16 16L14 18L12 16Z"
+                  fill="url(#bookGradient)"
+                  stroke="#d97706"
+                  strokeWidth="0.2"
+                />
+
+                {/* Tree leaves with gradient and depth - creating fuller canopy */}
+                <circle cx="10" cy="12" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="12" cy="10" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="14" cy="12" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="16" cy="10" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="18" cy="12" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="20" cy="10" r="1.8" fill="url(#leafGradient)" />
+                <circle cx="22" cy="12" r="1.8" fill="url(#leafGradient)" />
+
+                <circle cx="11" cy="14" r="1.5" fill="url(#leafGradient)" />
+                <circle cx="13" cy="14" r="1.5" fill="url(#leafGradient)" />
+                <circle cx="15" cy="14" r="1.5" fill="url(#leafGradient)" />
+                <circle cx="17" cy="14" r="1.5" fill="url(#leafGradient)" />
+                <circle cx="19" cy="14" r="1.5" fill="url(#leafGradient)" />
+                <circle cx="21" cy="14" r="1.5" fill="url(#leafGradient)" />
+
+                <circle cx="12" cy="16" r="1.2" fill="url(#leafGradient)" />
+                <circle cx="14" cy="16" r="1.2" fill="url(#leafGradient)" />
+                <circle cx="16" cy="16" r="1.2" fill="url(#leafGradient)" />
+                <circle cx="18" cy="16" r="1.2" fill="url(#leafGradient)" />
+                <circle cx="20" cy="16" r="1.2" fill="url(#leafGradient)" />
+
+                <circle cx="13" cy="18" r="1" fill="url(#leafGradient)" />
+                <circle cx="15" cy="18" r="1" fill="url(#leafGradient)" />
+                <circle cx="17" cy="18" r="1" fill="url(#leafGradient)" />
+                <circle cx="19" cy="18" r="1" fill="url(#leafGradient)" />
+
+                <circle cx="14" cy="20" r="0.8" fill="url(#leafGradient)" />
+                <circle cx="16" cy="20" r="0.8" fill="url(#leafGradient)" />
+                <circle cx="18" cy="20" r="0.8" fill="url(#leafGradient)" />
+
+                {/* Subtle highlights on leaves for 3D effect */}
+                <circle
+                  cx="10.3"
+                  cy="11.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="12.3"
+                  cy="9.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="14.3"
+                  cy="11.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="16.3"
+                  cy="9.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="18.3"
+                  cy="11.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="20.3"
+                  cy="9.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="22.3"
+                  cy="11.5"
+                  r="0.4"
+                  fill="#6ee7b7"
+                  opacity="0.6"
+                />
               </svg>
             </div>
             <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-300">
@@ -297,7 +422,7 @@ const Navbar = () => {
         {isOpen && (
           <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-in slide-in-from-top-2 duration-300 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
             <div className="flex flex-col space-y-2">
-                  {navigation.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -334,7 +459,9 @@ const Navbar = () => {
                       )}
                     >
                       <span className="text-xl mb-1">{language.flag}</span>
-                      <span className="text-xs font-medium">{language.name}</span>
+                      <span className="text-xs font-medium">
+                        {language.name}
+                      </span>
                     </button>
                   ))}
                 </div>

@@ -70,13 +70,28 @@ const submitQuiz = async (req, res) => {
       scores
     );
 
+    // Enhance answers with question and category information
+    const enhancedAnswers = answers.map((answer) => {
+      // Find the question details from the appropriate question set
+      const questions =
+        quizType === "mock" ? getMockQuestions() : getDetailedQuestions();
+      const questionData = questions.find((q) => q.id === answer.questionId);
+
+      return {
+        questionId: answer.questionId,
+        question: questionData?.question || "Unknown question",
+        selectedOption: answer.selectedOption,
+        category: questionData?.category || "general",
+      };
+    });
+
     // Create quiz result object
     const quizResult = {
       userId: isAuthenticated ? req.user.id : null,
       sessionId: !isAuthenticated ? sessionId : null,
       userType,
       quizType,
-      answers,
+      answers: enhancedAnswers,
       scores,
       recommendedCourses,
       personalityType,

@@ -15,16 +15,16 @@ const Input = forwardRef(
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
               {leftIcon}
             </div>
           )}
           <input
             ref={ref}
             className={cn(
-              "block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors",
-              leftIcon && "pl-10",
-              rightIcon && "pr-10",
+              "block w-full px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base min-h-[44px]",
+              leftIcon && "pl-10 sm:pl-12",
+              rightIcon && "pr-10 sm:pr-12",
               error &&
                 "border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500",
               className
@@ -32,7 +32,7 @@ const Input = forwardRef(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
               {rightIcon}
             </div>
           )}

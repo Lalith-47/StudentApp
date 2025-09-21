@@ -736,16 +736,20 @@ const Roadmap = () => {
   });
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-4 sm:py-6 lg:py-12">
+      <div className="container-custom px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 lg:mb-12"
         >
-          <h1 className="heading-2 mb-4">{t("roadmap.title")}</h1>
-          <p className="text-body max-w-3xl mx-auto">{t("roadmap.subtitle")}</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 lg:mb-6">
+            {t("roadmap.title")}
+          </h1>
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed px-4">
+            {t("roadmap.subtitle")}
+          </p>
         </motion.div>
 
         {/* Search and Filters */}
@@ -753,23 +757,24 @@ const Roadmap = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8 lg:mb-10"
         >
-          <Card>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-2">
+          <Card className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="sm:col-span-2 lg:col-span-2">
                 <Input
                   placeholder={t("roadmap.search")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                  className="w-full touch-target min-h-[44px]"
                 />
               </div>
 
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input"
+                className="input w-full touch-target min-h-[44px] text-sm sm:text-base"
               >
                 <option value="">{t("roadmap.category")}</option>
                 {categories.map((category) => (
@@ -782,7 +787,7 @@ const Roadmap = () => {
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="input"
+                className="input w-full touch-target min-h-[44px] text-sm sm:text-base"
               >
                 <option value="">{t("roadmap.difficulty")}</option>
                 {difficulties.map((difficulty) => (
@@ -796,7 +801,7 @@ const Roadmap = () => {
         </motion.div>
 
         {/* Roadmaps Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
           {filteredRoadmaps.map((roadmap, index) => (
             <motion.div
               key={roadmap._id}
@@ -804,90 +809,112 @@ const Roadmap = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card hover className="h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="heading-4 mb-2">{roadmap.courseName}</h3>
-                    <p className="text-gray-600 text-sm mb-3">
-                      {roadmap.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium">4.8</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="badge-primary">{roadmap.category}</span>
-                  <span className="badge-secondary">{roadmap.difficulty}</span>
-                  <span className="badge-secondary">{roadmap.duration}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {roadmap.marketDemand.current}
-                    </div>
-                    <div className="text-xs text-gray-500">Demand</div>
-                  </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <Award className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {roadmap.marketDemand.salaryRange.entry}
-                    </div>
-                    <div className="text-xs text-gray-500">Starting Salary</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Top Skills:
-                  </h4>
-                  <div className="flex flex-wrap gap-1">
-                    {roadmap.timeline[0]?.skills
-                      ?.slice(0, 3)
-                      .map((skill, skillIndex) => (
-                        <span
-                          key={skillIndex}
-                          className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded"
-                        >
-                          {skill}
+              <Card hover className="h-full p-4 sm:p-6">
+                <div className="flex flex-col h-full">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-3 sm:mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">
+                          {roadmap.courseName}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                          {roadmap.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-xs sm:text-sm font-medium">
+                          4.8
                         </span>
-                      ))}
-                  </div>
-                </div>
+                      </div>
+                    </div>
 
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Top Institutions:
-                  </h4>
-                  <div className="space-y-1">
-                    {roadmap.institutions
-                      .slice(0, 2)
-                      .map((institution, instIndex) => (
-                        <div
-                          key={instIndex}
-                          className="flex items-center space-x-2 text-sm"
-                        >
-                          <MapPin className="w-3 h-3 text-gray-400" />
-                          <span className="text-gray-600">
-                            {institution.name}
-                          </span>
-                          <span className="text-gray-400">•</span>
-                          <span className="text-gray-500">
-                            {institution.location}
-                          </span>
+                    <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                      <span className="badge-primary text-xs px-2 py-1">
+                        {roadmap.category}
+                      </span>
+                      <span className="badge-secondary text-xs px-2 py-1">
+                        {roadmap.difficulty}
+                      </span>
+                      <span className="badge-secondary text-xs px-2 py-1">
+                        {roadmap.duration}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="text-center p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mx-auto mb-1" />
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                          {roadmap.marketDemand.current}
                         </div>
-                      ))}
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Demand
+                        </div>
+                      </div>
+                      <div className="text-center p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <Award className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mx-auto mb-1" />
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                          {roadmap.marketDemand.salaryRange.entry}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Starting Salary
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">
+                        Top Skills:
+                      </h4>
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
+                        {roadmap.timeline[0]?.skills
+                          ?.slice(0, 3)
+                          .map((skill, skillIndex) => (
+                            <span
+                              key={skillIndex}
+                              className="px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-xs rounded"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">
+                        Top Institutions:
+                      </h4>
+                      <div className="space-y-2">
+                        {roadmap.institutions
+                          .slice(0, 2)
+                          .map((institution, instIndex) => (
+                            <div
+                              key={instIndex}
+                              className="flex items-start space-x-2 text-xs sm:text-sm"
+                            >
+                              <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0 mt-0.5" />
+                              <div className="min-w-0 flex-1">
+                                <span className="text-gray-600 dark:text-gray-300 font-medium">
+                                  {institution.name}
+                                </span>
+                                <span className="text-gray-400 dark:text-gray-500 ml-1">
+                                  •
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  {institution.location}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
+                    <Button className="w-full touch-target min-h-[44px] text-sm sm:text-base">
+                      {t("roadmap.view")}
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
                   </div>
                 </div>
-
-                <Button className="w-full">
-                  {t("roadmap.view")}
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
               </Card>
             </motion.div>
           ))}

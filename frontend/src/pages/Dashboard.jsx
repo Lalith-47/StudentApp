@@ -1310,39 +1310,47 @@ const Dashboard = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-8 text-white"
+        className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-4 sm:p-6 lg:p-8 text-white"
       >
-        <h2 className="text-2xl font-bold mb-2">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3">
           Welcome back, {user?.name || "Student"}! 👋
         </h2>
-        <p className="text-primary-100 mb-6">
+        <p className="text-primary-100 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
           Here's your personalized dashboard with all your learning progress and
           opportunities.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="text-center">
-            <div className="text-3xl font-bold">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
               {userAnalytics.totalInteractions}
             </div>
-            <div className="text-sm text-primary-100">AI Interactions</div>
+            <div className="text-xs sm:text-sm text-primary-100">
+              AI Interactions
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
               {userAnalytics.completedCourses}
             </div>
-            <div className="text-sm text-primary-100">Courses Completed</div>
+            <div className="text-xs sm:text-sm text-primary-100">
+              Courses Completed
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
               {userAnalytics.appliedInternships}
             </div>
-            <div className="text-sm text-primary-100">Internships Applied</div>
+            <div className="text-xs sm:text-sm text-primary-100">
+              Internships Applied
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">
               {userAnalytics.achievements}
             </div>
-            <div className="text-sm text-primary-100">Achievements</div>
+            <div className="text-xs sm:text-sm text-primary-100">
+              Achievements
+            </div>
           </div>
         </div>
       </motion.div>
@@ -1353,45 +1361,57 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Card
             hover
-            className="p-6 text-center cursor-pointer"
+            className="p-4 sm:p-6 text-center cursor-pointer h-full touch-target"
             onClick={() => {
               setActiveTab("chat");
               simulateInteraction("ai_chat");
             }}
           >
-            <MessageCircle className="w-8 h-8 text-primary-600 mx-auto mb-3" />
-            <h4 className="font-semibold mb-2">Start AI Chat</h4>
-            <p className="text-sm text-gray-600">
+            <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-semibold mb-2 text-sm sm:text-base">
+              Start AI Chat
+            </h4>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               Get personalized career guidance
             </p>
           </Card>
           <Card
             hover
-            className="p-6 text-center cursor-pointer"
+            className="p-4 sm:p-6 text-center cursor-pointer h-full touch-target"
             onClick={() => {
               setActiveTab("internships");
               simulateInteraction("internship_apply");
             }}
           >
-            <Briefcase className="w-8 h-8 text-green-600 mx-auto mb-3" />
-            <h4 className="font-semibold mb-2">Browse Internships</h4>
-            <p className="text-sm text-gray-600">Find your next opportunity</p>
+            <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-semibold mb-2 text-sm sm:text-base">
+              Browse Internships
+            </h4>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              Find your next opportunity
+            </p>
           </Card>
           <Card
             hover
-            className="p-6 text-center cursor-pointer"
+            className="p-4 sm:p-6 text-center cursor-pointer h-full touch-target"
             onClick={() => {
               setActiveTab("courses");
               simulateInteraction("course_complete");
             }}
           >
-            <GraduationCap className="w-8 h-8 text-purple-600 mx-auto mb-3" />
-            <h4 className="font-semibold mb-2">Explore Courses</h4>
-            <p className="text-sm text-gray-600">Learn new skills for free</p>
+            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600 mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-semibold mb-2 text-sm sm:text-base">
+              Explore Courses
+            </h4>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              Learn new skills for free
+            </p>
           </Card>
         </div>
       </motion.div>
@@ -1402,56 +1422,63 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h3 className="text-xl font-semibold mb-4">Test Analytics Tracking</h3>
-        <Card className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+          Test Analytics Tracking
+        </h3>
+        <Card className="p-4 sm:p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             <Button
               size="sm"
               onClick={() => simulateInteraction("ai_chat")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target min-h-[40px] sm:min-h-[44px]"
             >
-              <MessageCircle className="w-4 h-4" />
-              AI Chat
+              <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">AI Chat</span>
+              <span className="sm:hidden">Chat</span>
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => simulateInteraction("course_complete")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target min-h-[40px] sm:min-h-[44px]"
             >
-              <GraduationCap className="w-4 h-4" />
-              Complete Course
+              <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Complete Course</span>
+              <span className="sm:hidden">Course</span>
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => simulateInteraction("internship_apply")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target min-h-[40px] sm:min-h-[44px]"
             >
-              <Briefcase className="w-4 h-4" />
-              Apply Internship
+              <Briefcase className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Apply Internship</span>
+              <span className="sm:hidden">Apply</span>
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => simulateInteraction("scholarship_apply")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target min-h-[40px] sm:min-h-[44px]"
             >
-              <Award className="w-4 h-4" />
-              Apply Scholarship
+              <Award className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Apply Scholarship</span>
+              <span className="sm:hidden">Scholarship</span>
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => simulateInteraction("achievement")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target min-h-[40px] sm:min-h-[44px]"
             >
-              <Star className="w-4 h-4" />
-              Get Achievement
+              <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Get Achievement</span>
+              <span className="sm:hidden">Achievement</span>
             </Button>
           </div>
           <div className="mt-4 flex justify-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center px-4">
               Analytics are automatically tracked as you use the platform
             </p>
           </div>
@@ -1464,34 +1491,42 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-        <Card>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <div>
-                <p className="font-medium">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+          Recent Activity
+        </h3>
+        <Card className="p-4 sm:p-6">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-start space-x-3 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                   Completed: Data Science Fundamentals
                 </p>
-                <p className="text-sm text-gray-600">2 days ago</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                  2 days ago
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-              <Info className="w-5 h-5 text-blue-600" />
-              <div>
-                <p className="font-medium">
+            <div className="flex items-start space-x-3 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                   Applied to: Microsoft Data Science Intern
                 </p>
-                <p className="text-sm text-gray-600">1 week ago</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                  1 week ago
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
-              <Award className="w-5 h-5 text-purple-600" />
-              <div>
-                <p className="font-medium">
+            <div className="flex items-start space-x-3 p-3 sm:p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <Award className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                   Earned: Web Development Certificate
                 </p>
-                <p className="text-sm text-gray-600">2 weeks ago</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                  2 weeks ago
+                </p>
               </div>
             </div>
           </div>
@@ -1556,20 +1591,22 @@ const Dashboard = () => {
 
   const renderInternships = () => (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-        <h3 className="text-xl font-semibold">Available Internships</h3>
-        <div className="flex space-x-3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6 mb-6 sm:mb-8">
+        <h3 className="text-lg sm:text-xl font-semibold">
+          Available Internships
+        </h3>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Input
             placeholder="Search internships..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-            className="w-64"
+            className="w-full sm:w-64 touch-target min-h-[44px]"
           />
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="input"
+            className="input w-full sm:w-auto min-w-[150px] touch-target min-h-[44px]"
           >
             <option value="all">All Companies</option>
             <option value="google">Google</option>
@@ -1585,7 +1622,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         {mockData.internships
           .filter((internship) => {
             const matchesSearch =
@@ -2193,8 +2230,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-4 sm:py-6 lg:py-8">
+      <div className="container-custom px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
