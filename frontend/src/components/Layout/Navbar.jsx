@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, Globe, User, LogOut } from "lucide-react";
+import { Menu, X, Globe, User, LogOut, Shield } from "lucide-react";
 import { cn } from "../../utils/helpers";
 import Button from "../UI/Button";
 import ThemeToggle from "../UI/ThemeToggle";
@@ -44,15 +44,30 @@ const Navbar = () => {
     },
   ];
 
-  // Add dashboard to navigation only if user is authenticated
+  // Add navigation items based on user role
   const navigation = isAuthenticated
     ? [
         ...baseNavigation,
-        {
-          name: t("nav.dashboard"),
-          href: "/dashboard",
-          current: location.pathname === "/dashboard",
-        },
+        // Add dashboard link only for non-admin users
+        ...(user?.role !== "admin"
+          ? [
+              {
+                name: t("nav.dashboard"),
+                href: "/dashboard",
+                current: location.pathname === "/dashboard",
+              },
+            ]
+          : []),
+        // Add admin link only for admin users
+        ...(user?.role === "admin"
+          ? [
+              {
+                name: "Admin",
+                href: "/admin",
+                current: location.pathname === "/admin",
+              },
+            ]
+          : []),
       ]
     : baseNavigation;
 
@@ -74,29 +89,29 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-      <div className="container-custom">
-        <div className="flex justify-between items-center h-16 min-w-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">CG</span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">
-              CareerGuide
+              AdhyayanMarg
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
+          {/* Desktop Navigation - Hidden on smaller screens */}
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors duration-200 whitespace-nowrap",
+                  "px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap rounded-md",
                   item.current
-                    ? "text-primary-600 dark:text-primary-400"
-                    : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                    ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                    : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                 )}
               >
                 {item.name}
@@ -105,20 +120,20 @@ const Navbar = () => {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-2 lg:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* Language Selector */}
-            <div className="relative">
+            {/* Language Selector - Hidden on very small screens */}
+            <div className="relative hidden sm:block">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center space-x-1"
+                className="flex items-center space-x-1 px-2"
               >
                 <Globe className="w-4 h-4" />
-                <span className="hidden sm:block">
+                <span className="hidden md:block">
                   {languages.find((lang) => lang.code === i18n.language)?.flag}
                 </span>
               </Button>
@@ -145,35 +160,57 @@ const Navbar = () => {
 
             {/* Authentication Buttons */}
             {isAuthenticated ? (
-              <div className="flex items-center space-x-1 lg:space-x-2">
-                <div className="flex items-center space-x-1 lg:space-x-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center space-x-1">
+                {/* User Info - Responsive */}
+                <div className="flex items-center space-x-1 sm:space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg">
                   <User className="w-4 h-4 flex-shrink-0" />
                   <span
-                    className="hidden lg:block truncate max-w-32"
+                    className="hidden sm:block truncate max-w-20 md:max-w-32 lg:max-w-40 font-medium"
                     title={user?.name}
                   >
                     {user?.name}
                   </span>
                 </div>
+
+                {/* Logout Button - Responsive */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleLogout}
-                  className="flex items-center space-x-1"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                  title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden lg:block">{t("auth.signOut")}</span>
+                  <span className="hidden md:block font-medium">
+                    {t("auth.signOut")}
+                  </span>
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => navigate("/login")}
-                className="hidden sm:flex"
-              >
-                {t("auth.signIn")}
-              </Button>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                {/* Admin Portal Button - Responsive */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/admin-login")}
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:block font-medium">
+                    Admin Portal
+                  </span>
+                </Button>
+
+                {/* Sign In Button - Responsive */}
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="hidden sm:flex px-3 sm:px-4 py-2 font-medium"
+                >
+                  {t("auth.signIn")}
+                </Button>
+              </div>
             )}
 
             {/* Mobile menu button */}
@@ -181,7 +218,7 @@ const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden"
+              className="lg:hidden ml-1"
             >
               {isOpen ? (
                 <X className="w-5 h-5" />
@@ -194,8 +231,8 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4">
-            <div className="flex flex-col space-y-2">
+          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4">
+            <div className="flex flex-col space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -212,13 +249,39 @@ const Navbar = () => {
                 </Link>
               ))}
 
+              {/* Mobile Language Selector */}
+              <div className="px-3 py-2">
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                  Language
+                </div>
+                <div className="flex space-x-2">
+                  {languages.map((language) => (
+                    <button
+                      key={language.code}
+                      onClick={() => {
+                        changeLanguage(language.code);
+                        setIsOpen(false);
+                      }}
+                      className={cn(
+                        "px-3 py-1 text-sm rounded-md border transition-colors",
+                        i18n.language === language.code
+                          ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700"
+                          : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                      )}
+                    >
+                      {language.flag} {language.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Mobile Auth Buttons */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                 {isAuthenticated ? (
-                  <div className="flex items-center justify-between px-3 py-2">
+                  <div className="space-y-3 px-3">
                     <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                       <User className="w-4 h-4" />
-                      <span>{user?.name}</span>
+                      <span className="font-medium">{user?.name}</span>
                     </div>
                     <Button
                       variant="ghost"
@@ -227,24 +290,38 @@ const Navbar = () => {
                         handleLogout();
                         setIsOpen(false);
                       }}
-                      className="flex items-center space-x-1"
+                      className="flex items-center space-x-2 w-full justify-start"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>{t("auth.signOut")}</span>
                     </Button>
                   </div>
                 ) : (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      navigate("/login");
-                      setIsOpen(false);
-                    }}
-                    className="w-full"
-                  >
-                    {t("auth.signIn")}
-                  </Button>
+                  <div className="space-y-2 px-3">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        navigate("/login");
+                        setIsOpen(false);
+                      }}
+                      className="w-full"
+                    >
+                      {t("auth.signIn")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate("/admin-login");
+                        setIsOpen(false);
+                      }}
+                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Admin Portal
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>

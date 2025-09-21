@@ -460,21 +460,25 @@ const Quiz = () => {
                             option.id
                           )
                         }
-                        className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
+                        className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 relative overflow-hidden ${
                           answers[questions[currentQuestion].id] === option.id
-                            ? "border-primary-500 bg-primary-50 text-primary-900"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                            ? "border-primary-500 bg-primary-50 text-primary-900 dark:bg-primary-900/20 dark:text-primary-100"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-900 dark:text-gray-100"
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        style={{
+                          WebkitTapHighlightColor: "transparent",
+                          outline: "none",
+                        }}
                       >
-                        <div className="flex items-center">
+                        <div className="flex items-center relative z-10">
                           <div
-                            className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                            className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
                               answers[questions[currentQuestion].id] ===
                               option.id
                                 ? "border-primary-500 bg-primary-500"
-                                : "border-gray-300"
+                                : "border-gray-300 dark:border-gray-500"
                             }`}
                           >
                             {answers[questions[currentQuestion].id] ===
@@ -482,7 +486,9 @@ const Quiz = () => {
                               <CheckCircle className="w-4 h-4 text-white" />
                             )}
                           </div>
-                          <span className="font-medium">{option.text}</span>
+                          <span className="font-medium text-inherit">
+                            {option.text}
+                          </span>
                         </div>
                       </motion.button>
                     ))}

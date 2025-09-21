@@ -3,7 +3,21 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const {
+  createUser,
+  findUserByEmail,
+  findUserByEmailWithPassword,
+  findUserById,
+  updateUser,
+  comparePassword,
+} = require("../data/mockUsers");
+const mongoose = require("mongoose");
 const router = express.Router();
+
+// Check if database is connected
+const isDbConnected = () => {
+  return mongoose.connection.readyState === 1;
+};
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -143,8 +157,16 @@ router.post(
 
       const { email, password } = req.body;
 
-      // Find user with password
-      const user = await User.findOne({ email }).select("+password");
+      let user;
+
+      if (isDbConnected()) {
+        // Use MongoDB
+        user = await User.findOne({ email }).select("+password");
+      } else {
+        // Use mock users
+        user = await findUserByEmailWithPassword(email);
+      }
+
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -161,7 +183,7 @@ router.post(
       }
 
       // Compare password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await comparePassword(password, user.password);
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
@@ -171,11 +193,15 @@ router.post(
 
       // Update last login
       user.lastLogin = new Date();
-      await user.save();
+      if (isDbConnected()) {
+        await user.save();
+      } else {
+        await updateUser(user.id, { lastLogin: new Date() });
+      }
 
       // Generate JWT token
       const token = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user.id || user._id, email: user.email, role: user.role },
         process.env.JWT_SECRET || "your-secret-key",
         { expiresIn: process.env.JWT_EXPIRE || "7d" }
       );
@@ -185,7 +211,7 @@ router.post(
         message: "Login successful",
         token,
         user: {
-          id: user._id,
+          id: user.id || user._id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -204,7 +230,14 @@ router.post(
 // Get current user
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    let user;
+
+    if (isDbConnected()) {
+      user = await User.findById(req.user.id);
+    } else {
+      user = await findUserById(req.user.id);
+    }
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -215,7 +248,7 @@ router.get("/me", authenticateToken, async (req, res) => {
     res.json({
       success: true,
       user: {
-        id: user._id,
+        id: user.id || user._id,
         name: user.name,
         email: user.email,
         role: user.role,

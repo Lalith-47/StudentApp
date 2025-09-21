@@ -9,6 +9,38 @@ const hashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
 
+// Initialize with an admin user for demo purposes
+const initializeAdminUser = async () => {
+  const adminUser = {
+    id: "admin-001",
+    name: "System Administrator",
+    email: "admin@adhyayanmarg.com",
+    password: await hashPassword("admin123"),
+    role: "admin",
+    isActive: true,
+    isVerified: true,
+    createdAt: new Date(),
+    lastLogin: null,
+    analytics: {
+      totalInteractions: 0,
+      completedCourses: 0,
+      appliedInternships: 0,
+      appliedScholarships: 0,
+      totalHours: 0,
+      achievements: 0,
+      lastUpdated: new Date(),
+    },
+  };
+
+  // Only add if not already exists
+  if (!users.find((user) => user.email === adminUser.email)) {
+    users.push(adminUser);
+  }
+};
+
+// Initialize admin user when module loads
+initializeAdminUser();
+
 // Helper function to compare password
 const comparePassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword);
@@ -76,6 +108,7 @@ const updateUser = async (id, updateData) => {
 };
 
 module.exports = {
+  users,
   createUser,
   findUserByEmail,
   findUserByEmailWithPassword,
@@ -83,4 +116,3 @@ module.exports = {
   updateUser,
   comparePassword,
 };
-

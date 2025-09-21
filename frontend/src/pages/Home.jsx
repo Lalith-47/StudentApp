@@ -196,7 +196,7 @@ const Home = () => {
       name: "Priya Sharma",
       role: "Software Engineer at Google",
       content:
-        "CareerGuide helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
+        "AdhyayanMarg helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
       rating: 5,
       image:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",

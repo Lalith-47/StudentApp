@@ -3,18 +3,21 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import LoadingSpinner from "./components/UI/LoadingSpinner";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import AdminProtectedRoute from "./components/Auth/AdminProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Lazy load pages for better performance
 const Home = React.lazy(() => import("./pages/Home"));
 const Login = React.lazy(() => import("./pages/Login"));
+const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const Quiz = React.lazy(() => import("./pages/Quiz"));
 const Roadmap = React.lazy(() => import("./pages/Roadmap"));
 const Colleges = React.lazy(() => import("./pages/Colleges"));
 const Stories = React.lazy(() => import("./pages/Stories"));
 const Chatbot = React.lazy(() => import("./pages/Chatbot"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 function App() {
@@ -25,6 +28,7 @@ function App() {
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="quiz" element={<Quiz />} />
@@ -38,6 +42,14 @@ function App() {
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="admin"
+                  element={
+                    <AdminProtectedRoute>
+                      <AdminDashboard />
+                    </AdminProtectedRoute>
                   }
                 />
                 <Route path="*" element={<NotFound />} />

@@ -1,41 +1,41 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { Heart, Mail, Phone, MapPin } from 'lucide-react'
+import React from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Heart, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { name: t('footer.about'), href: '/about' },
-      { name: t('footer.contact'), href: '/contact' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Blog', href: '/blog' },
+      { name: t("footer.about"), href: "/about" },
+      { name: t("footer.contact"), href: "/contact" },
+      { name: "Careers", href: "/careers" },
+      { name: "Blog", href: "/blog" },
     ],
     support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'FAQ', href: '/faq' },
-      { name: 'Contact Support', href: '/support' },
-      { name: 'Community', href: '/community' },
+      { name: "Help Center", href: "/help" },
+      { name: "FAQ", href: "/faq" },
+      { name: "Contact Support", href: "/support" },
+      { name: "Community", href: "/community" },
     ],
     legal: [
-      { name: t('footer.privacy'), href: '/privacy' },
-      { name: t('footer.terms'), href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'Disclaimer', href: '/disclaimer' },
+      { name: t("footer.privacy"), href: "/privacy" },
+      { name: t("footer.terms"), href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Disclaimer", href: "/disclaimer" },
     ],
-  }
+  };
 
   const socialLinks = [
-    { name: 'Facebook', href: '#', icon: '📘' },
-    { name: 'Twitter', href: '#', icon: '🐦' },
-    { name: 'LinkedIn', href: '#', icon: '💼' },
-    { name: 'Instagram', href: '#', icon: '📷' },
-    { name: 'YouTube', href: '#', icon: '📺' },
-  ]
+    { name: "Facebook", href: "#", icon: "📘" },
+    { name: "Twitter", href: "#", icon: "🐦" },
+    { name: "LinkedIn", href: "#", icon: "💼" },
+    { name: "Instagram", href: "#", icon: "📷" },
+    { name: "YouTube", href: "#", icon: "📺" },
+  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -48,25 +48,27 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">CG</span>
               </div>
-              <span className="text-xl font-bold">CareerGuide</span>
+              <span className="text-xl font-bold">AdhyayanMarg</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-sm">
-              Your comprehensive career guidance platform. Discover your potential and build your future with expert guidance and resources.
+              Your comprehensive career guidance platform. Discover your
+              potential and build your future with expert guidance and
+              resources.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-4 h-4" />
-                <span className="text-sm">support@careerguide.com</span>
+                <span className="text-sm">support@adhyayanmarg.com</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
                 <Phone className="w-4 h-4" />
-                <span className="text-sm">+91 98765 43210</span>
+                <span className="text-sm">+91 98540 42222</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
                 <MapPin className="w-4 h-4" />
-                <span className="text-sm">New Delhi, India</span>
+                <span className="text-sm">Bengaluru, India</span>
               </div>
             </div>
           </div>
@@ -129,7 +131,8 @@ const Footer = () => {
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
               <p className="text-gray-400 text-sm">
-                Get the latest career guidance tips and opportunities delivered to your inbox.
+                Get the latest career guidance tips and opportunities delivered
+                to your inbox.
               </p>
             </div>
             <div className="flex w-full md:w-auto">
@@ -148,10 +151,12 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="py-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-2 text-gray-400 text-sm mb-4 md:mb-0">
-            <span>© {currentYear} CareerGuide. {t('footer.rights')}</span>
+            <span>
+              © {currentYear} AdhyayanMarg. {t("footer.rights")}
+            </span>
             <Heart className="w-4 h-4 text-red-500" />
           </div>
-          
+
           {/* Social Links */}
           <div className="flex items-center space-x-4">
             {socialLinks.map((social) => (
@@ -168,7 +173,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

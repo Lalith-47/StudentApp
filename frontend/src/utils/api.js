@@ -141,6 +141,13 @@ export const endpoints = {
     reset: "/analytics/user/reset",
   },
 
+  // Admin
+  admin: {
+    dashboard: "/admin/dashboard",
+    users: "/admin/users",
+    updateUserStatus: (userId) => `/admin/users/${userId}/status`,
+  },
+
   // Auth
   auth: {
     login: "/auth/login",
@@ -205,6 +212,12 @@ export const apiService = {
   getCurrentUser: () => api.get(endpoints.auth.me),
   logout: () => api.post(endpoints.auth.logout),
   verifyToken: (token) => api.post(endpoints.auth.verify, { token }),
+
+  // Admin
+  getAdminDashboard: () => api.get(endpoints.admin.dashboard),
+  getAdminUsers: (params) => api.get(endpoints.admin.users, { params }),
+  updateUserStatus: (userId, data) =>
+    api.patch(endpoints.admin.updateUserStatus(userId), data),
 };
 
 export default api;

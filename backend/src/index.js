@@ -17,6 +17,7 @@ const storyRoutes = require("./routes/story");
 const faqRoutes = require("./routes/faq");
 const analyticsRoutes = require("./routes/analytics");
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -69,6 +70,7 @@ app.use("/api/stories", storyRoutes);
 app.use("/api/faq", faqRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

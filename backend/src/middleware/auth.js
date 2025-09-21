@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { findUserById } = require("../data/mockUsers");
+const mongoose = require("mongoose");
 
 // Middleware to authenticate JWT tokens
 const authenticateToken = async (req, res, next) => {
@@ -20,8 +22,15 @@ const authenticateToken = async (req, res, next) => {
       process.env.JWT_SECRET || "your-secret-key"
     );
 
-    // Find the user
-    const user = await User.findById(decoded.id).select("-password");
+    // Find the user - check if database is connected
+    let user;
+    if (mongoose.connection.readyState === 1) {
+      // Database connected - use MongoDB
+      user = await User.findById(decoded.id).select("-password");
+    } else {
+      // Database not connected - use mock users
+      user = await findUserById(decoded.id);
+    }
 
     if (!user) {
       return res.status(401).json({
@@ -32,7 +41,7 @@ const authenticateToken = async (req, res, next) => {
 
     // Add user info to request object
     req.user = {
-      id: user._id,
+      id: user.id || user._id,
       email: user.email,
       name: user.name,
       role: user.role,
