@@ -171,8 +171,8 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="container-custom py-8">
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
+      <div className="container-custom">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -280,7 +280,7 @@ const Chatbot = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {/* Chat Interface */}
             <div className="lg:col-span-3">
-              <Card className="h-[calc(100vh-200px)] max-h-[600px] flex flex-col">
+              <Card className="h-[600px] flex flex-col">
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
                   <AnimatePresence>
