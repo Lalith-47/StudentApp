@@ -845,7 +845,13 @@ const AdminDashboard = () => {
         )}
 
         {/* Quiz Data Tab */}
-        {activeTab === "quiz" && (
+        {activeTab === "quiz" && (() => {
+          // Refresh quiz data when quiz tab is selected
+          React.useEffect(() => {
+            fetchQuizData();
+          }, []);
+          
+          return (
           <div className="space-y-8">
             {quizLoading ? (
               <>
@@ -875,6 +881,26 @@ const AdminDashboard = () => {
               </>
             ) : (
               <>
+                {/* Quiz Data Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      Quiz Analytics
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                      Track quiz submissions and user engagement
+                    </p>
+                  </div>
+                  <button
+                    onClick={fetchQuizData}
+                    disabled={quizLoading}
+                    className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${quizLoading ? 'animate-spin' : ''}`} />
+                    <span>Refresh Data</span>
+                  </button>
+                </div>
+
                 {/* Quiz Statistics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
@@ -1381,7 +1407,8 @@ const AdminDashboard = () => {
               </>
             )}
           </div>
-        )}
+          );
+        })()}
 
         {/* Other tabs */}
         {activeTab === "analytics" && (
