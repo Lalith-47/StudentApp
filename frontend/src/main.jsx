@@ -17,6 +17,11 @@ const queryClient = new QueryClient({
       cacheTime: 0, // Disable cache for debugging
     },
   },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -52,3 +57,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </QueryClientProvider>
   </React.StrictMode>
 );
+

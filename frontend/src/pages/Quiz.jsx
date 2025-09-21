@@ -52,6 +52,7 @@ const Quiz = () => {
 
   // Handle successful data fetch with useEffect
   useEffect(() => {
+    console.log("useEffect triggered - questionsData:", questionsData);
     if (questionsData) {
       console.log("Quiz questions response:", questionsData);
       if (questionsData && questionsData.data && questionsData.data.questions) {
@@ -64,6 +65,13 @@ const Quiz = () => {
       }
     }
   }, [questionsData]);
+
+  // Test React Query directly
+  useEffect(() => {
+    console.log("React Query test - questionsData changed:", questionsData);
+    console.log("React Query test - questionsLoading:", questionsLoading);
+    console.log("React Query test - questionsError:", questionsError);
+  }, [questionsData, questionsLoading, questionsError]);
 
   // Handle errors
   useEffect(() => {
