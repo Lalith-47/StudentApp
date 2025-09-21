@@ -44,7 +44,7 @@ const Quiz = () => {
     ["quizQuestions", isAuthenticated], // Include auth status in query key
     () => apiService.getQuizQuestions(),
     {
-      enabled: !quizStarted, // Only fetch when quiz hasn't started
+      enabled: true, // Always fetch questions
       staleTime: 0, // Always fetch fresh data
       cacheTime: 0, // Don't cache
     }
@@ -52,19 +52,21 @@ const Quiz = () => {
 
   // Handle successful data fetch with useEffect
   useEffect(() => {
-    console.log("useEffect triggered - questionsData:", questionsData);
+    console.log("🔍 useEffect triggered - questionsData:", questionsData);
+    console.log("🔍 questionsLoading:", questionsLoading);
+    console.log("🔍 questionsError:", questionsError);
     if (questionsData) {
-      console.log("Quiz questions response:", questionsData);
+      console.log("✅ Quiz questions response:", questionsData);
       if (questionsData && questionsData.data && questionsData.data.questions) {
-        console.log("Setting questions:", questionsData.data.questions.length);
+        console.log("✅ Setting questions:", questionsData.data.questions.length);
         setQuestions(questionsData.data.questions);
         setQuizData(questionsData.data);
       } else {
-        console.error("Invalid quiz questions response:", questionsData);
+        console.error("❌ Invalid quiz questions response:", questionsData);
         setQuestions([]);
       }
     }
-  }, [questionsData]);
+  }, [questionsData, questionsLoading, questionsError]);
 
   // Test React Query directly
   useEffect(() => {
@@ -244,7 +246,7 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {isAuthenticated ? "15" : "5"} questions
+                    {questions.length > 0 ? questions.length : (isAuthenticated ? "15" : "5")} questions
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -266,7 +268,6 @@ const Quiz = () => {
                     : "Start Quick Quiz"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-
 
                 {!isAuthenticated && (
                   <div className="text-center">
