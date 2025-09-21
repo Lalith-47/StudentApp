@@ -191,7 +191,7 @@ const AdminDashboard = () => {
       setQuizData(response.data.data);
     } catch (error) {
       console.error("Error fetching quiz data:", error);
-      
+
       // Set dummy data if API fails
       setQuizData({
         totalQuizzes: 5,
@@ -900,7 +900,7 @@ const AdminDashboard = () => {
 
         {/* Quiz Data Tab */}
         {activeTab === "quiz" && (
-              <div className="space-y-8">
+          <div className="space-y-8">
             {quizLoading ? (
               <>
                 {/* Quiz Statistics Cards Skeleton */}
