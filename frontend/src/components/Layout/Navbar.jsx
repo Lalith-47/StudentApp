@@ -102,39 +102,56 @@ const Navbar = () => {
                 {/* Background circle */}
                 <circle cx="16" cy="16" r="16" fill="#f59e0b" />
 
-                {/* Open Book (light beige/yellow) */}
+                {/* Open Book (golden-orange with 3D effect) */}
                 <path
                   d="M8 20C8 18.5 9.5 17 11 17H21C22.5 17 24 18.5 24 20V24C24 25.5 22.5 27 21 27H11C9.5 27 8 25.5 8 24V20Z"
-                  fill="#fef3c7"
-                  stroke="#f59e0b"
+                  fill="#f59e0b"
+                  stroke="#d97706"
                   stroke-width="0.5"
                 />
 
-                {/* Book spine */}
-                <rect x="15" y="17" width="2" height="10" fill="#f59e0b" />
+                {/* Book spine (darker orange) */}
+                <rect x="15" y="17" width="2" height="10" fill="#d97706" />
 
-                {/* Book pages detail */}
+                {/* Book pages with 3D effect */}
                 <path
                   d="M9 19L23 19M9 21L23 21M9 23L23 23"
-                  stroke="#f59e0b"
+                  stroke="#d97706"
                   stroke-width="0.3"
                 />
 
-                {/* Green plant/sprout growing from book */}
+                {/* Tree trunk growing from book center */}
+                <path d="M15 20L17 20L17 24L15 24Z" fill="#f59e0b" />
+
+                {/* Tree branches (golden-orange) */}
                 <path
-                  d="M16 20L16 16"
-                  stroke="#10b981"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
+                  d="M13 18L15 20L17 18L19 20L17 22L15 20Z"
+                  fill="#f59e0b"
+                />
+                <path
+                  d="M12 16L14 18L16 16L18 18L16 20L14 18Z"
+                  fill="#f59e0b"
+                />
+                <path
+                  d="M11 14L13 16L15 14L17 16L15 18L13 16Z"
+                  fill="#f59e0b"
                 />
 
-                {/* Plant leaves/sprouts */}
+                {/* Tree leaves (bright green with 3D effect) */}
+                <circle cx="11" cy="12" r="1.5" fill="#10b981" />
+                <circle cx="13" cy="10" r="1.5" fill="#10b981" />
+                <circle cx="15" cy="12" r="1.5" fill="#10b981" />
+                <circle cx="17" cy="10" r="1.5" fill="#10b981" />
+                <circle cx="19" cy="12" r="1.5" fill="#10b981" />
+                <circle cx="12" cy="14" r="1.2" fill="#10b981" />
                 <circle cx="14" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="16" cy="12" r="1.2" fill="#10b981" />
+                <circle cx="16" cy="14" r="1.2" fill="#10b981" />
                 <circle cx="18" cy="14" r="1.2" fill="#10b981" />
-                <circle cx="15" cy="15" r="1" fill="#10b981" />
-                <circle cx="17" cy="15" r="1" fill="#10b981" />
-                <circle cx="16" cy="13" r="0.8" fill="#10b981" />
+                <circle cx="13" cy="16" r="1" fill="#10b981" />
+                <circle cx="15" cy="16" r="1" fill="#10b981" />
+                <circle cx="17" cy="16" r="1" fill="#10b981" />
+                <circle cx="14" cy="18" r="0.8" fill="#10b981" />
+                <circle cx="16" cy="18" r="0.8" fill="#10b981" />
               </svg>
             </div>
             <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-300">
