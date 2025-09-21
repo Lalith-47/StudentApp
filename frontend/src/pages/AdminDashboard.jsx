@@ -83,6 +83,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [quizData, setQuizData] = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
+  const [lastQuizRefresh, setLastQuizRefresh] = useState(null);
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -126,6 +127,18 @@ const AdminDashboard = () => {
     fetchUsers();
     fetchQuizData();
   }, []);
+
+  // Auto-refresh quiz data every 30 seconds when quiz tab is active
+  useEffect(() => {
+    if (activeTab === "quiz") {
+      const interval = setInterval(() => {
+        console.log("Auto-refreshing quiz data...");
+        fetchQuizData();
+      }, 30000); // 30 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
 
   const fetchDashboardData = async () => {
     try {
@@ -187,40 +200,56 @@ const AdminDashboard = () => {
   const fetchQuizData = async () => {
     try {
       setQuizLoading(true);
+      console.log("Fetching quiz data...");
+      
       const response = await apiService.getAdminQuizData();
-      setQuizData(response.data.data);
+      console.log("Quiz data response:", response.data);
+      
+      if (response.data.success && response.data.data) {
+        const backendData = response.data.data;
+        
+        // Map backend data structure to frontend expected structure
+        const mappedData = {
+          totalQuizzes: backendData.totalQuizzes || 0,
+          guestQuizzes: backendData.guestQuizzes || 0,
+          authenticatedQuizzes: backendData.authenticatedQuizzes || 0,
+          personalityDistribution: {
+            analytical: backendData.personalityDistribution?.Analyst || 0,
+            creative: backendData.personalityDistribution?.Creator || 0,
+            social: backendData.personalityDistribution?.Helper || 0,
+            leadership: backendData.personalityDistribution?.Leader || 0,
+            explorer: backendData.personalityDistribution?.Explorer || 0,
+          },
+          recentQuizzes: backendData.recentQuizzes || [],
+          averageCompletionTime: backendData.quizStats?.averageCompletionTime || 0,
+          totalAnswers: backendData.quizStats?.totalAnswers || 0,
+          mostCommonPersonality: backendData.quizStats?.mostCommonPersonality || "analytical",
+        };
+        
+        console.log("Mapped quiz data:", mappedData);
+        setQuizData(mappedData);
+        setLastQuizRefresh(new Date());
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (error) {
       console.error("Error fetching quiz data:", error);
-
-      // Set dummy data if API fails
+      
+      // Set fallback data if API fails
       setQuizData({
-        totalQuizzes: 5,
-        guestQuizzes: 3,
-        authenticatedQuizzes: 2,
+        totalQuizzes: 0,
+        guestQuizzes: 0,
+        authenticatedQuizzes: 0,
         personalityDistribution: {
-          analytical: 2,
-          creative: 1,
-          social: 1,
-          leadership: 1,
+          analytical: 0,
+          creative: 0,
+          social: 0,
+          leadership: 0,
+          explorer: 0,
         },
-        recentQuizzes: [
-          {
-            userId: { name: "John Doe", email: "john@example.com" },
-            quizType: "detailed",
-            personalityType: "analytical",
-            completionTime: 180,
-            createdAt: new Date().toISOString(),
-          },
-          {
-            userId: { name: "Jane Smith", email: "jane@example.com" },
-            quizType: "mock",
-            personalityType: "creative",
-            completionTime: 120,
-            createdAt: new Date().toISOString(),
-          },
-        ],
-        averageCompletionTime: 150,
-        totalAnswers: 75,
+        recentQuizzes: [],
+        averageCompletionTime: 0,
+        totalAnswers: 0,
         mostCommonPersonality: "analytical",
       });
     } finally {
@@ -939,16 +968,25 @@ const AdminDashboard = () => {
                       Track quiz submissions and user engagement
                     </p>
                   </div>
-                  <button
-                    onClick={fetchQuizData}
-                    disabled={quizLoading}
-                    className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <RefreshCw
-                      className={`w-4 h-4 ${quizLoading ? "animate-spin" : ""}`}
-                    />
-                    <span>Refresh Data</span>
-                  </button>
+                  <div className="flex flex-col items-end space-y-2">
+                    <button
+                      onClick={fetchQuizData}
+                      disabled={quizLoading}
+                      className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {quizLoading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4" />
+                      )}
+                      <span>{quizLoading ? "Refreshing..." : "Refresh Data"}</span>
+                    </button>
+                    {lastQuizRefresh && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Last updated: {lastQuizRefresh.toLocaleTimeString()}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Quiz Statistics Cards */}
@@ -1361,10 +1399,15 @@ const AdminDashboard = () => {
                     </h3>
                     <button
                       onClick={fetchQuizData}
-                      className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center"
+                      disabled={quizLoading}
+                      className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <RefreshCw className="w-4 h-4 mr-1" />
-                      Refresh
+                      {quizLoading ? (
+                        <div className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mr-1" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4 mr-1" />
+                      )}
+                      {quizLoading ? "Refreshing..." : "Refresh"}
                     </button>
                   </div>
                   <div className="overflow-x-auto">
