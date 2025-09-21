@@ -38,7 +38,7 @@ const Chatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [selectedAIProvider, setSelectedAIProvider] = useState("gemini");
-  const [useAI, setUseAI] = useState(true);
+  const [useAI, setUseAI] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -66,20 +66,26 @@ const Chatbot = () => {
 
   const submitQueryMutation = useMutation(apiService.submitFaqQuery, {
     onSuccess: (data) => {
+      console.log("Chatbot response data:", data);
       setIsTyping(false);
+      
+      // Ensure we have a valid response
+      const answer = data?.data?.answer || "I apologize, but I couldn't generate a response. Please try again.";
+      
       const botResponse = {
         id: Date.now(),
         type: "bot",
-        content: data.data.answer,
+        content: answer,
         timestamp: new Date(),
-        helpful: data.data.found,
-        relatedQuestions: data.data.relatedQuestions || [],
-        aiProvider: data.data.aiProvider,
-        aiModel: data.data.aiModel,
+        helpful: data.data?.found || false,
+        relatedQuestions: data.data?.relatedQuestions || [],
+        aiProvider: data.data?.aiProvider || "AdhyayanMarg Assistant",
+        aiModel: data.data?.aiModel || "Enhanced Knowledge Base",
       };
       setMessages((prev) => [...prev, botResponse]);
     },
     onError: (error) => {
+      console.error("Chatbot error:", error);
       setIsTyping(false);
       const errorResponse = {
         id: Date.now(),

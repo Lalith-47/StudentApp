@@ -567,7 +567,8 @@ What would you like to know about your career journey?`,
       relatedQuestions: [
         {
           question: "What are the best engineering colleges in India?",
-          answer: "Top engineering colleges include IITs, NITs, and private institutions...",
+          answer:
+            "Top engineering colleges include IITs, NITs, and private institutions...",
         },
         {
           question: "How to prepare for JEE exam?",
@@ -575,7 +576,8 @@ What would you like to know about your career journey?`,
         },
         {
           question: "What career options are available after 12th?",
-          answer: "After 12th, you have multiple career paths in various fields...",
+          answer:
+            "After 12th, you have multiple career paths in various fields...",
         },
       ],
       suggestions: [
@@ -614,15 +616,18 @@ Which field interests you most?`,
       relatedQuestions: [
         {
           question: "What are the best career options after engineering?",
-          answer: "Engineering graduates have diverse opportunities in tech, management, research...",
+          answer:
+            "Engineering graduates have diverse opportunities in tech, management, research...",
         },
         {
           question: "How to choose the right career path?",
-          answer: "Consider your interests, skills, values, and market demand...",
+          answer:
+            "Consider your interests, skills, values, and market demand...",
         },
         {
           question: "What skills are in demand in 2024?",
-          answer: "Tech skills, data analysis, AI/ML, soft skills are highly valued...",
+          answer:
+            "Tech skills, data analysis, AI/ML, soft skills are highly valued...",
         },
       ],
       suggestions: [
@@ -833,15 +838,18 @@ This will help me provide you with the most relevant information!`,
       relatedQuestions: [
         {
           question: "What are the best engineering colleges in India?",
-          answer: "Top engineering colleges include IITs, NITs, and private institutions...",
+          answer:
+            "Top engineering colleges include IITs, NITs, and private institutions...",
         },
         {
           question: "How to prepare for competitive exams?",
-          answer: "Create a study schedule, focus on weak areas, practice regularly...",
+          answer:
+            "Create a study schedule, focus on weak areas, practice regularly...",
         },
         {
           question: "What are the career options after 12th?",
-          answer: "After 12th, you can pursue engineering, medicine, commerce, arts...",
+          answer:
+            "After 12th, you can pursue engineering, medicine, commerce, arts...",
         },
       ],
       suggestions: [
@@ -886,15 +894,18 @@ Ask me about any specific topic for detailed guidance!`,
     relatedQuestions: [
       {
         question: "What are the best career options after 12th?",
-        answer: "After 12th, you have multiple career paths in various fields...",
+        answer:
+          "After 12th, you have multiple career paths in various fields...",
       },
       {
         question: "How to choose the right college?",
-        answer: "Consider factors like reputation, courses, placement, location...",
+        answer:
+          "Consider factors like reputation, courses, placement, location...",
       },
       {
         question: "What are the emerging career fields?",
-        answer: "AI/ML, data science, cybersecurity, renewable energy are growing...",
+        answer:
+          "AI/ML, data science, cybersecurity, renewable energy are growing...",
       },
     ],
     suggestions: [
