@@ -43,6 +43,11 @@ api.interceptors.response.use(
       );
     }
 
+    // For quiz questions, log the response data
+    if (response.config.url?.includes('/quiz/questions')) {
+      console.log('Quiz questions API response:', response.data);
+    }
+
     return response;
   },
   (error) => {
