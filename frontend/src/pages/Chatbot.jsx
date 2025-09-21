@@ -65,24 +65,36 @@ const Chatbot = () => {
   );
 
   const submitQueryMutation = useMutation(apiService.submitFaqQuery, {
-    onSuccess: (data) => {
-      console.log("Chatbot response data:", data);
+    onSuccess: (response) => {
+      console.log("Full response object:", response);
+      console.log("Response data:", response.data);
+      console.log("Response data.data:", response.data?.data);
       setIsTyping(false);
-      
-      // Ensure we have a valid response
-      const answer = data?.data?.answer || "I apologize, but I couldn't generate a response. Please try again.";
-      
-      const botResponse = {
-        id: Date.now(),
-        type: "bot",
-        content: answer,
-        timestamp: new Date(),
-        helpful: data.data?.found || false,
-        relatedQuestions: data.data?.relatedQuestions || [],
-        aiProvider: data.data?.aiProvider || "AdhyayanMarg Assistant",
-        aiModel: data.data?.aiModel || "Enhanced Knowledge Base",
-      };
-      setMessages((prev) => [...prev, botResponse]);
+
+      // Check if we have the expected response structure
+      if (response?.data?.success && response?.data?.data?.answer) {
+        const botResponse = {
+          id: Date.now(),
+          type: "bot",
+          content: response.data.data.answer,
+          timestamp: new Date(),
+          helpful: response.data.data.found || false,
+          relatedQuestions: response.data.data.relatedQuestions || [],
+          aiProvider: response.data.data.aiProvider || "AdhyayanMarg Assistant",
+          aiModel: response.data.data.aiModel || "Enhanced Knowledge Base",
+        };
+        setMessages((prev) => [...prev, botResponse]);
+      } else {
+        console.error("Unexpected response structure:", response);
+        const errorResponse = {
+          id: Date.now(),
+          type: "bot",
+          content: "I apologize, but I couldn't generate a response. Please try again.",
+          timestamp: new Date(),
+          helpful: false,
+        };
+        setMessages((prev) => [...prev, errorResponse]);
+      }
     },
     onError: (error) => {
       console.error("Chatbot error:", error);
@@ -139,6 +151,7 @@ const Chatbot = () => {
 
     // Simulate typing delay
     setTimeout(() => {
+      console.log("Sending query data:", queryData);
       submitQueryMutation.mutate(queryData);
     }, 1000);
   };
