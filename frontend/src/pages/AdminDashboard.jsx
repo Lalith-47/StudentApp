@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { apiService } from "../utils/api";
+import Button from "../components/UI/Button";
 import {
   Shield,
   Users,
@@ -1418,6 +1419,13 @@ const AdminDashboard = () => {
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
                 Configure system preferences, security, and platform options
+              </p>
+            </div>
+            
+            {/* Debug Info */}
+            <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+              <p className="text-blue-800 dark:text-blue-200 text-sm">
+                Settings tab is loading... Active tab: {activeTab}
               </p>
             </div>
 
