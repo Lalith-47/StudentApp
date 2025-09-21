@@ -1,77 +1,81 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const quizResultSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false // Not required for guest users
+    ref: "User",
+    required: false, // Not required for guest users
   },
   sessionId: {
     type: String,
-    required: false // For guest users
+    required: false, // For guest users
   },
   userType: {
     type: String,
-    enum: ['guest', 'authenticated'],
+    enum: ["guest", "authenticated"],
     required: true,
-    default: 'authenticated'
+    default: "authenticated",
   },
   quizType: {
     type: String,
-    enum: ['mock', 'detailed'],
+    enum: ["mock", "detailed"],
     required: true,
-    default: 'detailed'
+    default: "detailed",
   },
-  answers: [{
-    questionId: {
-      type: String,
-      required: true
+  answers: [
+    {
+      questionId: {
+        type: String,
+        required: true,
+      },
+      question: {
+        type: String,
+        required: true,
+      },
+      selectedOption: {
+        type: String,
+        required: true,
+      },
+      category: {
+        type: String,
+        required: true,
+      },
     },
-    question: {
-      type: String,
-      required: true
-    },
-    selectedOption: {
-      type: String,
-      required: true
-    },
-    category: {
-      type: String,
-      required: true
-    }
-  }],
+  ],
   scores: {
     technical: { type: Number, default: 0 },
     creative: { type: Number, default: 0 },
     analytical: { type: Number, default: 0 },
     social: { type: Number, default: 0 },
-    leadership: { type: Number, default: 0 }
+    leadership: { type: Number, default: 0 },
   },
-  recommendedCourses: [{
-    courseName: String,
-    matchPercentage: Number,
-    description: String,
-    careerPaths: [String]
-  }],
+  recommendedCourses: [
+    {
+      courseName: String,
+      matchPercentage: Number,
+      description: String,
+      careerPaths: [String],
+    },
+  ],
   personalityType: {
     type: String,
-    enum: ['Analyst', 'Creator', 'Helper', 'Leader', 'Explorer'],
-    required: true
+    enum: ["Analyst", "Creator", "Helper", "Leader", "Explorer"],
+    required: true,
   },
   strengths: [String],
   areasForImprovement: [String],
   completionTime: {
     type: Number, // in seconds
-    required: true
+    required: true,
   },
   submittedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   version: {
     type: String,
-    default: '1.0'
-  }
+    default: "1.0",
+  },
 });
 
 // Index for efficient queries
@@ -81,11 +85,11 @@ quizResultSchema.index({ userType: 1, quizType: 1 });
 quizResultSchema.index({ personalityType: 1 });
 
 // Virtual for total score
-quizResultSchema.virtual('totalScore').get(function() {
+quizResultSchema.virtual("totalScore").get(function () {
   return Object.values(this.scores).reduce((sum, score) => sum + score, 0);
 });
 
 // Ensure virtual fields are serialized
-quizResultSchema.set('toJSON', { virtuals: true });
+quizResultSchema.set("toJSON", { virtuals: true });
 
-module.exports = mongoose.model('QuizResult', quizResultSchema);
+module.exports = mongoose.model("QuizResult", quizResultSchema);

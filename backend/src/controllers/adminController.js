@@ -490,8 +490,8 @@ const updateUserStatus = async (req, res) => {
 // Get quiz data for admin dashboard
 const getQuizData = async (req, res) => {
   try {
-    const QuizResult = require('../models/QuizResult');
-    
+    const QuizResult = require("../models/QuizResult");
+
     // Check if database is connected
     if (mongoose.connection.readyState !== 1) {
       // Return dummy data when database is not connected
@@ -500,40 +500,40 @@ const getQuizData = async (req, res) => {
         guestQuizzes: 45,
         authenticatedQuizzes: 44,
         personalityDistribution: {
-          'Analyst': 22,
-          'Creator': 18,
-          'Helper': 16,
-          'Leader': 20,
-          'Explorer': 13
+          Analyst: 22,
+          Creator: 18,
+          Helper: 16,
+          Leader: 20,
+          Explorer: 13,
         },
         recentQuizzes: [
           {
-            id: 'quiz-001',
-            userType: 'guest',
-            quizType: 'mock',
-            personalityType: 'Analyst',
+            id: "quiz-001",
+            userType: "guest",
+            quizType: "mock",
+            personalityType: "Analyst",
             completionTime: 180,
             submittedAt: new Date().toISOString(),
-            userInfo: null
+            userInfo: null,
           },
           {
-            id: 'quiz-002',
-            userType: 'authenticated',
-            quizType: 'detailed',
-            personalityType: 'Creator',
+            id: "quiz-002",
+            userType: "authenticated",
+            quizType: "detailed",
+            personalityType: "Creator",
             completionTime: 420,
             submittedAt: new Date(Date.now() - 3600000).toISOString(),
             userInfo: {
-              name: 'John Doe',
-              email: 'john@example.com'
-            }
-          }
+              name: "John Doe",
+              email: "john@example.com",
+            },
+          },
         ],
         quizStats: {
           averageCompletionTime: 280,
           totalAnswers: 445,
-          mostCommonPersonality: 'Analyst'
-        }
+          mostCommonPersonality: "Analyst",
+        },
       };
 
       return res.json({
@@ -544,60 +544,65 @@ const getQuizData = async (req, res) => {
 
     // Get quiz statistics from database
     const totalQuizzes = await QuizResult.countDocuments();
-    const guestQuizzes = await QuizResult.countDocuments({ userType: 'guest' });
-    const authenticatedQuizzes = await QuizResult.countDocuments({ userType: 'authenticated' });
+    const guestQuizzes = await QuizResult.countDocuments({ userType: "guest" });
+    const authenticatedQuizzes = await QuizResult.countDocuments({
+      userType: "authenticated",
+    });
 
     // Get personality type distribution
     const personalityDistribution = await QuizResult.aggregate([
       {
         $group: {
-          _id: '$personalityType',
-          count: { $sum: 1 }
-        }
+          _id: "$personalityType",
+          count: { $sum: 1 },
+        },
       },
       {
         $project: {
-          personalityType: '$_id',
+          personalityType: "$_id",
           count: 1,
-          _id: 0
-        }
-      }
+          _id: 0,
+        },
+      },
     ]);
 
     // Get recent quizzes with user info
     const recentQuizzes = await QuizResult.find()
-      .populate('userId', 'name email')
+      .populate("userId", "name email")
       .sort({ submittedAt: -1 })
       .limit(10)
-      .select('userType quizType personalityType completionTime submittedAt userId');
+      .select(
+        "userType quizType personalityType completionTime submittedAt userId"
+      );
 
     // Calculate quiz statistics
     const quizStats = await QuizResult.aggregate([
       {
         $group: {
           _id: null,
-          averageCompletionTime: { $avg: '$completionTime' },
-          totalAnswers: { $sum: { $size: '$answers' } },
-          mostCommonPersonality: { $first: '$personalityType' }
-        }
-      }
+          averageCompletionTime: { $avg: "$completionTime" },
+          totalAnswers: { $sum: { $size: "$answers" } },
+          mostCommonPersonality: { $first: "$personalityType" },
+        },
+      },
     ]);
 
     // Get most common personality type
     const mostCommonPersonalityAgg = await QuizResult.aggregate([
       {
         $group: {
-          _id: '$personalityType',
-          count: { $sum: 1 }
-        }
+          _id: "$personalityType",
+          count: { $sum: 1 },
+        },
       },
       { $sort: { count: -1 } },
-      { $limit: 1 }
+      { $limit: 1 },
     ]);
 
-    const mostCommonPersonality = mostCommonPersonalityAgg.length > 0 
-      ? mostCommonPersonalityAgg[0]._id 
-      : 'Analyst';
+    const mostCommonPersonality =
+      mostCommonPersonalityAgg.length > 0
+        ? mostCommonPersonalityAgg[0]._id
+        : "Analyst";
 
     res.json({
       success: true,
@@ -609,30 +614,35 @@ const getQuizData = async (req, res) => {
           acc[item.personalityType] = item.count;
           return acc;
         }, {}),
-        recentQuizzes: recentQuizzes.map(quiz => ({
+        recentQuizzes: recentQuizzes.map((quiz) => ({
           id: quiz._id,
           userType: quiz.userType,
           quizType: quiz.quizType,
           personalityType: quiz.personalityType,
           completionTime: quiz.completionTime,
           submittedAt: quiz.submittedAt,
-          userInfo: quiz.userId ? {
-            name: quiz.userId.name,
-            email: quiz.userId.email
-          } : null
+          userInfo: quiz.userId
+            ? {
+                name: quiz.userId.name,
+                email: quiz.userId.email,
+              }
+            : null,
         })),
         quizStats: {
-          averageCompletionTime: quizStats.length > 0 ? Math.round(quizStats[0].averageCompletionTime) : 0,
+          averageCompletionTime:
+            quizStats.length > 0
+              ? Math.round(quizStats[0].averageCompletionTime)
+              : 0,
           totalAnswers: quizStats.length > 0 ? quizStats[0].totalAnswers : 0,
-          mostCommonPersonality
-        }
-      }
+          mostCommonPersonality,
+        },
+      },
     });
   } catch (error) {
-    console.error('Get quiz data error:', error);
+    console.error("Get quiz data error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching quiz data'
+      message: "Error fetching quiz data",
     });
   }
 };

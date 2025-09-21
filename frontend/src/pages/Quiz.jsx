@@ -31,24 +31,22 @@ const Quiz = () => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [quizData, setQuizData] = useState(null);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [sessionId] = useState(
+    () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  );
 
   // Fetch quiz questions based on authentication status
   const {
     data: questionsData,
     isLoading: questionsLoading,
     error: questionsError,
-  } = useQuery(
-    'quizQuestions',
-    () => apiService.getQuizQuestions(),
-    {
-      enabled: !quizStarted, // Only fetch when quiz hasn't started
-      onSuccess: (data) => {
-        setQuestions(data.questions || []);
-        setQuizData(data);
-      }
-    }
-  );
+  } = useQuery("quizQuestions", () => apiService.getQuizQuestions(), {
+    enabled: !quizStarted, // Only fetch when quiz hasn't started
+    onSuccess: (data) => {
+      setQuestions(data.questions || []);
+      setQuizData(data);
+    },
+  });
 
   const submitQuizMutation = useMutation(
     (quizData) => apiService.submitQuiz(quizData),
@@ -107,8 +105,8 @@ const Quiz = () => {
     setStartTime(Date.now());
   };
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
-  const canProceed = answers[questions[currentQuestion]?.id];
+  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
+  const canProceed = questions[currentQuestion] && answers[questions[currentQuestion]?.id];
 
   if (showResults) {
     return <QuizResults />;
@@ -131,7 +129,8 @@ const Quiz = () => {
     );
   }
 
-  if (!quizStarted) {
+  // Check if we have questions before starting quiz
+  if (!quizStarted || questions.length === 0) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
@@ -146,21 +145,24 @@ const Quiz = () => {
                   <Target className="w-10 h-10 text-primary-600" />
                 </div>
                 <h1 className="heading-2 mb-4">
-                  {isAuthenticated ? "Detailed Career Assessment" : "Quick Career Quiz"}
+                  {isAuthenticated
+                    ? "Detailed Career Assessment"
+                    : "Quick Career Quiz"}
                 </h1>
                 <p className="text-body max-w-2xl mx-auto mb-6">
-                  {isAuthenticated 
+                  {isAuthenticated
                     ? "Take our comprehensive career assessment to get detailed insights about your personality, strengths, and career recommendations."
-                    : "Take a quick quiz to get a preview of your career personality. Sign up for detailed insights!"
-                  }
+                    : "Take a quick quiz to get a preview of your career personality. Sign up for detailed insights!"}
                 </p>
-                
+
                 {/* User Status Indicator */}
-                <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6 ${
-                  isAuthenticated 
-                    ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                    : "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-                }`}>
+                <div
+                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6 ${
+                    isAuthenticated
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                      : "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                  }`}
+                >
                   {isAuthenticated ? (
                     <>
                       <User className="w-4 h-4 mr-2" />
@@ -179,13 +181,15 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {isAuthenticated ? "Takes 10-15 minutes" : "Takes 3-5 minutes"}
+                    {isAuthenticated
+                      ? "Takes 10-15 minutes"
+                      : "Takes 3-5 minutes"}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {questions.length} questions
+                    {questions.length > 0 ? questions.length : "Loading..."} questions
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -197,17 +201,30 @@ const Quiz = () => {
               </div>
 
               <div className="space-y-4">
-                <Button size="lg" onClick={startQuiz} className="min-h-[52px] text-lg px-8">
-                  {isAuthenticated ? "Start Detailed Assessment" : "Start Quick Quiz"}
+                <Button
+                  size="lg"
+                  onClick={startQuiz}
+                  disabled={questions.length === 0}
+                  className="min-h-[52px] text-lg px-8"
+                >
+                  {questions.length === 0 
+                    ? "Loading Questions..." 
+                    : isAuthenticated
+                    ? "Start Detailed Assessment"
+                    : "Start Quick Quiz"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                
+
                 {!isAuthenticated && (
                   <div className="text-center">
                     <p className="text-sm text-gray-600 mb-3">
                       Want detailed career insights?
                     </p>
-                    <Button variant="outline" size="md" onClick={() => window.location.href = '/login'}>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => (window.location.href = "/login")}
+                    >
                       <LogIn className="w-4 h-4 mr-2" />
                       Sign Up for Free
                     </Button>
@@ -216,6 +233,22 @@ const Quiz = () => {
               </div>
             </Card>
           </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Safety check for current question
+  if (!questions[currentQuestion]) {
+    console.error('Current question not found:', currentQuestion, questions.length);
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
+        <div className="container-custom">
+          <Card className="text-center">
+            <div className="text-red-500 mb-4">Quiz Error</div>
+            <p className="text-gray-600 mb-4">Something went wrong with the quiz. Please try again.</p>
+            <Button onClick={() => window.location.reload()}>Restart Quiz</Button>
+          </Card>
         </div>
       </div>
     );
@@ -260,21 +293,21 @@ const Quiz = () => {
               >
                 <div className="mb-8">
                   <h2 className="heading-3 mb-6">
-                    {questions[currentQuestion].question}
+                    {questions[currentQuestion]?.question || "Question not available"}
                   </h2>
 
                   <div className="space-y-3">
-                    {questions[currentQuestion].options.map((option) => (
+                    {(questions[currentQuestion]?.options || []).map((option) => (
                       <motion.button
                         key={option.id}
                         onClick={() =>
                           handleAnswerSelect(
-                            questions[currentQuestion].id,
+                            questions[currentQuestion]?.id,
                             option.id
                           )
                         }
                         className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 relative overflow-hidden ${
-                          answers[questions[currentQuestion].id] === option.id
+                          answers[questions[currentQuestion]?.id] === option.id
                             ? "border-primary-500 bg-primary-50 text-primary-900 dark:bg-primary-900/20 dark:text-primary-100"
                             : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-900 dark:text-gray-100"
                         }`}
@@ -288,13 +321,13 @@ const Quiz = () => {
                         <div className="flex items-center relative z-10">
                           <div
                             className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                              answers[questions[currentQuestion].id] ===
+                              answers[questions[currentQuestion]?.id] ===
                               option.id
                                 ? "border-primary-500 bg-primary-500"
                                 : "border-gray-300 dark:border-gray-500"
                             }`}
                           >
-                            {answers[questions[currentQuestion].id] ===
+                            {answers[questions[currentQuestion]?.id] ===
                               option.id && (
                               <CheckCircle className="w-4 h-4 text-white" />
                             )}
