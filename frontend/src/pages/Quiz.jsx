@@ -58,7 +58,10 @@ const Quiz = () => {
     if (questionsData) {
       console.log("✅ Quiz questions response:", questionsData);
       if (questionsData && questionsData.data && questionsData.data.questions) {
-        console.log("✅ Setting questions:", questionsData.data.questions.length);
+        console.log(
+          "✅ Setting questions:",
+          questionsData.data.questions.length
+        );
         setQuestions(questionsData.data.questions);
         setQuizData(questionsData.data);
       } else {
@@ -137,6 +140,10 @@ const Quiz = () => {
   };
 
   const startQuiz = () => {
+    console.log("🚀 Starting quiz...");
+    console.log("🚀 Questions available:", questions.length);
+    console.log("🚀 QuestionsData available:", questionsData?.data?.questions?.length || 0);
+    console.log("🚀 ActualQuestions length:", actualQuestions.length);
     setQuizStarted(true);
     setStartTime(Date.now());
   };
@@ -246,7 +253,12 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {questions.length > 0 ? questions.length : (isAuthenticated ? "15" : "5")} questions
+                    {questions.length > 0
+                      ? questions.length
+                      : isAuthenticated
+                      ? "15"
+                      : "5"}{" "}
+                    questions
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -261,9 +273,12 @@ const Quiz = () => {
                 <Button
                   size="lg"
                   onClick={startQuiz}
+                  disabled={actualQuestions.length === 0}
                   className="min-h-[52px] text-lg px-8"
                 >
-                  {isAuthenticated
+                  {actualQuestions.length === 0
+                    ? "Loading Questions..."
+                    : isAuthenticated
                     ? "Start Detailed Assessment"
                     : "Start Quick Quiz"}
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -295,17 +310,22 @@ const Quiz = () => {
   // Safety check for current question
   if (!actualQuestions[currentQuestion]) {
     console.error(
-      "Current question not found:",
+      "❌ Current question not found:",
       currentQuestion,
+      "Total questions:",
       actualQuestions.length
     );
+    console.error("❌ ActualQuestions:", actualQuestions);
+    console.error("❌ Questions state:", questions);
+    console.error("❌ QuestionsData:", questionsData);
+    
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
           <Card className="text-center">
             <div className="text-red-500 mb-4">Quiz Error</div>
             <p className="text-gray-600 mb-4">
-              Something went wrong with the quiz. Please try again.
+              No questions available. Current: {currentQuestion}, Total: {actualQuestions.length}
             </p>
             <Button onClick={() => window.location.reload()}>
               Restart Quiz
