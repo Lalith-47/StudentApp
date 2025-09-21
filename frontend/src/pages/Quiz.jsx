@@ -184,8 +184,8 @@ const Quiz = () => {
     );
   }
 
-  // Check if we have questions before starting quiz
-  if (!quizStarted || actualQuestions.length === 0) {
+  // Show quiz start screen if not started
+  if (!quizStarted) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
@@ -244,10 +244,7 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {actualQuestions.length > 0
-                      ? actualQuestions.length
-                      : "Loading..."}{" "}
-                    questions
+                    {isAuthenticated ? "15" : "5"} questions
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -262,58 +259,14 @@ const Quiz = () => {
                 <Button
                   size="lg"
                   onClick={startQuiz}
-                  disabled={actualQuestions.length === 0}
                   className="min-h-[52px] text-lg px-8"
                 >
-                  {actualQuestions.length === 0
-                    ? "Loading Questions..."
-                    : isAuthenticated
+                  {isAuthenticated
                     ? "Start Detailed Assessment"
                     : "Start Quick Quiz"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
 
-                {actualQuestions.length === 0 && (
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      size="md"
-                      onClick={() => window.location.reload()}
-                      className="w-full"
-                    >
-                      Refresh Page
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="md"
-                      onClick={async () => {
-                        try {
-                          console.log("Testing API call...");
-                          const response = await apiService.getQuizQuestions();
-                          console.log("Manual API test SUCCESS:", response);
-                          alert(`API Response SUCCESS: ${JSON.stringify(response).substring(0, 200)}...`);
-                        } catch (error) {
-                          console.error("Manual API test ERROR:", error);
-                          alert(`API Error: ${error.message}`);
-                        }
-                      }}
-                      className="w-full"
-                    >
-                      Test API Call
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="md"
-                      onClick={() => {
-                        console.log("=== FORCE REFETCH ===");
-                        window.location.reload();
-                      }}
-                      className="w-full"
-                    >
-                      Force Refresh
-                    </Button>
-                  </div>
-                )}
 
                 {!isAuthenticated && (
                   <div className="text-center">
