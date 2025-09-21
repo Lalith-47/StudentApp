@@ -35,55 +35,39 @@ const Quiz = () => {
     () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   );
 
-  // Fetch quiz questions based on authentication status
-  const {
-    data: questionsData,
-    isLoading: questionsLoading,
-    error: questionsError,
-  } = useQuery(
-    ["quizQuestions", isAuthenticated], // Include auth status in query key
-    () => apiService.getQuizQuestions(),
-    {
-      enabled: true, // Always fetch questions
-      staleTime: 0, // Always fetch fresh data
-      cacheTime: 0, // Don't cache
-    }
-  );
+  // SIMPLE DIRECT FETCH - NO REACT QUERY
+  const [questionsLoading, setQuestionsLoading] = useState(true);
+  const [questionsError, setQuestionsError] = useState(null);
 
-  // Handle successful data fetch with useEffect
   useEffect(() => {
-    console.log("🔍 useEffect triggered - questionsData:", questionsData);
-    console.log("🔍 questionsLoading:", questionsLoading);
-    console.log("🔍 questionsError:", questionsError);
-    if (questionsData) {
-      console.log("✅ Quiz questions response:", questionsData);
-      if (questionsData && questionsData.data && questionsData.data.questions) {
-        console.log(
-          "✅ Setting questions:",
-          questionsData.data.questions.length
-        );
-        setQuestions(questionsData.data.questions);
-        setQuizData(questionsData.data);
-      } else {
-        console.error("❌ Invalid quiz questions response:", questionsData);
-        setQuestions([]);
+    const fetchQuestions = async () => {
+      try {
+        console.log("🚀 Direct fetch: Starting...");
+        setQuestionsLoading(true);
+        setQuestionsError(null);
+        
+        const response = await apiService.getQuizQuestions();
+        console.log("✅ Direct fetch: Response received:", response);
+        
+        if (response && response.data && response.data.questions) {
+          console.log("✅ Direct fetch: Setting questions:", response.data.questions.length);
+          setQuestions(response.data.questions);
+          setQuizData(response.data);
+          setQuestionsLoading(false);
+        } else {
+          console.error("❌ Direct fetch: Invalid response structure:", response);
+          setQuestionsError("Invalid response from server");
+          setQuestionsLoading(false);
+        }
+      } catch (err) {
+        console.error("❌ Direct fetch ERROR:", err);
+        setQuestionsError(err.message || "Failed to load questions");
+        setQuestionsLoading(false);
       }
-    }
-  }, [questionsData, questionsLoading, questionsError]);
+    };
 
-  // Test React Query directly
-  useEffect(() => {
-    console.log("React Query test - questionsData changed:", questionsData);
-    console.log("React Query test - questionsLoading:", questionsLoading);
-    console.log("React Query test - questionsError:", questionsError);
-  }, [questionsData, questionsLoading, questionsError]);
-
-  // Handle errors
-  useEffect(() => {
-    if (questionsError) {
-      console.error("Quiz questions fetch error:", questionsError);
-    }
-  }, [questionsError]);
+    fetchQuestions();
+  }, [isAuthenticated]); // Re-fetch when auth status changes
 
   const submitQuizMutation = useMutation(
     (quizData) => apiService.submitQuiz(quizData),
@@ -142,26 +126,22 @@ const Quiz = () => {
   const startQuiz = () => {
     console.log("🚀 Starting quiz...");
     console.log("🚀 Questions available:", questions.length);
-    console.log("🚀 QuestionsData available:", questionsData?.data?.questions?.length || 0);
     console.log("🚀 ActualQuestions length:", actualQuestions.length);
     setQuizStarted(true);
     setStartTime(Date.now());
   };
 
-  // Fallback: Use questionsData if questions state is empty
-  const actualQuestions =
-    questions.length > 0 ? questions : questionsData?.data?.questions || [];
+  // Use questions state directly
+  const actualQuestions = questions;
 
   // Debug logging
   console.log("=== QUIZ DEBUG INFO ===");
   console.log("Debug - questions.length:", questions.length);
-  console.log("Debug - questionsData:", questionsData);
   console.log("Debug - actualQuestions.length:", actualQuestions.length);
   console.log("Debug - questionsLoading:", questionsLoading);
   console.log("Debug - questionsError:", questionsError);
   console.log("Debug - isAuthenticated:", isAuthenticated);
   console.log("Debug - quizStarted:", quizStarted);
-  console.log("Debug - useQuery enabled:", !quizStarted);
   console.log("==========================");
 
   const progress =
@@ -317,15 +297,15 @@ const Quiz = () => {
     );
     console.error("❌ ActualQuestions:", actualQuestions);
     console.error("❌ Questions state:", questions);
-    console.error("❌ QuestionsData:", questionsData);
-    
+
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
           <Card className="text-center">
             <div className="text-red-500 mb-4">Quiz Error</div>
             <p className="text-gray-600 mb-4">
-              No questions available. Current: {currentQuestion}, Total: {actualQuestions.length}
+              No questions available. Current: {currentQuestion}, Total:{" "}
+              {actualQuestions.length}
             </p>
             <Button onClick={() => window.location.reload()}>
               Restart Quiz
