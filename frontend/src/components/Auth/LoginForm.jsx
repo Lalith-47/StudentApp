@@ -134,7 +134,7 @@ const LoginForm = ({ onSuccess, onError, loading = false }) => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />

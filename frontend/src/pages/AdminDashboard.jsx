@@ -208,16 +208,123 @@ const AdminDashboard = () => {
     }
   };
 
-  // Show loading state
+  // Skeleton Loading Component
+  const SkeletonCard = ({ className = "" }) => (
+    <div className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse ${className}`}>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-2"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-16 mb-2"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-24"></div>
+        </div>
+        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
+      </div>
+    </div>
+  );
+
+  const SkeletonChart = () => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+      <div className="flex items-center justify-between mb-6">
+        <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-40"></div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-8"></div>
+      </div>
+      <div className="h-72 bg-gray-200 dark:bg-gray-600 rounded"></div>
+    </div>
+  );
+
+  const SkeletonStats = () => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+      <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-32 mb-6"></div>
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex items-center justify-between">
+            <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-24"></div>
+            <div className="h-5 bg-gray-200 dark:bg-gray-600 rounded w-8"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const SkeletonTable = () => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+      <div className="flex items-center justify-between mb-6">
+        <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-24"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-16"></div>
+      </div>
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32 mb-1"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-48"></div>
+            </div>
+            <div className="text-right">
+              <div className="h-5 bg-gray-200 dark:bg-gray-600 rounded w-16 mb-1"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Show loading state with skeleton
   if (loading) {
-    console.log("AdminDashboard showing loading state");
+    console.log("AdminDashboard showing skeleton loading state");
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-16 h-16 text-primary-600 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Loading Admin Dashboard...
-          </h2>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Header Skeleton */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-48 mb-2 animate-pulse"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-64 animate-pulse"></div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 animate-pulse"></div>
+                <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Tabs Skeleton */}
+          <div className="mb-8">
+            <div className="border-b border-gray-200 dark:border-gray-700">
+              <div className="-mb-px flex space-x-8">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-2 py-2 px-1">
+                    <div className="w-4 h-4 bg-gray-200 dark:bg-gray-600 rounded animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-16 animate-pulse"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Overview Tab Skeleton */}
+          <div className="space-y-8">
+            {/* Key Metrics Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+
+            {/* Charts Row Skeleton */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <SkeletonChart />
+              <SkeletonStats />
+            </div>
+
+            {/* Recent Users Skeleton */}
+            <SkeletonTable />
+          </div>
         </div>
       </div>
     );
@@ -732,12 +839,31 @@ const AdminDashboard = () => {
         {activeTab === "quiz" && (
           <div className="space-y-8">
             {quizLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 text-primary-600 animate-spin mr-3" />
-                <span className="text-gray-600 dark:text-gray-400">
-                  Loading quiz data...
-                </span>
-              </div>
+              <>
+                {/* Quiz Statistics Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+
+                {/* Charts Row Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <SkeletonChart />
+                  <SkeletonChart />
+                </div>
+
+                {/* Insights Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+
+                {/* Table Skeleton */}
+                <SkeletonTable />
+              </>
             ) : (
               <>
                 {/* Quiz Statistics Cards */}
@@ -1311,7 +1437,7 @@ const AdminDashboard = () => {
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
