@@ -211,7 +211,12 @@ const Roadmap = () => {
           admissionProcess: "GATE",
         },
       ],
-      tags: ["artificial intelligence", "machine learning", "deep learning", "neural networks"],
+      tags: [
+        "artificial intelligence",
+        "machine learning",
+        "deep learning",
+        "neural networks",
+      ],
     },
     {
       _id: "4",
@@ -237,7 +242,8 @@ const Roadmap = () => {
           milestones: [
             {
               title: "Network Security",
-              description: "Understanding networks, protocols, and vulnerabilities",
+              description:
+                "Understanding networks, protocols, and vulnerabilities",
               resources: ["Cisco Networking", "CompTIA Security+"],
               completed: false,
             },
@@ -260,7 +266,12 @@ const Roadmap = () => {
           admissionProcess: "JEE Main",
         },
       ],
-      tags: ["cybersecurity", "information security", "ethical hacking", "network security"],
+      tags: [
+        "cybersecurity",
+        "information security",
+        "ethical hacking",
+        "network security",
+      ],
     },
     {
       _id: "5",
@@ -452,7 +463,12 @@ const Roadmap = () => {
               completed: false,
             },
           ],
-          skills: ["Visual Design", "User Research", "Prototyping", "Adobe Suite"],
+          skills: [
+            "Visual Design",
+            "User Research",
+            "Prototyping",
+            "Adobe Suite",
+          ],
         },
       ],
       resources: {
@@ -470,7 +486,12 @@ const Roadmap = () => {
           admissionProcess: "NID Entrance Exam",
         },
       ],
-      tags: ["graphic design", "ui design", "ux design", "visual communication"],
+      tags: [
+        "graphic design",
+        "ui design",
+        "ux design",
+        "visual communication",
+      ],
     },
     {
       _id: "9",
@@ -519,7 +540,12 @@ const Roadmap = () => {
           admissionProcess: "JEE Advanced",
         },
       ],
-      tags: ["civil engineering", "construction", "infrastructure", "structural design"],
+      tags: [
+        "civil engineering",
+        "construction",
+        "infrastructure",
+        "structural design",
+      ],
     },
     {
       _id: "10",
@@ -550,7 +576,11 @@ const Roadmap = () => {
               completed: false,
             },
           ],
-          skills: ["Research Methods", "Counseling", "Psychological Assessment"],
+          skills: [
+            "Research Methods",
+            "Counseling",
+            "Psychological Assessment",
+          ],
         },
       ],
       resources: {
@@ -603,7 +633,11 @@ const Roadmap = () => {
         },
       ],
       resources: {
-        books: ["Environmental Science", "Silent Spring", "The Sixth Extinction"],
+        books: [
+          "Environmental Science",
+          "Silent Spring",
+          "The Sixth Extinction",
+        ],
         onlineCourses: ["Coursera Environment", "edX MIT"],
         certifications: ["Environmental Impact Assessment", "LEED"],
         tools: ["GIS", "Remote Sensing", "Environmental Modeling"],

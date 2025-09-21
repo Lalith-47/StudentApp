@@ -187,17 +187,11 @@ const AdminDashboard = () => {
   const fetchQuizData = async () => {
     try {
       setQuizLoading(true);
-      console.log("Fetching quiz data...");
-      console.log("Auth token:", localStorage.getItem("authToken"));
-
       const response = await apiService.getAdminQuizData();
-      console.log("Quiz data response:", response.data);
       setQuizData(response.data.data);
     } catch (error) {
       console.error("Error fetching quiz data:", error);
-      console.error("Error details:", error.response?.data);
-      console.error("Error status:", error.response?.status);
-
+      
       // Set dummy data if API fails
       setQuizData({
         totalQuizzes: 5,
@@ -906,17 +900,7 @@ const AdminDashboard = () => {
 
         {/* Quiz Data Tab */}
         {activeTab === "quiz" && (
-          <div className="space-y-8">
-            {/* Debug Info */}
-            <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
-              <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                Debug: Quiz Tab Active - Loading: {quizLoading ? "Yes" : "No"} -
-                Data: {quizData ? "Present" : "None"}
-              </p>
-              <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
-                Quiz Data: {JSON.stringify(quizData)}
-              </p>
-            </div>
+              <div className="space-y-8">
             {quizLoading ? (
               <>
                 {/* Quiz Statistics Cards Skeleton */}
