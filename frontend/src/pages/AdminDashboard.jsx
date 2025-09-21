@@ -83,6 +83,21 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [quizData, setQuizData] = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
+  
+  // Settings state
+  const [settings, setSettings] = useState({
+    maintenanceMode: false,
+    registrationStatus: true,
+    emailNotifications: true,
+    passwordRequirements: true,
+    twoFactorAuth: false,
+    ipWhitelist: false,
+    autoSaveResults: true,
+    autoModerateStories: false,
+    contentApprovalRequired: true,
+    errorReporting: true,
+    debugMode: false,
+  });
 
   console.log("AdminDashboard rendered, user:", user);
   console.log("AdminDashboard loading state:", loading);
@@ -208,6 +223,33 @@ const AdminDashboard = () => {
       console.error("Error updating user status:", error);
     }
   };
+
+  // Toggle setting function
+  const toggleSetting = (settingName) => {
+    setSettings(prev => ({
+      ...prev,
+      [settingName]: !prev[settingName]
+    }));
+  };
+
+  // Toggle Button Component
+  const ToggleButton = ({ isOn, onClick, disabled = false }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+        isOn 
+          ? "bg-green-500" 
+          : "bg-gray-200 dark:bg-gray-700"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+          isOn ? "translate-x-6" : "translate-x-1"
+        }`}
+      />
+    </button>
+  );
 
   // Skeleton Loading Component
   const SkeletonCard = ({ className = "" }) => (
@@ -845,570 +887,591 @@ const AdminDashboard = () => {
         )}
 
         {/* Quiz Data Tab */}
-        {activeTab === "quiz" && (() => {
-          // Refresh quiz data when quiz tab is selected
-          React.useEffect(() => {
-            fetchQuizData();
-          }, []);
-          
-          return (
-          <div className="space-y-8">
-            {quizLoading ? (
-              <>
-                {/* Quiz Statistics Cards Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                </div>
+        {activeTab === "quiz" &&
+          (() => {
+            // Refresh quiz data when quiz tab is selected
+            React.useEffect(() => {
+              fetchQuizData();
+            }, []);
 
-                {/* Charts Row Skeleton */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <SkeletonChart />
-                  <SkeletonChart />
-                </div>
+            return (
+              <div className="space-y-8">
+                {quizLoading ? (
+                  <>
+                    {/* Quiz Statistics Cards Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <SkeletonCard />
+                      <SkeletonCard />
+                      <SkeletonCard />
+                      <SkeletonCard />
+                    </div>
 
-                {/* Insights Cards Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                </div>
+                    {/* Charts Row Skeleton */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      <SkeletonChart />
+                      <SkeletonChart />
+                    </div>
 
-                {/* Table Skeleton */}
-                <SkeletonTable />
-              </>
-            ) : (
-              <>
-                {/* Quiz Data Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                      Quiz Analytics
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      Track quiz submissions and user engagement
-                    </p>
-                  </div>
-                  <button
-                    onClick={fetchQuizData}
-                    disabled={quizLoading}
-                    className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <RefreshCw className={`w-4 h-4 ${quizLoading ? 'animate-spin' : ''}`} />
-                    <span>Refresh Data</span>
-                  </button>
-                </div>
+                    {/* Insights Cards Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <SkeletonCard />
+                      <SkeletonCard />
+                      <SkeletonCard />
+                    </div>
 
-                {/* Quiz Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
+                    {/* Table Skeleton */}
+                    <SkeletonTable />
+                  </>
+                ) : (
+                  <>
+                    {/* Quiz Data Header */}
+                    <div className="flex items-center justify-between mb-6">
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Total Quizzes
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {quizData?.totalQuizzes || 0}
-                        </p>
-                        <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
-                          <Target className="w-3 h-3 mr-1" />
-                          All submissions
+                        <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                          Quiz Analytics
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">
+                          Track quiz submissions and user engagement
                         </p>
                       </div>
-                      <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      <button
+                        onClick={fetchQuizData}
+                        disabled={quizLoading}
+                        className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <RefreshCw
+                          className={`w-4 h-4 ${
+                            quizLoading ? "animate-spin" : ""
+                          }`}
+                        />
+                        <span>Refresh Data</span>
+                      </button>
+                    </div>
+
+                    {/* Quiz Statistics Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Total Quizzes
+                            </p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              {quizData?.totalQuizzes || 0}
+                            </p>
+                            <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
+                              <Target className="w-3 h-3 mr-1" />
+                              All submissions
+                            </p>
+                          </div>
+                          <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Detailed Quizzes
+                            </p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              {quizData?.authenticatedQuizzes || 0}
+                            </p>
+                            <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+                              <UserCheck className="w-3 h-3 mr-1" />
+                              Logged-in users
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Mock Quizzes
+                            </p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              {quizData?.guestQuizzes || 0}
+                            </p>
+                            <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center mt-1">
+                              <Users className="w-3 h-3 mr-1" />
+                              Guest users
+                            </p>
+                          </div>
+                          <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Avg. Time
+                            </p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              {Math.round(quizData?.averageCompletionTime || 0)}
+                              s
+                            </p>
+                            <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Completion time
+                            </p>
+                          </div>
+                          <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                            <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Detailed Quizzes
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {quizData?.authenticatedQuizzes || 0}
-                        </p>
-                        <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
-                          <UserCheck className="w-3 h-3 mr-1" />
-                          Logged-in users
-                        </p>
+                    {/* Charts Row */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Personality Distribution Chart */}
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                          Personality Distribution
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <RechartsPieChart>
+                            <Pie
+                              data={[
+                                {
+                                  name: "Analytical",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.analytical || 0,
+                                  color: "#3B82F6",
+                                },
+                                {
+                                  name: "Creative",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.creative || 0,
+                                  color: "#8B5CF6",
+                                },
+                                {
+                                  name: "Social",
+                                  value:
+                                    quizData?.personalityDistribution?.social ||
+                                    0,
+                                  color: "#10B981",
+                                },
+                                {
+                                  name: "Leadership",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.leadership || 0,
+                                  color: "#F59E0B",
+                                },
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) =>
+                                `${name} ${(percent * 100).toFixed(0)}%`
+                              }
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {[
+                                {
+                                  name: "Analytical",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.analytical || 0,
+                                  color: "#3B82F6",
+                                },
+                                {
+                                  name: "Creative",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.creative || 0,
+                                  color: "#8B5CF6",
+                                },
+                                {
+                                  name: "Social",
+                                  value:
+                                    quizData?.personalityDistribution?.social ||
+                                    0,
+                                  color: "#10B981",
+                                },
+                                {
+                                  name: "Leadership",
+                                  value:
+                                    quizData?.personalityDistribution
+                                      ?.leadership || 0,
+                                  color: "#F59E0B",
+                                },
+                              ].map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={entry.color}
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                        <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
+
+                      {/* Quiz Type Distribution */}
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                          Quiz Type Distribution
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart
+                            data={[
+                              {
+                                name: "Mock Quiz",
+                                value: quizData?.guestQuizzes || 0,
+                                fill: "#3B82F6",
+                              },
+                              {
+                                name: "Detailed Quiz",
+                                value: quizData?.authenticatedQuizzes || 0,
+                                fill: "#10B981",
+                              },
+                            ]}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="value" fill="#3B82F6" />
+                          </BarChart>
+                        </ResponsiveContainer>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Mock Quizzes
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {quizData?.guestQuizzes || 0}
-                        </p>
-                        <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center mt-1">
-                          <Users className="w-3 h-3 mr-1" />
-                          Guest users
-                        </p>
+                    {/* Additional Analysis Charts */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Personality Scores Breakdown */}
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                          Personality Scores Breakdown
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart
+                            data={[
+                              {
+                                name: "Analytical",
+                                score:
+                                  quizData?.personalityDistribution
+                                    ?.analytical || 0,
+                              },
+                              {
+                                name: "Creative",
+                                score:
+                                  quizData?.personalityDistribution?.creative ||
+                                  0,
+                              },
+                              {
+                                name: "Social",
+                                score:
+                                  quizData?.personalityDistribution?.social ||
+                                  0,
+                              },
+                              {
+                                name: "Leadership",
+                                score:
+                                  quizData?.personalityDistribution
+                                    ?.leadership || 0,
+                              },
+                            ]}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="score" fill="#8B5CF6" />
+                          </BarChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                        <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+
+                      {/* Completion Time Analysis */}
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                          Completion Time Analysis
+                        </h3>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <AreaChart
+                            data={[
+                              {
+                                name: "Mock Quiz",
+                                time: quizData?.averageCompletionTime
+                                  ? Math.round(
+                                      quizData.averageCompletionTime * 0.6
+                                    )
+                                  : 120,
+                              },
+                              {
+                                name: "Detailed Quiz",
+                                time: quizData?.averageCompletionTime || 300,
+                              },
+                            ]}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis
+                              label={{
+                                value: "Seconds",
+                                angle: -90,
+                                position: "insideLeft",
+                              }}
+                            />
+                            <Tooltip
+                              formatter={(value) => [`${value}s`, "Avg. Time"]}
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="time"
+                              stroke="#F59E0B"
+                              fill="#F59E0B"
+                              fillOpacity={0.6}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Avg. Time
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {Math.round(quizData?.averageCompletionTime || 0)}s
-                        </p>
-                        <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
-                          <Clock className="w-3 h-3 mr-1" />
-                          Completion time
-                        </p>
+                    {/* Quiz Insights Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                          Key Insights
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Most Common Personality
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
+                              {quizData?.mostCommonPersonality || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Total Answers
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {quizData?.totalAnswers || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Completion Rate
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {quizData?.totalQuizzes > 0 ? "100%" : "0%"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                        <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                          User Engagement
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Guest Participation
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {quizData?.guestQuizzes || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Registered Participation
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {quizData?.authenticatedQuizzes || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                              Avg. Time per Quiz
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {Math.round(quizData?.averageCompletionTime || 0)}
+                              s
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                          Popular Choices
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                Analytical
+                              </span>
+                              <span className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                                {quizData?.personalityDistribution
+                                  ?.analytical || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                                Creative
+                              </span>
+                              <span className="text-sm font-bold text-purple-900 dark:text-purple-100">
+                                {quizData?.personalityDistribution?.creative ||
+                                  0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                                Social
+                              </span>
+                              <span className="text-sm font-bold text-green-900 dark:text-green-100">
+                                {quizData?.personalityDistribution?.social || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                                Leadership
+                              </span>
+                              <span className="text-sm font-bold text-orange-900 dark:text-orange-100">
+                                {quizData?.personalityDistribution
+                                  ?.leadership || 0}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Charts Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Personality Distribution Chart */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                      Personality Distribution
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <RechartsPieChart>
-                        <Pie
-                          data={[
-                            {
-                              name: "Analytical",
-                              value:
-                                quizData?.personalityDistribution?.analytical ||
-                                0,
-                              color: "#3B82F6",
-                            },
-                            {
-                              name: "Creative",
-                              value:
-                                quizData?.personalityDistribution?.creative ||
-                                0,
-                              color: "#8B5CF6",
-                            },
-                            {
-                              name: "Social",
-                              value:
-                                quizData?.personalityDistribution?.social || 0,
-                              color: "#10B981",
-                            },
-                            {
-                              name: "Leadership",
-                              value:
-                                quizData?.personalityDistribution?.leadership ||
-                                0,
-                              color: "#F59E0B",
-                            },
-                          ]}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) =>
-                            `${name} ${(percent * 100).toFixed(0)}%`
-                          }
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
+                    {/* Recent Quiz Submissions */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Recent Quiz Submissions
+                        </h3>
+                        <button
+                          onClick={fetchQuizData}
+                          className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center"
                         >
-                          {[
-                            {
-                              name: "Analytical",
-                              value:
-                                quizData?.personalityDistribution?.analytical ||
-                                0,
-                              color: "#3B82F6",
-                            },
-                            {
-                              name: "Creative",
-                              value:
-                                quizData?.personalityDistribution?.creative ||
-                                0,
-                              color: "#8B5CF6",
-                            },
-                            {
-                              name: "Social",
-                              value:
-                                quizData?.personalityDistribution?.social || 0,
-                              color: "#10B981",
-                            },
-                            {
-                              name: "Leadership",
-                              value:
-                                quizData?.personalityDistribution?.leadership ||
-                                0,
-                              color: "#F59E0B",
-                            },
-                          ].map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Quiz Type Distribution */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                      Quiz Type Distribution
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart
-                        data={[
-                          {
-                            name: "Mock Quiz",
-                            value: quizData?.guestQuizzes || 0,
-                            fill: "#3B82F6",
-                          },
-                          {
-                            name: "Detailed Quiz",
-                            value: quizData?.authenticatedQuizzes || 0,
-                            fill: "#10B981",
-                          },
-                        ]}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#3B82F6" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* Additional Analysis Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Personality Scores Breakdown */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                      Personality Scores Breakdown
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart
-                        data={[
-                          {
-                            name: "Analytical",
-                            score:
-                              quizData?.personalityDistribution?.analytical ||
-                              0,
-                          },
-                          {
-                            name: "Creative",
-                            score:
-                              quizData?.personalityDistribution?.creative || 0,
-                          },
-                          {
-                            name: "Social",
-                            score:
-                              quizData?.personalityDistribution?.social || 0,
-                          },
-                          {
-                            name: "Leadership",
-                            score:
-                              quizData?.personalityDistribution?.leadership ||
-                              0,
-                          },
-                        ]}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="score" fill="#8B5CF6" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Completion Time Analysis */}
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                      Completion Time Analysis
-                    </h3>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <AreaChart
-                        data={[
-                          {
-                            name: "Mock Quiz",
-                            time: quizData?.averageCompletionTime
-                              ? Math.round(quizData.averageCompletionTime * 0.6)
-                              : 120,
-                          },
-                          {
-                            name: "Detailed Quiz",
-                            time: quizData?.averageCompletionTime || 300,
-                          },
-                        ]}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis
-                          label={{
-                            value: "Seconds",
-                            angle: -90,
-                            position: "insideLeft",
-                          }}
-                        />
-                        <Tooltip
-                          formatter={(value) => [`${value}s`, "Avg. Time"]}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="time"
-                          stroke="#F59E0B"
-                          fill="#F59E0B"
-                          fillOpacity={0.6}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* Quiz Insights Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Key Insights
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Most Common Personality
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
-                          {quizData?.mostCommonPersonality || "N/A"}
-                        </span>
+                          <RefreshCw className="w-4 h-4 mr-1" />
+                          Refresh
+                        </button>
                       </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Total Answers
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {quizData?.totalAnswers || 0}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Completion Rate
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {quizData?.totalQuizzes > 0 ? "100%" : "0%"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      User Engagement
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Guest Participation
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {quizData?.guestQuizzes || 0}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Registered Participation
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {quizData?.authenticatedQuizzes || 0}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Avg. Time per Quiz
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {Math.round(quizData?.averageCompletionTime || 0)}s
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Popular Choices
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                            Analytical
-                          </span>
-                          <span className="text-sm font-bold text-blue-900 dark:text-blue-100">
-                            {quizData?.personalityDistribution?.analytical || 0}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
-                            Creative
-                          </span>
-                          <span className="text-sm font-bold text-purple-900 dark:text-purple-100">
-                            {quizData?.personalityDistribution?.creative || 0}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-green-800 dark:text-green-200">
-                            Social
-                          </span>
-                          <span className="text-sm font-bold text-green-900 dark:text-green-100">
-                            {quizData?.personalityDistribution?.social || 0}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                            Leadership
-                          </span>
-                          <span className="text-sm font-bold text-orange-900 dark:text-orange-100">
-                            {quizData?.personalityDistribution?.leadership || 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Quiz Submissions */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Recent Quiz Submissions
-                    </h3>
-                    <button
-                      onClick={fetchQuizData}
-                      className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-1" />
-                      Refresh
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                      <thead className="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            User
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Quiz Type
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Personality
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Completion Time
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Submitted
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {quizData?.recentQuizzes?.length > 0 ? (
-                          quizData.recentQuizzes.map((quiz, index) => (
-                            <tr
-                              key={index}
-                              className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                                    <span className="text-primary-600 dark:text-primary-400 font-medium">
-                                      {quiz.userId?.name
-                                        ?.charAt(0)
-                                        .toUpperCase() || "G"}
-                                    </span>
-                                  </div>
-                                  <div className="ml-4">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                      {quiz.userId?.name || "Guest User"}
-                                    </div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                                      {quiz.userId?.email || "No email"}
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span
-                                  className={`px-2 py-1 text-xs rounded-full ${
-                                    quiz.quizType === "detailed"
-                                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                                      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                                  }`}
-                                >
-                                  {quiz.quizType === "detailed"
-                                    ? "Detailed (15Q)"
-                                    : "Mock (5Q)"}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 capitalize">
-                                  {quiz.personalityType || "N/A"}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {Math.round(quiz.completionTime || 0)}s
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {new Date(quiz.createdAt).toLocaleDateString()}
-                              </td>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                          <thead className="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                User
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Quiz Type
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Personality
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Completion Time
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Submitted
+                              </th>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="5"
-                              className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
-                            >
-                              No quiz submissions yet
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-          );
-        })()}
+                          </thead>
+                          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            {quizData?.recentQuizzes?.length > 0 ? (
+                              quizData.recentQuizzes.map((quiz, index) => (
+                                <tr
+                                  key={index}
+                                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                      <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                                        <span className="text-primary-600 dark:text-primary-400 font-medium">
+                                          {quiz.userId?.name
+                                            ?.charAt(0)
+                                            .toUpperCase() || "G"}
+                                        </span>
+                                      </div>
+                                      <div className="ml-4">
+                                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                          {quiz.userId?.name || "Guest User"}
+                                        </div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                          {quiz.userId?.email || "No email"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                      className={`px-2 py-1 text-xs rounded-full ${
+                                        quiz.quizType === "detailed"
+                                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                          : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                      }`}
+                                    >
+                                      {quiz.quizType === "detailed"
+                                        ? "Detailed (15Q)"
+                                        : "Mock (5Q)"}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 capitalize">
+                                      {quiz.personalityType || "N/A"}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    {Math.round(quiz.completionTime || 0)}s
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    {new Date(
+                                      quiz.createdAt
+                                    ).toLocaleDateString()}
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td
+                                  colSpan="5"
+                                  className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
+                                >
+                                  No quiz submissions yet
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()}
 
         {/* Other tabs */}
         {activeTab === "analytics" && (
@@ -1437,424 +1500,423 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === "settings" && (() => {
-          console.log("Rendering settings tab, activeTab:", activeTab);
-          return (
-          <div className="space-y-8">
-            {/* System Settings Header */}
-            <div className="text-center">
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                System Settings
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Configure system preferences, security, and platform options
-              </p>
-            </div>
-            
-            {/* Debug Info */}
-            <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-              <p className="text-blue-800 dark:text-blue-200 text-sm">
-                Settings tab is loading... Active tab: {activeTab}
-              </p>
-              <p className="text-blue-800 dark:text-blue-200 text-sm mt-2">
-                Console: Settings tab rendered successfully!
-              </p>
-            </div>
+         {activeTab === "settings" && (
+              <div className="space-y-8">
+                {/* System Settings Header */}
+                <div className="text-center">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                    System Settings
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Configure system preferences, security, and platform options
+                  </p>
+                </div>
 
-            {/* Settings Categories */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* General Settings */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <Settings className="w-5 h-5 mr-2" />
-                  General Settings
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Platform Name
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Display name for the platform
-                      </p>
+
+                {/* Settings Categories */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* General Settings */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                      <Settings className="w-5 h-5 mr-2" />
+                      General Settings
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Platform Name
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Display name for the platform
+                          </p>
+                        </div>
+                        <input
+                          type="text"
+                          defaultValue="AdhyayanMarg"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
+                        />
+                      </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Maintenance Mode
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Temporarily disable public access
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.maintenanceMode}
+                           onClick={() => toggleSetting('maintenanceMode')}
+                         />
+                       </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Registration Status
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Allow new user registrations
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.registrationStatus}
+                           onClick={() => toggleSetting('registrationStatus')}
+                         />
+                       </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Email Notifications
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Send system notifications via email
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.emailNotifications}
+                           onClick={() => toggleSetting('emailNotifications')}
+                         />
+                       </div>
                     </div>
-                    <input
-                      type="text"
-                      defaultValue="AdhyayanMarg"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
-                    />
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Maintenance Mode
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Temporarily disable public access
-                      </p>
+                  {/* Security Settings */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                      <Shield className="w-5 h-5 mr-2" />
+                      Security Settings
+                    </h4>
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Password Requirements
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Minimum 8 characters, mixed case, numbers
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.passwordRequirements}
+                           onClick={() => toggleSetting('passwordRequirements')}
+                         />
+                       </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Two-Factor Authentication
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Require 2FA for admin accounts
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.twoFactorAuth}
+                           onClick={() => toggleSetting('twoFactorAuth')}
+                         />
+                       </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Session Timeout
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Auto-logout after inactivity
+                          </p>
+                        </div>
+                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                          <option value="30">30 minutes</option>
+                          <option value="60">1 hour</option>
+                          <option value="120">2 hours</option>
+                          <option value="480">8 hours</option>
+                        </select>
+                      </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             IP Whitelist
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Restrict admin access to specific IPs
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.ipWhitelist}
+                           onClick={() => toggleSetting('ipWhitelist')}
+                         />
+                       </div>
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
-                    </button>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Registration Status
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Allow new user registrations
-                      </p>
+                  {/* Quiz Settings */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                      <Target className="w-5 h-5 mr-2" />
+                      Quiz Settings
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Guest Quiz Limit
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Number of questions for guest users
+                          </p>
+                        </div>
+                        <input
+                          type="number"
+                          defaultValue="5"
+                          min="1"
+                          max="20"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Detailed Quiz Limit
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Number of questions for logged-in users
+                          </p>
+                        </div>
+                        <input
+                          type="number"
+                          defaultValue="15"
+                          min="5"
+                          max="50"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Quiz Time Limit
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Maximum time per quiz (minutes)
+                          </p>
+                        </div>
+                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                          <option value="0">No limit</option>
+                          <option value="10">10 minutes</option>
+                          <option value="15">15 minutes</option>
+                          <option value="30">30 minutes</option>
+                        </select>
+                      </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Auto-Save Results
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Automatically save quiz results
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.autoSaveResults}
+                           onClick={() => toggleSetting('autoSaveResults')}
+                         />
+                       </div>
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                    </button>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Email Notifications
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Send system notifications via email
-                      </p>
+                  {/* Content Settings */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      Content Settings
+                    </h4>
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Auto-Moderate Stories
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Automatically approve user stories
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.autoModerateStories}
+                           onClick={() => toggleSetting('autoModerateStories')}
+                         />
+                       </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Featured Content Limit
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Maximum featured items per category
+                          </p>
+                        </div>
+                        <input
+                          type="number"
+                          defaultValue="5"
+                          min="1"
+                          max="20"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
+                        />
+                      </div>
+
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                             Content Approval Required
+                           </p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400">
+                             Review all user submissions
+                           </p>
+                         </div>
+                         <ToggleButton
+                           isOn={settings.contentApprovalRequired}
+                           onClick={() => toggleSetting('contentApprovalRequired')}
+                         />
+                       </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Content Backup Frequency
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            How often to backup content
+                          </p>
+                        </div>
+                        <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
+                          <option value="daily">Daily</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="monthly">Monthly</option>
+                        </select>
+                      </div>
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                    </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Security Settings */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <Shield className="w-5 h-5 mr-2" />
-                  Security Settings
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Password Requirements
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Minimum 8 characters, mixed case, numbers
-                      </p>
+                {/* Advanced Settings */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                    <Database className="w-5 h-5 mr-2" />
+                    Advanced Settings
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          Database Backup
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Create database backup
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        Backup Now
+                      </Button>
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                    </button>
-                  </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Two-Factor Authentication
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Require 2FA for admin accounts
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          Clear Cache
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Clear system cache
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        Clear Cache
+                      </Button>
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
-                    </button>
-                  </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Session Timeout
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Auto-logout after inactivity
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          System Logs
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          View system logs
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        View Logs
+                      </Button>
                     </div>
-                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                      <option value="30">30 minutes</option>
-                      <option value="60">1 hour</option>
-                      <option value="120">2 hours</option>
-                      <option value="480">8 hours</option>
-                    </select>
-                  </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        IP Whitelist
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Restrict admin access to specific IPs
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          API Rate Limit
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Requests per minute
+                        </p>
+                      </div>
+                      <input
+                        type="number"
+                        defaultValue="100"
+                        min="10"
+                        max="1000"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-24"
+                      />
                     </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
-                    </button>
+
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <p className="text-sm font-medium text-gray-900 dark:text-white">
+                           Error Reporting
+                         </p>
+                         <p className="text-xs text-gray-500 dark:text-gray-400">
+                           Send error reports
+                         </p>
+                       </div>
+                       <ToggleButton
+                         isOn={settings.errorReporting}
+                         onClick={() => toggleSetting('errorReporting')}
+                       />
+                     </div>
+
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <p className="text-sm font-medium text-gray-900 dark:text-white">
+                           Debug Mode
+                         </p>
+                         <p className="text-xs text-gray-500 dark:text-gray-400">
+                           Enable debug logging
+                         </p>
+                       </div>
+                       <ToggleButton
+                         isOn={settings.debugMode}
+                         onClick={() => toggleSetting('debugMode')}
+                       />
+                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Quiz Settings */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <Target className="w-5 h-5 mr-2" />
-                  Quiz Settings
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Guest Quiz Limit
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Number of questions for guest users
-                      </p>
-                    </div>
-                    <input
-                      type="number"
-                      defaultValue="5"
-                      min="1"
-                      max="20"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Detailed Quiz Limit
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Number of questions for logged-in users
-                      </p>
-                    </div>
-                    <input
-                      type="number"
-                      defaultValue="15"
-                      min="5"
-                      max="50"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Quiz Time Limit
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Maximum time per quiz (minutes)
-                      </p>
-                    </div>
-                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                      <option value="0">No limit</option>
-                      <option value="10">10 minutes</option>
-                      <option value="15">15 minutes</option>
-                      <option value="30">30 minutes</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Auto-Save Results
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Automatically save quiz results
-                      </p>
-                    </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Settings */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  Content Settings
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Auto-Moderate Stories
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Automatically approve user stories
-                      </p>
-                    </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Featured Content Limit
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Maximum featured items per category
-                      </p>
-                    </div>
-                    <input
-                      type="number"
-                      defaultValue="5"
-                      min="1"
-                      max="20"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-20"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Content Approval Required
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Review all user submissions
-                      </p>
-                    </div>
-                    <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Content Backup Frequency
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        How often to backup content
-                      </p>
-                    </div>
-                    <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Advanced Settings */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <Database className="w-5 h-5 mr-2" />
-                Advanced Settings
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Database Backup
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Create database backup
-                    </p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    Backup Now
+                {/* Save Settings */}
+                <div className="flex justify-end space-x-4">
+                  <Button variant="outline" size="lg">
+                    Reset to Defaults
+                  </Button>
+                  <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                    Save All Settings
                   </Button>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Clear Cache
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Clear system cache
-                    </p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    Clear Cache
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      System Logs
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      View system logs
-                    </p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    View Logs
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      API Rate Limit
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Requests per minute
-                    </p>
-                  </div>
-                  <input
-                    type="number"
-                    defaultValue="100"
-                    min="10"
-                    max="1000"
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-24"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Error Reporting
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Send error reports
-                    </p>
-                  </div>
-                  <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors">
-                    <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Debug Mode
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Enable debug logging
-                    </p>
-                  </div>
-                  <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors">
-                    <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
-                  </button>
-                </div>
               </div>
-            </div>
-
-            {/* Save Settings */}
-            <div className="flex justify-end space-x-4">
-              <Button variant="outline" size="lg">
-                Reset to Defaults
-              </Button>
-              <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                Save All Settings
-              </Button>
-            </div>
-          </div>
-          );
-        })()}
+         )}
       </div>
     </div>
   );
