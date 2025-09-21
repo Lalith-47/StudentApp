@@ -194,25 +194,25 @@ const Quiz = () => {
         try {
           const personalityResult = calculatePersonalityType();
           const insights = getPersonalityInsights(personalityResult.type);
-          
+
           const quizData = {
-            answers: Object.keys(answers).map(questionId => ({
+            answers: Object.keys(answers).map((questionId) => ({
               questionId: parseInt(questionId),
-              answerId: answers[questionId]
+              answerId: answers[questionId],
             })),
             personalityType: personalityResult.type,
             scores: personalityResult.scores,
             strengths: insights.strengths,
             careerPaths: insights.careerPaths,
             workEnvironment: insights.workEnvironment,
-            quizType: isAuthenticated ? 'detailed' : 'mock',
-            userType: isAuthenticated ? 'authenticated' : 'guest'
+            quizType: isAuthenticated ? "detailed" : "mock",
+            userType: isAuthenticated ? "authenticated" : "guest",
           };
 
           await apiService.submitQuiz(quizData);
-          console.log('✅ Quiz results saved to database');
+          console.log("✅ Quiz results saved to database");
         } catch (error) {
-          console.error('❌ Failed to save quiz results:', error);
+          console.error("❌ Failed to save quiz results:", error);
           // Still show results even if save fails
         } finally {
           setIsSubmitting(false);
@@ -462,10 +462,9 @@ const Quiz = () => {
               </h1>
 
               <p className="text-gray-600 dark:text-gray-300 mb-8">
-                {isAuthenticated 
+                {isAuthenticated
                   ? "Take our comprehensive assessment to get detailed career insights and personalized recommendations saved to your profile."
-                  : "Take our quick quiz to discover your career personality and get personalized recommendations."
-                }
+                  : "Take our quick quiz to discover your career personality and get personalized recommendations."}
               </p>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-8">
@@ -570,10 +569,9 @@ const Quiz = () => {
               </h1>
 
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                {isAuthenticated 
+                {isAuthenticated
                   ? "Based on your detailed responses, here's your comprehensive career assessment. Your results have been saved to your profile!"
-                  : "Based on your responses, here's your personalized career assessment:"
-                }
+                  : "Based on your responses, here's your personalized career assessment:"}
               </p>
             </Card>
 
@@ -761,8 +759,8 @@ const Quiz = () => {
                 Previous
               </Button>
 
-              <Button 
-                onClick={handleNext} 
+              <Button
+                onClick={handleNext}
                 disabled={!selectedAnswer || isSubmitting}
               >
                 {isSubmitting ? (
@@ -772,7 +770,9 @@ const Quiz = () => {
                   </>
                 ) : (
                   <>
-                    {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
+                    {currentQuestion === questions.length - 1
+                      ? "Finish"
+                      : "Next"}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </>
                 )}
