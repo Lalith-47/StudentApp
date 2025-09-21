@@ -42,9 +42,15 @@ const Quiz = () => {
     error: questionsError,
   } = useQuery("quizQuestions", () => apiService.getQuizQuestions(), {
     enabled: !quizStarted, // Only fetch when quiz hasn't started
-    onSuccess: (data) => {
-      setQuestions(data.questions || []);
-      setQuizData(data);
+    onSuccess: (response) => {
+      console.log('Quiz questions response:', response);
+      if (response && response.data && response.data.questions) {
+        setQuestions(response.data.questions);
+        setQuizData(response.data);
+      } else {
+        console.error('Invalid quiz questions response:', response);
+        setQuestions([]);
+      }
     },
   });
 
@@ -73,8 +79,10 @@ const Quiz = () => {
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < actualQuestions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
+    } else {
+      handleSubmit();
     }
   };
 
@@ -87,7 +95,7 @@ const Quiz = () => {
   const handleSubmit = () => {
     const completionTime = Math.floor((Date.now() - startTime) / 1000);
     const quizData = {
-      answers: questions.map((q) => ({
+      answers: actualQuestions.map((q) => ({
         questionId: q.id,
         question: q.question,
         selectedOption: answers[q.id] || "",
@@ -105,8 +113,13 @@ const Quiz = () => {
     setStartTime(Date.now());
   };
 
-  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
-  const canProceed = questions[currentQuestion] && answers[questions[currentQuestion]?.id];
+  // Fallback: Use questionsData if questions state is empty
+  const actualQuestions = questions.length > 0 ? questions : (questionsData?.data?.questions || []);
+  
+  const progress =
+    actualQuestions.length > 0 ? ((currentQuestion + 1) / actualQuestions.length) * 100 : 0;
+  const canProceed =
+    actualQuestions[currentQuestion] && answers[actualQuestions[currentQuestion]?.id];
 
   if (showResults) {
     return <QuizResults />;
@@ -130,7 +143,7 @@ const Quiz = () => {
   }
 
   // Check if we have questions before starting quiz
-  if (!quizStarted || questions.length === 0) {
+  if (!quizStarted || actualQuestions.length === 0) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
@@ -189,7 +202,8 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    {questions.length > 0 ? questions.length : "Loading..."} questions
+                    {actualQuestions.length > 0 ? actualQuestions.length : "Loading..."}{" "}
+                    questions
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -204,11 +218,11 @@ const Quiz = () => {
                 <Button
                   size="lg"
                   onClick={startQuiz}
-                  disabled={questions.length === 0}
+                  disabled={actualQuestions.length === 0}
                   className="min-h-[52px] text-lg px-8"
                 >
-                  {questions.length === 0 
-                    ? "Loading Questions..." 
+                  {actualQuestions.length === 0
+                    ? "Loading Questions..."
                     : isAuthenticated
                     ? "Start Detailed Assessment"
                     : "Start Quick Quiz"}
@@ -239,15 +253,23 @@ const Quiz = () => {
   }
 
   // Safety check for current question
-  if (!questions[currentQuestion]) {
-    console.error('Current question not found:', currentQuestion, questions.length);
+  if (!actualQuestions[currentQuestion]) {
+    console.error(
+      "Current question not found:",
+      currentQuestion,
+      actualQuestions.length
+    );
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
         <div className="container-custom">
           <Card className="text-center">
             <div className="text-red-500 mb-4">Quiz Error</div>
-            <p className="text-gray-600 mb-4">Something went wrong with the quiz. Please try again.</p>
-            <Button onClick={() => window.location.reload()}>Restart Quiz</Button>
+            <p className="text-gray-600 mb-4">
+              Something went wrong with the quiz. Please try again.
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Restart Quiz
+            </Button>
           </Card>
         </div>
       </div>
@@ -269,7 +291,7 @@ const Quiz = () => {
                 {t("quiz.progress")}
               </span>
               <span className="text-sm font-medium text-gray-600">
-                {currentQuestion + 1} {t("quiz.of")} {questions.length}
+                {currentQuestion + 1} {t("quiz.of")} {actualQuestions.length}
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -293,51 +315,55 @@ const Quiz = () => {
               >
                 <div className="mb-8">
                   <h2 className="heading-3 mb-6">
-                    {questions[currentQuestion]?.question || "Question not available"}
+                    {actualQuestions[currentQuestion]?.question ||
+                      "Question not available"}
                   </h2>
 
                   <div className="space-y-3">
-                    {(questions[currentQuestion]?.options || []).map((option) => (
-                      <motion.button
-                        key={option.id}
-                        onClick={() =>
-                          handleAnswerSelect(
-                            questions[currentQuestion]?.id,
-                            option.id
-                          )
-                        }
-                        className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 relative overflow-hidden ${
-                          answers[questions[currentQuestion]?.id] === option.id
-                            ? "border-primary-500 bg-primary-50 text-primary-900 dark:bg-primary-900/20 dark:text-primary-100"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-900 dark:text-gray-100"
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          WebkitTapHighlightColor: "transparent",
-                          outline: "none",
-                        }}
-                      >
-                        <div className="flex items-center relative z-10">
-                          <div
-                            className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                              answers[questions[currentQuestion]?.id] ===
+                    {(actualQuestions[currentQuestion]?.options || []).map(
+                      (option) => (
+                        <motion.button
+                          key={option.id}
+                          onClick={() =>
+                            handleAnswerSelect(
+                              actualQuestions[currentQuestion]?.id,
                               option.id
-                                ? "border-primary-500 bg-primary-500"
-                                : "border-gray-300 dark:border-gray-500"
-                            }`}
-                          >
-                            {answers[questions[currentQuestion]?.id] ===
-                              option.id && (
-                              <CheckCircle className="w-4 h-4 text-white" />
-                            )}
+                            )
+                          }
+                          className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 relative overflow-hidden ${
+                            answers[actualQuestions[currentQuestion]?.id] ===
+                            option.id
+                              ? "border-primary-500 bg-primary-50 text-primary-900 dark:bg-primary-900/20 dark:text-primary-100"
+                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-900 dark:text-gray-100"
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          style={{
+                            WebkitTapHighlightColor: "transparent",
+                            outline: "none",
+                          }}
+                        >
+                          <div className="flex items-center relative z-10">
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
+                                answers[actualQuestions[currentQuestion]?.id] ===
+                                option.id
+                                  ? "border-primary-500 bg-primary-500"
+                                  : "border-gray-300 dark:border-gray-500"
+                              }`}
+                            >
+                              {answers[actualQuestions[currentQuestion]?.id] ===
+                                option.id && (
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              )}
+                            </div>
+                            <span className="font-medium text-inherit">
+                              {option.text}
+                            </span>
                           </div>
-                          <span className="font-medium text-inherit">
-                            {option.text}
-                          </span>
-                        </div>
-                      </motion.button>
-                    ))}
+                        </motion.button>
+                      )
+                    )}
                   </div>
                 </div>
 
