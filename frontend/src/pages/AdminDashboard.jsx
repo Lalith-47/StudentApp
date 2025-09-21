@@ -201,13 +201,13 @@ const AdminDashboard = () => {
     try {
       setQuizLoading(true);
       console.log("Fetching quiz data...");
-      
+
       const response = await apiService.getAdminQuizData();
       console.log("Quiz data response:", response.data);
-      
+
       if (response.data.success && response.data.data) {
         const backendData = response.data.data;
-        
+
         // Map backend data structure to frontend expected structure
         const mappedData = {
           totalQuizzes: backendData.totalQuizzes || 0,
@@ -221,11 +221,13 @@ const AdminDashboard = () => {
             explorer: backendData.personalityDistribution?.Explorer || 0,
           },
           recentQuizzes: backendData.recentQuizzes || [],
-          averageCompletionTime: backendData.quizStats?.averageCompletionTime || 0,
+          averageCompletionTime:
+            backendData.quizStats?.averageCompletionTime || 0,
           totalAnswers: backendData.quizStats?.totalAnswers || 0,
-          mostCommonPersonality: backendData.quizStats?.mostCommonPersonality || "analytical",
+          mostCommonPersonality:
+            backendData.quizStats?.mostCommonPersonality || "analytical",
         };
-        
+
         console.log("Mapped quiz data:", mappedData);
         setQuizData(mappedData);
         setLastQuizRefresh(new Date());
@@ -234,7 +236,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching quiz data:", error);
-      
+
       // Set fallback data if API fails
       setQuizData({
         totalQuizzes: 0,
@@ -979,7 +981,9 @@ const AdminDashboard = () => {
                       ) : (
                         <RefreshCw className="w-4 h-4" />
                       )}
-                      <span>{quizLoading ? "Refreshing..." : "Refresh Data"}</span>
+                      <span>
+                        {quizLoading ? "Refreshing..." : "Refresh Data"}
+                      </span>
                     </button>
                     {lastQuizRefresh && (
                       <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -1073,7 +1077,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Charts Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                   {/* Personality Distribution Chart */}
                   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
@@ -1277,7 +1281,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Quiz Insights Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       Key Insights
@@ -1392,7 +1396,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Recent Quiz Submissions */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-8">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       Recent Quiz Submissions
