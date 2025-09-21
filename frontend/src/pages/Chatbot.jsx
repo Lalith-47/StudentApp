@@ -326,14 +326,40 @@ const Chatbot = () => {
                             <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
                               <ReactMarkdown
                                 components={{
-                                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                                  ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-                                  ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-                                  li: ({ children }) => <li className="text-sm">{children}</li>,
-                                  strong: ({ children }) => <strong className="font-semibold text-primary-600 dark:text-primary-400">{children}</strong>,
-                                  em: ({ children }) => <em className="italic">{children}</em>,
-                                  code: ({ children }) => <code className="bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                                  blockquote: ({ children }) => <blockquote className="border-l-4 border-primary-500 pl-4 italic my-2">{children}</blockquote>,
+                                  p: ({ children }) => (
+                                    <p className="mb-2 last:mb-0">{children}</p>
+                                  ),
+                                  ul: ({ children }) => (
+                                    <ul className="list-disc list-inside mb-2 space-y-1">
+                                      {children}
+                                    </ul>
+                                  ),
+                                  ol: ({ children }) => (
+                                    <ol className="list-decimal list-inside mb-2 space-y-1">
+                                      {children}
+                                    </ol>
+                                  ),
+                                  li: ({ children }) => (
+                                    <li className="text-sm">{children}</li>
+                                  ),
+                                  strong: ({ children }) => (
+                                    <strong className="font-semibold text-primary-600 dark:text-primary-400">
+                                      {children}
+                                    </strong>
+                                  ),
+                                  em: ({ children }) => (
+                                    <em className="italic">{children}</em>
+                                  ),
+                                  code: ({ children }) => (
+                                    <code className="bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded text-xs font-mono">
+                                      {children}
+                                    </code>
+                                  ),
+                                  blockquote: ({ children }) => (
+                                    <blockquote className="border-l-4 border-primary-500 pl-4 italic my-2">
+                                      {children}
+                                    </blockquote>
+                                  ),
                                 }}
                               >
                                 {message.content}

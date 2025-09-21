@@ -4,7 +4,23 @@ const quizResultSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Not required for guest users
+  },
+  sessionId: {
+    type: String,
+    required: false // For guest users
+  },
+  userType: {
+    type: String,
+    enum: ['guest', 'authenticated'],
+    required: true,
+    default: 'authenticated'
+  },
+  quizType: {
+    type: String,
+    enum: ['mock', 'detailed'],
+    required: true,
+    default: 'detailed'
   },
   answers: [{
     questionId: {
@@ -60,6 +76,8 @@ const quizResultSchema = new mongoose.Schema({
 
 // Index for efficient queries
 quizResultSchema.index({ userId: 1, submittedAt: -1 });
+quizResultSchema.index({ sessionId: 1, submittedAt: -1 });
+quizResultSchema.index({ userType: 1, quizType: 1 });
 quizResultSchema.index({ personalityType: 1 });
 
 // Virtual for total score

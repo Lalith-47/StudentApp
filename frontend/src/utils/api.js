@@ -87,6 +87,7 @@ api.interceptors.response.use(
 export const endpoints = {
   // Quiz
   quiz: {
+    questions: "/quiz/questions",
     submit: "/quiz",
     results: "/quiz/results",
   },
@@ -146,6 +147,7 @@ export const endpoints = {
     dashboard: "/admin/dashboard",
     users: "/admin/users",
     updateUserStatus: (userId) => `/admin/users/${userId}/status`,
+    quizData: "/admin/quiz-data",
   },
 
   // Auth
@@ -161,6 +163,7 @@ export const endpoints = {
 // API functions
 export const apiService = {
   // Quiz
+  getQuizQuestions: () => api.get(endpoints.quiz.questions),
   submitQuiz: (data) => api.post(endpoints.quiz.submit, data),
   getQuizResults: () => api.get(endpoints.quiz.results),
 
@@ -218,6 +221,7 @@ export const apiService = {
   getAdminUsers: (params) => api.get(endpoints.admin.users, { params }),
   updateUserStatus: (userId, data) =>
     api.patch(endpoints.admin.updateUserStatus(userId), data),
+  getAdminQuizData: () => api.get(endpoints.admin.quizData),
 };
 
 export default api;

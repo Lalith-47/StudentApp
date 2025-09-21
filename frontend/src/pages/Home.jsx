@@ -51,6 +51,13 @@ const Home = () => {
       link: "/colleges",
       color: "text-purple-600 bg-purple-100",
     },
+    {
+      icon: <MessageCircle className="w-8 h-8" />,
+      title: "AI Career Counselor",
+      description: "Get personalized career guidance from our intelligent AI assistant",
+      link: "/chatbot",
+      color: "text-orange-600 bg-orange-100",
+    },
   ];
 
   const stats = [
@@ -236,7 +243,7 @@ const Home = () => {
                 <Link to="/quiz">
                   <Button
                     size="lg"
-                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto"
+                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto min-h-[52px] text-base sm:text-lg"
                   >
                     {t("home.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -246,7 +253,7 @@ const Home = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto"
+                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto min-h-[52px] text-base sm:text-lg"
                   >
                     Explore Roadmaps
                   </Button>
@@ -302,7 +309,7 @@ const Home = () => {
           </motion.div>
 
           {/* Main Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -348,7 +355,7 @@ const Home = () => {
             <h3 className="heading-3 text-center mb-12">
               Platform Achievements
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={achievement.title}
@@ -446,7 +453,7 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -454,28 +461,116 @@ const Home = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card hover className="h-full text-center">
+                <Card hover className="h-full text-center flex flex-col">
                   <div
-                    className={`inline-flex items-center justify-center w-16 h-16 ${feature.color} rounded-xl mb-6`}
+                    className={`inline-flex items-center justify-center w-16 h-16 ${feature.color} rounded-xl mb-6 mx-auto`}
                   >
                     {feature.icon}
                   </div>
-                  <h3 className="heading-4 mb-3 text-gray-900 dark:text-white">
+                  <h3 className="heading-4 mb-3 text-gray-900 dark:text-white flex-grow-0">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow text-sm sm:text-base leading-relaxed">
                     {feature.description}
                   </p>
-                  <Link to={feature.link}>
-                    <Button variant="outline" className="w-full">
-                      Get Started
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
+                  <div className="mt-auto">
+                    <Link to={feature.link}>
+                      <Button variant="outline" className="w-full min-h-[44px]">
+                        Get Started
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
                 </Card>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="section-padding bg-white dark:bg-gray-800">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
+              How AdhyayanMarg Works
+            </h2>
+            <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
+              Our proven 3-step process helps you discover, plan, and achieve your career goals with confidence.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">1</span>
+              </div>
+              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
+                Discover Your Path
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Take our comprehensive career assessment quiz to understand your interests, strengths, and personality type.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">2</span>
+              </div>
+              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
+                Plan Your Journey
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Get detailed roadmaps, course recommendations, and step-by-step guidance tailored to your career goals.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">3</span>
+              </div>
+              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
+                Achieve Success
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Find the right colleges, apply for scholarships, and connect with opportunities that match your aspirations.
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center mt-12"
+          >
+            <Link to="/quiz">
+              <Button size="lg" className="min-h-[52px] text-lg px-8">
+                Start Your Journey Today
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -497,7 +592,7 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
@@ -505,7 +600,7 @@ const Home = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="h-full">
+                <Card className="h-full flex flex-col">
                   <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star
@@ -514,10 +609,10 @@ const Home = () => {
                       />
                     ))}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 italic">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 italic flex-grow leading-relaxed">
                     "{testimonial.content}"
                   </p>
-                  <div className="flex items-center">
+                  <div className="flex items-center mt-auto">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
@@ -557,43 +652,43 @@ const Home = () => {
                 ? "Access your personalized dashboard to track your progress, view recommendations, and continue your career development journey."
                 : "Take our comprehensive career assessment quiz and discover your ideal career path in just 10 minutes."}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-4xl mx-auto">
               {isAuthenticated ? (
-                <Link to="/dashboard">
-                  <Button
-                    size="lg"
-                    className="bg-white text-primary-600 hover:bg-gray-50"
-                  >
-                    Go to Dashboard
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Link to="/quiz">
+                  <Link to="/dashboard">
                     <Button
                       size="lg"
-                      className="bg-white text-primary-600 hover:bg-gray-50"
+                      className="bg-white text-primary-600 hover:bg-gray-50 min-h-[52px] text-lg"
                     >
-                      Take Career Quiz
+                      Go to Dashboard
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-white text-white hover:bg-white hover:text-primary-600"
-                    onClick={() => navigate("/login")}
-                  >
-                    Sign In to Get Started
-                  </Button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Link to="/quiz">
+                      <Button
+                        size="lg"
+                        className="bg-white text-primary-600 hover:bg-gray-50 min-h-[52px] text-lg"
+                      >
+                        Take Career Quiz
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-white text-white hover:bg-white hover:text-primary-600 min-h-[52px] text-lg"
+                      onClick={() => navigate("/login")}
+                    >
+                      Sign In to Get Started
+                    </Button>
+                  </>
+                )}
               <Link to="/stories">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-white text-white hover:bg-white hover:text-primary-600"
+                  className="border-white text-white hover:bg-white hover:text-primary-600 min-h-[52px] text-lg"
                 >
                   Read Success Stories
                 </Button>

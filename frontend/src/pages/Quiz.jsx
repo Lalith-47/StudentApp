@@ -10,9 +10,12 @@ import {
   TrendingUp,
   Users,
   BookOpen,
+  User,
+  LogIn,
 } from "lucide-react";
 import { useQuery, useMutation } from "react-query";
 import toast from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
 import LoadingSpinner from "../components/UI/LoadingSpinner";
@@ -20,295 +23,49 @@ import { apiService } from "../utils/api";
 
 const Quiz = () => {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [startTime, setStartTime] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [quizData, setQuizData] = useState(null);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
-  // Comprehensive career assessment quiz - 10 questions
-  const questions = [
+  // Fetch quiz questions based on authentication status
+  const {
+    data: questionsData,
+    isLoading: questionsLoading,
+    error: questionsError,
+  } = useQuery(
+    'quizQuestions',
+    () => apiService.getQuizQuestions(),
     {
-      id: "q1",
-      question: "What type of work environment do you prefer?",
-      category: "work_environment",
-      options: [
-        {
-          id: "a",
-          text: "Collaborative team environment with regular meetings",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "b",
-          text: "Independent and quiet workspace with minimal distractions",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "c",
-          text: "Creative and flexible environment with artistic freedom",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "d",
-          text: "Fast-paced and challenging with tight deadlines",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q2",
-      question: "Which activity interests you most?",
-      category: "interests",
-      options: [
-        {
-          id: "a",
-          text: "Solving complex mathematical or logical problems",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "b",
-          text: "Creating art, design, or multimedia content",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Helping others solve their problems or providing support",
-          score: { social: 3, leadership: 1 },
-        },
-        {
-          id: "d",
-          text: "Leading projects and managing teams",
-          score: { leadership: 3, social: 2 },
-        },
-      ],
-    },
-    {
-      id: "q3",
-      question: "What motivates you most in your work?",
-      category: "motivation",
-      options: [
-        {
-          id: "a",
-          text: "Making a positive impact on society or helping people",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "b",
-          text: "Learning new technologies and acquiring technical skills",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "c",
-          text: "Expressing creativity and bringing innovative ideas to life",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "d",
-          text: "Achieving recognition and advancing in your career",
-          score: { leadership: 3, analytical: 1 },
-        },
-      ],
-    },
-    {
-      id: "q4",
-      question: "How do you prefer to learn new skills?",
-      category: "learning_style",
-      options: [
-        {
-          id: "a",
-          text: "Hands-on practice and building projects",
-          score: { technical: 3, analytical: 2 },
-        },
-        {
-          id: "b",
-          text: "Visual learning with videos, diagrams, and creative materials",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Group discussions and collaborative learning",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Structured courses with clear objectives and assessments",
-          score: { analytical: 3, technical: 1 },
-        },
-      ],
-    },
-    {
-      id: "q5",
-      question: "What type of challenges do you enjoy most?",
-      category: "challenges",
-      options: [
-        {
-          id: "a",
-          text: "Technical and logical problems requiring systematic thinking",
-          score: { technical: 3, analytical: 2 },
-        },
-        {
-          id: "b",
-          text: "Creative and artistic challenges requiring innovation",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Social and communication challenges involving people",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Strategic and planning challenges requiring big-picture thinking",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q6",
-      question: "What is your ideal work schedule?",
-      category: "work_life_balance",
-      options: [
-        {
-          id: "a",
-          text: "Traditional 9-5 with clear boundaries between work and personal time",
-          score: { analytical: 2, social: 2 },
-        },
-        {
-          id: "b",
-          text: "Flexible hours with ability to work from anywhere",
-          score: { creative: 3, technical: 2 },
-        },
-        {
-          id: "c",
-          text: "Variable schedule with frequent travel and networking",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Intensive periods with high focus and occasional breaks",
-          score: { technical: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q7",
-      question: "What type of problems do you find most satisfying to solve?",
-      category: "problem_solving",
-      options: [
-        {
-          id: "a",
-          text: "Data analysis and finding patterns in complex information",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "b",
-          text: "Design problems requiring aesthetic and functional solutions",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Interpersonal conflicts and team dynamics issues",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Strategic business problems and market opportunities",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q8",
-      question: "How do you prefer to communicate your ideas?",
-      category: "communication_style",
-      options: [
-        {
-          id: "a",
-          text: "Through detailed reports, data, and technical documentation",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "b",
-          text: "Through visual presentations, graphics, and creative storytelling",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Through face-to-face meetings and collaborative discussions",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Through executive summaries and strategic presentations",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q9",
-      question: "What type of career growth appeals to you most?",
-      category: "career_aspirations",
-      options: [
-        {
-          id: "a",
-          text: "Becoming a subject matter expert in a specific technical field",
-          score: { technical: 3, analytical: 2 },
-        },
-        {
-          id: "b",
-          text: "Building a portfolio of creative work and artistic achievements",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Mentoring others and building strong professional relationships",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Advancing to senior management and executive positions",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-    {
-      id: "q10",
-      question: "What values are most important to you in a career?",
-      category: "values",
-      options: [
-        {
-          id: "a",
-          text: "Intellectual stimulation and continuous learning",
-          score: { analytical: 3, technical: 2 },
-        },
-        {
-          id: "b",
-          text: "Creative freedom and self-expression",
-          score: { creative: 3, social: 1 },
-        },
-        {
-          id: "c",
-          text: "Making a difference in people's lives and society",
-          score: { social: 3, leadership: 2 },
-        },
-        {
-          id: "d",
-          text: "Achievement, recognition, and financial success",
-          score: { leadership: 3, analytical: 2 },
-        },
-      ],
-    },
-  ];
+      enabled: !quizStarted, // Only fetch when quiz hasn't started
+      onSuccess: (data) => {
+        setQuestions(data.questions || []);
+        setQuizData(data);
+      }
+    }
+  );
 
-  const submitQuizMutation = useMutation(apiService.submitQuiz, {
-    onSuccess: (data) => {
-      setShowResults(true);
-      toast.success("Quiz submitted successfully!");
-    },
-    onError: (error) => {
-      toast.error("Failed to submit quiz. Please try again.");
-    },
-  });
+  const submitQuizMutation = useMutation(
+    (quizData) => apiService.submitQuiz(quizData),
+    {
+      onSuccess: (data) => {
+        setShowResults(true);
+        if (data.isGuestUser) {
+          toast.success("Quiz completed! Sign up to get detailed insights!");
+        } else {
+          toast.success("Quiz submitted successfully!");
+        }
+      },
+      onError: (error) => {
+        toast.error("Failed to submit quiz. Please try again.");
+      },
+    }
+  );
 
   const handleAnswerSelect = (questionId, optionId) => {
     setAnswers((prev) => ({
@@ -339,6 +96,7 @@ const Quiz = () => {
         category: q.category,
       })),
       completionTime,
+      sessionId: !isAuthenticated ? sessionId : undefined,
     };
 
     submitQuizMutation.mutate(quizData);
@@ -356,6 +114,23 @@ const Quiz = () => {
     return <QuizResults />;
   }
 
+  if (questionsLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (questionsError) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
+        <div className="container-custom">
+          <Card className="text-center">
+            <div className="text-red-500 mb-4">Error loading quiz</div>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   if (!quizStarted) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
@@ -370,17 +145,41 @@ const Quiz = () => {
                 <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Target className="w-10 h-10 text-primary-600" />
                 </div>
-                <h1 className="heading-2 mb-4">{t("quiz.title")}</h1>
-                <p className="text-body max-w-2xl mx-auto mb-8">
-                  {t("quiz.subtitle")}
+                <h1 className="heading-2 mb-4">
+                  {isAuthenticated ? "Detailed Career Assessment" : "Quick Career Quiz"}
+                </h1>
+                <p className="text-body max-w-2xl mx-auto mb-6">
+                  {isAuthenticated 
+                    ? "Take our comprehensive career assessment to get detailed insights about your personality, strengths, and career recommendations."
+                    : "Take a quick quiz to get a preview of your career personality. Sign up for detailed insights!"
+                  }
                 </p>
+                
+                {/* User Status Indicator */}
+                <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6 ${
+                  isAuthenticated 
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                    : "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                }`}>
+                  {isAuthenticated ? (
+                    <>
+                      <User className="w-4 h-4 mr-2" />
+                      Logged in as {user?.name}
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4 mr-2" />
+                      Guest Mode
+                    </>
+                  )}
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    Takes 8-12 minutes
+                    {isAuthenticated ? "Takes 10-15 minutes" : "Takes 3-5 minutes"}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -392,15 +191,29 @@ const Quiz = () => {
                 <div className="flex items-center space-x-3">
                   <TrendingUp className="w-5 h-5 text-primary-600" />
                   <span className="text-sm text-gray-600">
-                    Get instant results
+                    {isAuthenticated ? "Detailed results" : "Quick preview"}
                   </span>
                 </div>
               </div>
 
-              <Button size="lg" onClick={startQuiz}>
-                {t("quiz.start")}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+              <div className="space-y-4">
+                <Button size="lg" onClick={startQuiz} className="min-h-[52px] text-lg px-8">
+                  {isAuthenticated ? "Start Detailed Assessment" : "Start Quick Quiz"}
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                
+                {!isAuthenticated && (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-3">
+                      Want detailed career insights?
+                    </p>
+                    <Button variant="outline" size="md" onClick={() => window.location.href = '/login'}>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Sign Up for Free
+                    </Button>
+                  </div>
+                )}
+              </div>
             </Card>
           </motion.div>
         </div>

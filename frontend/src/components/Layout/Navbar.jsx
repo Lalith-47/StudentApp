@@ -191,10 +191,10 @@ const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center space-x-1 px-2 touch-target"
+                className="flex items-center space-x-1 px-3 py-2 touch-target min-h-[44px] min-w-[44px]"
               >
                 <Globe className="w-4 h-4" />
-                <span className="hidden md:block">
+                <span className="hidden md:block text-sm">
                   {languages.find((lang) => lang.code === i18n.language)?.flag}
                 </span>
               </Button>
@@ -282,7 +282,7 @@ const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden ml-1 touch-target"
+              className="lg:hidden ml-1 touch-target min-h-[44px] min-w-[44px] p-2"
             >
               {isOpen ? (
                 <X className="w-5 h-5" />
@@ -297,13 +297,13 @@ const Navbar = () => {
         {isOpen && (
           <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-in slide-in-from-top-2 duration-300 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
             <div className="flex flex-col space-y-2">
-              {navigation.map((item) => (
+                  {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    "px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 touch-target",
+                    "px-4 py-4 text-base font-medium rounded-lg transition-all duration-200 touch-target min-h-[48px] flex items-center",
                     item.current
                       ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900 shadow-sm"
                       : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-sm"
@@ -327,16 +327,14 @@ const Navbar = () => {
                         setIsOpen(false);
                       }}
                       className={cn(
-                        "px-3 py-2 text-sm rounded-md border transition-all duration-200 touch-target",
+                        "px-4 py-3 text-sm rounded-md border transition-all duration-200 touch-target min-h-[56px] flex flex-col items-center justify-center",
                         i18n.language === language.code
                           ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700 shadow-sm"
                           : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-sm"
                       )}
                     >
-                      <div className="flex flex-col items-center space-y-1">
-                        <span className="text-lg">{language.flag}</span>
-                        <span className="text-xs">{language.name}</span>
-                      </div>
+                      <span className="text-xl mb-1">{language.flag}</span>
+                      <span className="text-xs font-medium">{language.name}</span>
                     </button>
                   ))}
                 </div>
@@ -367,23 +365,23 @@ const Navbar = () => {
                   <div className="space-y-3 px-4">
                     <Button
                       variant="primary"
-                      size="sm"
+                      size="lg"
                       onClick={() => {
                         navigate("/login");
                         setIsOpen(false);
                       }}
-                      className="w-full touch-target"
+                      className="w-full touch-target min-h-[48px] text-base"
                     >
                       {t("auth.signIn")}
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="lg"
                       onClick={() => {
                         navigate("/admin-login");
                         setIsOpen(false);
                       }}
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target"
+                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target min-h-[48px] text-base"
                     >
                       <Shield className="w-4 h-4 mr-2" />
                       Admin Portal

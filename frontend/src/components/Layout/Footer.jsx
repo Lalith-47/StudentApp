@@ -41,7 +41,7 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="container-custom">
         {/* Main Footer Content */}
-        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-8 sm:py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
@@ -110,7 +110,7 @@ const Footer = () => {
               </div>
               <span className="text-xl font-bold">AdhyayanMarg</span>
             </Link>
-            <p className="text-gray-400 mb-6 max-w-sm">
+            <p className="text-gray-400 mb-6 max-w-sm text-sm sm:text-base leading-relaxed">
               Your comprehensive career guidance platform. Discover your
               potential and build your future with expert guidance and
               resources.
@@ -186,22 +186,22 @@ const Footer = () => {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="py-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
+        <div className="py-6 sm:py-8 border-t border-gray-800">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="text-center lg:text-left">
               <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-sm max-w-md">
                 Get the latest career guidance tips and opportunities delivered
                 to your inbox.
               </p>
             </div>
-            <div className="flex w-full md:w-auto">
+            <div className="flex w-full max-w-md lg:max-w-none">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 md:w-64 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="flex-1 lg:w-64 px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
               />
-              <button className="px-6 py-2 bg-primary-600 text-white rounded-r-lg hover:bg-primary-700 transition-colors duration-200">
+              <button className="px-6 py-3 bg-primary-600 text-white rounded-r-lg hover:bg-primary-700 transition-colors duration-200 text-base font-medium min-h-[48px]">
                 Subscribe
               </button>
             </div>

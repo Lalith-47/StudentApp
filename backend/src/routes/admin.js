@@ -4,6 +4,7 @@ const {
   getDashboardStats,
   getUsers,
   updateUserStatus,
+  getQuizData,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -20,5 +21,8 @@ router.get("/users", getUsers);
 
 // Update user status
 router.patch("/users/:userId/status", updateUserStatus);
+
+// Get quiz data for admin dashboard
+router.get("/quiz-data", getQuizData);
 
 module.exports = router;
