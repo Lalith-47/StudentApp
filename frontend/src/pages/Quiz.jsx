@@ -45,10 +45,13 @@ const Quiz = () => {
         console.log("🚀 Direct fetch: Starting...");
         console.log("🚀 User authenticated:", isAuthenticated);
         console.log("🚀 Auth token:", localStorage.getItem("authToken") ? "Present" : "Not present");
+        console.log("🚀 API base URL:", import.meta.env.VITE_API_URL || "http://localhost:5000/api");
         setQuestionsLoading(true);
         setQuestionsError(null);
 
+        console.log("🚀 Making API call...");
         const response = await apiService.getQuizQuestions();
+        console.log("🚀 API call completed");
         console.log("✅ Direct fetch: Response received:", response);
 
         if (response && response.data && response.data.questions) {
