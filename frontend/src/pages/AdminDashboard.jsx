@@ -1410,7 +1410,9 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === "settings" && (
+        {activeTab === "settings" && (() => {
+          console.log("Rendering settings tab, activeTab:", activeTab);
+          return (
           <div className="space-y-8">
             {/* System Settings Header */}
             <div className="text-center">
@@ -1426,6 +1428,9 @@ const AdminDashboard = () => {
             <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
               <p className="text-blue-800 dark:text-blue-200 text-sm">
                 Settings tab is loading... Active tab: {activeTab}
+              </p>
+              <p className="text-blue-800 dark:text-blue-200 text-sm mt-2">
+                Console: Settings tab rendered successfully!
               </p>
             </div>
 
@@ -1821,7 +1826,8 @@ const AdminDashboard = () => {
               </Button>
             </div>
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
