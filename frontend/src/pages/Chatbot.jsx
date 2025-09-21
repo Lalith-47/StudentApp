@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import {
   Send,
   Bot,
@@ -89,7 +90,8 @@ const Chatbot = () => {
         const errorResponse = {
           id: Date.now(),
           type: "bot",
-          content: "I apologize, but I couldn't generate a response. Please try again.",
+          content:
+            "I apologize, but I couldn't generate a response. Please try again.",
           timestamp: new Date(),
           helpful: false,
         };
@@ -326,7 +328,22 @@ const Chatbot = () => {
                                 : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                             }`}
                           >
-                            <p className="text-sm">{message.content}</p>
+                            <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                              <ReactMarkdown
+                                components={{
+                                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                                  ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                                  ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                                  li: ({ children }) => <li className="text-sm">{children}</li>,
+                                  strong: ({ children }) => <strong className="font-semibold text-primary-600 dark:text-primary-400">{children}</strong>,
+                                  em: ({ children }) => <em className="italic">{children}</em>,
+                                  code: ({ children }) => <code className="bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                                  blockquote: ({ children }) => <blockquote className="border-l-4 border-primary-500 pl-4 italic my-2">{children}</blockquote>,
+                                }}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
 
                             {/* AI Provider Info for bot messages */}
                             {message.type === "bot" && message.aiProvider && (
