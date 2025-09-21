@@ -43,25 +43,36 @@ const Quiz = () => {
     const fetchQuestions = async () => {
       try {
         console.log("🚀 Direct fetch: Starting...");
+        console.log("🚀 User authenticated:", isAuthenticated);
+        console.log("🚀 Auth token:", localStorage.getItem("authToken") ? "Present" : "Not present");
         setQuestionsLoading(true);
         setQuestionsError(null);
-        
+
         const response = await apiService.getQuizQuestions();
         console.log("✅ Direct fetch: Response received:", response);
-        
+
         if (response && response.data && response.data.questions) {
-          console.log("✅ Direct fetch: Setting questions:", response.data.questions.length);
+          console.log(
+            "✅ Direct fetch: Setting questions:",
+            response.data.questions.length
+          );
           setQuestions(response.data.questions);
           setQuizData(response.data);
           setQuestionsLoading(false);
         } else {
-          console.error("❌ Direct fetch: Invalid response structure:", response);
+          console.error(
+            "❌ Direct fetch: Invalid response structure:",
+            response
+          );
           setQuestionsError("Invalid response from server");
           setQuestionsLoading(false);
         }
       } catch (err) {
         console.error("❌ Direct fetch ERROR:", err);
-        setQuestionsError(err.message || "Failed to load questions");
+        console.error("❌ Error details:", err.response?.data);
+        console.error("❌ Error status:", err.response?.status);
+        console.error("❌ Error config:", err.config);
+        setQuestionsError(err.response?.data?.message || err.message || "Failed to load questions");
         setQuestionsLoading(false);
       }
     };
