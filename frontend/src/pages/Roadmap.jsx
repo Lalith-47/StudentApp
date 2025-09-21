@@ -151,6 +151,523 @@ const Roadmap = () => {
       ],
       tags: ["data science", "machine learning", "python", "analytics"],
     },
+    {
+      _id: "3",
+      courseName: "Artificial Intelligence & Machine Learning",
+      description:
+        "Master AI and ML technologies including deep learning, neural networks, and AI applications.",
+      category: "Technology",
+      duration: "2 years",
+      difficulty: "Advanced",
+      marketDemand: {
+        current: "Very High",
+        future: "Revolutionary",
+        salaryRange: {
+          entry: "₹10-15 LPA",
+          mid: "₹20-35 LPA",
+          senior: "₹40-80 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Months 1-8)",
+          duration: "8 months",
+          milestones: [
+            {
+              title: "Mathematics for ML",
+              description: "Linear Algebra, Calculus, Probability, Statistics",
+              resources: ["3Blue1Brown", "Khan Academy"],
+              completed: false,
+            },
+            {
+              title: "Python & Libraries",
+              description: "NumPy, Pandas, Matplotlib, Scikit-learn",
+              resources: ["Python.org", "Kaggle"],
+              completed: false,
+            },
+          ],
+          skills: ["Mathematics", "Python", "Statistics", "Data Analysis"],
+        },
+      ],
+      resources: {
+        books: ["Pattern Recognition", "Deep Learning", "Hands-On ML"],
+        onlineCourses: ["Andrew Ng's ML Course", "Fast.ai"],
+        certifications: ["Google ML Engineer", "AWS ML Specialty"],
+        tools: ["TensorFlow", "PyTorch", "Keras", "Jupyter"],
+      },
+      institutions: [
+        {
+          name: "IIT Bombay",
+          location: "Mumbai",
+          ranking: 3,
+          fees: "₹2.8 LPA",
+          admissionProcess: "JEE Advanced",
+        },
+        {
+          name: "IIIT Bangalore",
+          location: "Bangalore",
+          ranking: 5,
+          fees: "₹3.2 LPA",
+          admissionProcess: "GATE",
+        },
+      ],
+      tags: ["artificial intelligence", "machine learning", "deep learning", "neural networks"],
+    },
+    {
+      _id: "4",
+      courseName: "Cybersecurity",
+      description:
+        "Learn to protect digital assets and systems from cyber threats and attacks.",
+      category: "Technology",
+      duration: "2 years",
+      difficulty: "Advanced",
+      marketDemand: {
+        current: "High",
+        future: "Critical",
+        salaryRange: {
+          entry: "₹8-12 LPA",
+          mid: "₹18-30 LPA",
+          senior: "₹35-70 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Months 1-6)",
+          duration: "6 months",
+          milestones: [
+            {
+              title: "Network Security",
+              description: "Understanding networks, protocols, and vulnerabilities",
+              resources: ["Cisco Networking", "CompTIA Security+"],
+              completed: false,
+            },
+          ],
+          skills: ["Network Security", "Cryptography", "Risk Assessment"],
+        },
+      ],
+      resources: {
+        books: ["Hacking: Art of Exploitation", "Network Security Essentials"],
+        onlineCourses: ["Cybrary", "SANS", "TryHackMe"],
+        certifications: ["CEH", "CISSP", "CompTIA Security+"],
+        tools: ["Wireshark", "Nmap", "Metasploit", "Burp Suite"],
+      },
+      institutions: [
+        {
+          name: "NIT Trichy",
+          location: "Tiruchirappalli",
+          ranking: 8,
+          fees: "₹2.2 LPA",
+          admissionProcess: "JEE Main",
+        },
+      ],
+      tags: ["cybersecurity", "information security", "ethical hacking", "network security"],
+    },
+    {
+      _id: "5",
+      courseName: "Medicine (MBBS)",
+      description:
+        "Comprehensive medical education covering human anatomy, physiology, pathology, and clinical practice.",
+      category: "Medicine",
+      duration: "5.5 years",
+      difficulty: "Very Advanced",
+      marketDemand: {
+        current: "Always High",
+        future: "Essential",
+        salaryRange: {
+          entry: "₹8-15 LPA",
+          mid: "₹20-40 LPA",
+          senior: "₹50-100 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Pre-clinical (Years 1-2)",
+          duration: "24 months",
+          milestones: [
+            {
+              title: "Basic Sciences",
+              description: "Anatomy, Physiology, Biochemistry",
+              resources: ["Gray's Anatomy", "Guyton Physiology"],
+              completed: false,
+            },
+          ],
+          skills: ["Medical Knowledge", "Patient Care", "Clinical Skills"],
+        },
+      ],
+      resources: {
+        books: ["Gray's Anatomy", "Harrison's Medicine", "Robbins Pathology"],
+        onlineCourses: ["Osmosis", "Medscape", "UpToDate"],
+        certifications: ["MBBS", "MD/MS", "Specialization"],
+        tools: ["Stethoscope", "Medical Apps", "Clinical Software"],
+      },
+      institutions: [
+        {
+          name: "AIIMS Delhi",
+          location: "New Delhi",
+          ranking: 1,
+          fees: "₹1.5 LPA",
+          admissionProcess: "NEET",
+        },
+        {
+          name: "CMC Vellore",
+          location: "Vellore",
+          ranking: 2,
+          fees: "₹4.5 LPA",
+          admissionProcess: "NEET",
+        },
+      ],
+      tags: ["medicine", "healthcare", "clinical practice", "patient care"],
+    },
+    {
+      _id: "6",
+      courseName: "Business Administration (MBA)",
+      description:
+        "Master business strategy, management, finance, marketing, and leadership skills.",
+      category: "Commerce",
+      duration: "2 years",
+      difficulty: "Advanced",
+      marketDemand: {
+        current: "High",
+        future: "Stable",
+        salaryRange: {
+          entry: "₹12-20 LPA",
+          mid: "₹25-50 LPA",
+          senior: "₹60-150 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Core Modules (Year 1)",
+          duration: "12 months",
+          milestones: [
+            {
+              title: "Business Fundamentals",
+              description: "Finance, Marketing, Operations, Strategy",
+              resources: ["Harvard Business Review", "Coursera MBA"],
+              completed: false,
+            },
+          ],
+          skills: ["Leadership", "Strategy", "Finance", "Marketing"],
+        },
+      ],
+      resources: {
+        books: ["Good to Great", "Blue Ocean Strategy", "Lean Startup"],
+        onlineCourses: ["Harvard Business School", "Wharton", "INSEAD"],
+        certifications: ["MBA", "CFA", "PMP"],
+        tools: ["Excel", "Tableau", "Salesforce", "SAP"],
+      },
+      institutions: [
+        {
+          name: "IIM Ahmedabad",
+          location: "Ahmedabad",
+          ranking: 1,
+          fees: "₹23 LPA",
+          admissionProcess: "CAT",
+        },
+        {
+          name: "IIM Bangalore",
+          location: "Bangalore",
+          ranking: 2,
+          fees: "₹21 LPA",
+          admissionProcess: "CAT",
+        },
+      ],
+      tags: ["business", "management", "leadership", "strategy"],
+    },
+    {
+      _id: "7",
+      courseName: "Digital Marketing",
+      description:
+        "Master online marketing strategies, SEO, social media, content marketing, and analytics.",
+      category: "Commerce",
+      duration: "1 year",
+      difficulty: "Beginner",
+      marketDemand: {
+        current: "Very High",
+        future: "Growing",
+        salaryRange: {
+          entry: "₹4-8 LPA",
+          mid: "₹10-18 LPA",
+          senior: "₹20-40 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Months 1-4)",
+          duration: "4 months",
+          milestones: [
+            {
+              title: "Digital Marketing Basics",
+              description: "SEO, SEM, Social Media, Content Marketing",
+              resources: ["Google Digital Garage", "HubSpot Academy"],
+              completed: false,
+            },
+          ],
+          skills: ["SEO", "Social Media", "Content Creation", "Analytics"],
+        },
+      ],
+      resources: {
+        books: ["Digital Marketing for Dummies", "SEO 2023"],
+        onlineCourses: ["Google Analytics", "Facebook Blueprint", "HubSpot"],
+        certifications: ["Google Ads", "Facebook Marketing", "HubSpot"],
+        tools: ["Google Analytics", "Hootsuite", "Canva", "Mailchimp"],
+      },
+      institutions: [
+        {
+          name: "MICA Ahmedabad",
+          location: "Ahmedabad",
+          ranking: 1,
+          fees: "₹18 LPA",
+          admissionProcess: "CAT/MICAT",
+        },
+      ],
+      tags: ["digital marketing", "seo", "social media", "content marketing"],
+    },
+    {
+      _id: "8",
+      courseName: "Graphic Design & UI/UX",
+      description:
+        "Learn visual design, user experience, interface design, and creative software tools.",
+      category: "Arts",
+      duration: "2 years",
+      difficulty: "Intermediate",
+      marketDemand: {
+        current: "High",
+        future: "Growing",
+        salaryRange: {
+          entry: "₹4-8 LPA",
+          mid: "₹10-20 LPA",
+          senior: "₹25-50 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Design Fundamentals (Months 1-8)",
+          duration: "8 months",
+          milestones: [
+            {
+              title: "Design Principles",
+              description: "Typography, Color Theory, Layout Design",
+              resources: ["Adobe Creative Suite", "Behance"],
+              completed: false,
+            },
+          ],
+          skills: ["Visual Design", "User Research", "Prototyping", "Adobe Suite"],
+        },
+      ],
+      resources: {
+        books: ["Don't Make Me Think", "Design of Everyday Things"],
+        onlineCourses: ["Udemy Design", "Skillshare", "Interaction Design"],
+        certifications: ["Adobe Certified", "Google UX Design"],
+        tools: ["Figma", "Adobe XD", "Sketch", "Photoshop"],
+      },
+      institutions: [
+        {
+          name: "NID Ahmedabad",
+          location: "Ahmedabad",
+          ranking: 1,
+          fees: "₹2.5 LPA",
+          admissionProcess: "NID Entrance Exam",
+        },
+      ],
+      tags: ["graphic design", "ui design", "ux design", "visual communication"],
+    },
+    {
+      _id: "9",
+      courseName: "Civil Engineering",
+      description:
+        "Design and construct infrastructure including buildings, roads, bridges, and water systems.",
+      category: "Engineering",
+      duration: "4 years",
+      difficulty: "Advanced",
+      marketDemand: {
+        current: "High",
+        future: "Stable",
+        salaryRange: {
+          entry: "₹4-8 LPA",
+          mid: "₹10-20 LPA",
+          senior: "₹25-50 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Year 1)",
+          duration: "12 months",
+          milestones: [
+            {
+              title: "Engineering Mathematics",
+              description: "Calculus, Differential Equations, Statistics",
+              resources: ["Engineering Mathematics", "Khan Academy"],
+              completed: false,
+            },
+          ],
+          skills: ["Structural Analysis", "Project Management", "AutoCAD"],
+        },
+      ],
+      resources: {
+        books: ["Structural Analysis", "Concrete Technology", "Soil Mechanics"],
+        onlineCourses: ["Coursera Engineering", "edX MIT"],
+        certifications: ["PMP", "AutoCAD", "Revit"],
+        tools: ["AutoCAD", "Revit", "STAAD Pro", "ETABS"],
+      },
+      institutions: [
+        {
+          name: "IIT Madras",
+          location: "Chennai",
+          ranking: 4,
+          fees: "₹2.5 LPA",
+          admissionProcess: "JEE Advanced",
+        },
+      ],
+      tags: ["civil engineering", "construction", "infrastructure", "structural design"],
+    },
+    {
+      _id: "10",
+      courseName: "Psychology",
+      description:
+        "Study human behavior, mental processes, and psychological principles for therapy and research.",
+      category: "Science",
+      duration: "3 years",
+      difficulty: "Intermediate",
+      marketDemand: {
+        current: "Moderate",
+        future: "Growing",
+        salaryRange: {
+          entry: "₹3-6 LPA",
+          mid: "₹8-15 LPA",
+          senior: "₹20-40 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Year 1)",
+          duration: "12 months",
+          milestones: [
+            {
+              title: "Introduction to Psychology",
+              description: "Basic psychological principles and theories",
+              resources: ["Introduction to Psychology", "Khan Academy"],
+              completed: false,
+            },
+          ],
+          skills: ["Research Methods", "Counseling", "Psychological Assessment"],
+        },
+      ],
+      resources: {
+        books: ["Introduction to Psychology", "Abnormal Psychology"],
+        onlineCourses: ["Coursera Psychology", "edX MIT"],
+        certifications: ["Licensed Psychologist", "Clinical Psychology"],
+        tools: ["SPSS", "Psychological Tests", "Assessment Tools"],
+      },
+      institutions: [
+        {
+          name: "Delhi University",
+          location: "New Delhi",
+          ranking: 1,
+          fees: "₹50,000/year",
+          admissionProcess: "CUET",
+        },
+      ],
+      tags: ["psychology", "mental health", "counseling", "behavioral science"],
+    },
+    {
+      _id: "11",
+      courseName: "Environmental Science",
+      description:
+        "Study environmental issues, sustainability, climate change, and conservation strategies.",
+      category: "Science",
+      duration: "3 years",
+      difficulty: "Intermediate",
+      marketDemand: {
+        current: "Growing",
+        future: "Critical",
+        salaryRange: {
+          entry: "₹4-8 LPA",
+          mid: "₹10-20 LPA",
+          senior: "₹25-50 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Year 1)",
+          duration: "12 months",
+          milestones: [
+            {
+              title: "Environmental Basics",
+              description: "Ecology, Climate Science, Sustainability",
+              resources: ["Environmental Science", "Coursera"],
+              completed: false,
+            },
+          ],
+          skills: ["Environmental Assessment", "Sustainability", "Research"],
+        },
+      ],
+      resources: {
+        books: ["Environmental Science", "Silent Spring", "The Sixth Extinction"],
+        onlineCourses: ["Coursera Environment", "edX MIT"],
+        certifications: ["Environmental Impact Assessment", "LEED"],
+        tools: ["GIS", "Remote Sensing", "Environmental Modeling"],
+      },
+      institutions: [
+        {
+          name: "TERI University",
+          location: "New Delhi",
+          ranking: 1,
+          fees: "₹3 LPA",
+          admissionProcess: "Entrance Exam",
+        },
+      ],
+      tags: ["environment", "sustainability", "climate change", "conservation"],
+    },
+    {
+      _id: "12",
+      courseName: "Journalism & Mass Communication",
+      description:
+        "Learn media production, news reporting, broadcasting, and digital communication skills.",
+      category: "Arts",
+      duration: "3 years",
+      difficulty: "Intermediate",
+      marketDemand: {
+        current: "Moderate",
+        future: "Evolving",
+        salaryRange: {
+          entry: "₹3-6 LPA",
+          mid: "₹8-15 LPA",
+          senior: "₹20-40 LPA",
+        },
+      },
+      timeline: [
+        {
+          phase: "Foundation (Year 1)",
+          duration: "12 months",
+          milestones: [
+            {
+              title: "Media Fundamentals",
+              description: "News Writing, Broadcasting, Digital Media",
+              resources: ["AP Stylebook", "Journalism.org"],
+              completed: false,
+            },
+          ],
+          skills: ["Writing", "Video Production", "Social Media", "Editing"],
+        },
+      ],
+      resources: {
+        books: ["Elements of Journalism", "On Writing Well"],
+        onlineCourses: ["Poynter", "Coursera Journalism"],
+        certifications: ["Journalism Certification", "Video Production"],
+        tools: ["Adobe Premiere", "Canon Cameras", "WordPress"],
+      },
+      institutions: [
+        {
+          name: "IIMC Delhi",
+          location: "New Delhi",
+          ranking: 1,
+          fees: "₹1.5 LPA",
+          admissionProcess: "Entrance Exam",
+        },
+      ],
+      tags: ["journalism", "media", "broadcasting", "communication"],
+    },
   ];
 
   const categories = [

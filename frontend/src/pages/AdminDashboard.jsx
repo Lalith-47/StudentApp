@@ -189,7 +189,7 @@ const AdminDashboard = () => {
       setQuizLoading(true);
       console.log("Fetching quiz data...");
       console.log("Auth token:", localStorage.getItem("authToken"));
-      
+
       const response = await apiService.getAdminQuizData();
       console.log("Quiz data response:", response.data);
       setQuizData(response.data.data);
@@ -197,7 +197,7 @@ const AdminDashboard = () => {
       console.error("Error fetching quiz data:", error);
       console.error("Error details:", error.response?.data);
       console.error("Error status:", error.response?.status);
-      
+
       // Set dummy data if API fails
       setQuizData({
         totalQuizzes: 5,
@@ -223,7 +223,7 @@ const AdminDashboard = () => {
             personalityType: "creative",
             completionTime: 120,
             createdAt: new Date().toISOString(),
-          }
+          },
         ],
         averageCompletionTime: 150,
         totalAnswers: 75,
@@ -906,590 +906,573 @@ const AdminDashboard = () => {
 
         {/* Quiz Data Tab */}
         {activeTab === "quiz" && (
-              <div className="space-y-8">
-                {/* Debug Info */}
-                <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                  <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                    Debug: Quiz Tab Active - Loading: {quizLoading ? 'Yes' : 'No'} - Data: {quizData ? 'Present' : 'None'}
-                  </p>
-                  <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
-                    Quiz Data: {JSON.stringify(quizData)}
-                  </p>
+          <div className="space-y-8">
+            {/* Debug Info */}
+            <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                Debug: Quiz Tab Active - Loading: {quizLoading ? "Yes" : "No"} -
+                Data: {quizData ? "Present" : "None"}
+              </p>
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
+                Quiz Data: {JSON.stringify(quizData)}
+              </p>
+            </div>
+            {quizLoading ? (
+              <>
+                {/* Quiz Statistics Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
                 </div>
-                {quizLoading ? (
-                  <>
-                    {/* Quiz Statistics Cards Skeleton */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <SkeletonCard />
-                      <SkeletonCard />
-                      <SkeletonCard />
-                      <SkeletonCard />
-                    </div>
 
-                    {/* Charts Row Skeleton */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <SkeletonChart />
-                      <SkeletonChart />
-                    </div>
+                {/* Charts Row Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <SkeletonChart />
+                  <SkeletonChart />
+                </div>
 
-                    {/* Insights Cards Skeleton */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <SkeletonCard />
-                      <SkeletonCard />
-                      <SkeletonCard />
-                    </div>
+                {/* Insights Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
 
-                    {/* Table Skeleton */}
-                    <SkeletonTable />
-                  </>
-                ) : (
-                  <>
-                    {/* Quiz Data Header */}
-                    <div className="flex items-center justify-between mb-6">
+                {/* Table Skeleton */}
+                <SkeletonTable />
+              </>
+            ) : (
+              <>
+                {/* Quiz Data Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      Quiz Analytics
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                      Track quiz submissions and user engagement
+                    </p>
+                  </div>
+                  <button
+                    onClick={fetchQuizData}
+                    disabled={quizLoading}
+                    className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <RefreshCw
+                      className={`w-4 h-4 ${quizLoading ? "animate-spin" : ""}`}
+                    />
+                    <span>Refresh Data</span>
+                  </button>
+                </div>
+
+                {/* Quiz Statistics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                          Quiz Analytics
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
-                          Track quiz submissions and user engagement
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Total Quizzes
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {quizData?.totalQuizzes || 0}
+                        </p>
+                        <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
+                          <Target className="w-3 h-3 mr-1" />
+                          All submissions
                         </p>
                       </div>
-                      <button
-                        onClick={fetchQuizData}
-                        disabled={quizLoading}
-                        className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <RefreshCw
-                          className={`w-4 h-4 ${
-                            quizLoading ? "animate-spin" : ""
-                          }`}
-                        />
-                        <span>Refresh Data</span>
-                      </button>
-                    </div>
-
-                    {/* Quiz Statistics Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Total Quizzes
-                            </p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                              {quizData?.totalQuizzes || 0}
-                            </p>
-                            <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
-                              <Target className="w-3 h-3 mr-1" />
-                              All submissions
-                            </p>
-                          </div>
-                          <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Detailed Quizzes
-                            </p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                              {quizData?.authenticatedQuizzes || 0}
-                            </p>
-                            <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
-                              <UserCheck className="w-3 h-3 mr-1" />
-                              Logged-in users
-                            </p>
-                          </div>
-                          <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                            <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Mock Quizzes
-                            </p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                              {quizData?.guestQuizzes || 0}
-                            </p>
-                            <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center mt-1">
-                              <Users className="w-3 h-3 mr-1" />
-                              Guest users
-                            </p>
-                          </div>
-                          <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Avg. Time
-                            </p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                              {Math.round(quizData?.averageCompletionTime || 0)}
-                              s
-                            </p>
-                            <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
-                              <Clock className="w-3 h-3 mr-1" />
-                              Completion time
-                            </p>
-                          </div>
-                          <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                            <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                          </div>
-                        </div>
+                      <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                       </div>
                     </div>
+                  </div>
 
-                    {/* Charts Row */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {/* Personality Distribution Chart */}
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                          Personality Distribution
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <RechartsPieChart>
-                            <Pie
-                              data={[
-                                {
-                                  name: "Analytical",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.analytical || 0,
-                                  color: "#3B82F6",
-                                },
-                                {
-                                  name: "Creative",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.creative || 0,
-                                  color: "#8B5CF6",
-                                },
-                                {
-                                  name: "Social",
-                                  value:
-                                    quizData?.personalityDistribution?.social ||
-                                    0,
-                                  color: "#10B981",
-                                },
-                                {
-                                  name: "Leadership",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.leadership || 0,
-                                  color: "#F59E0B",
-                                },
-                              ]}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              label={({ name, percent }) =>
-                                `${name} ${(percent * 100).toFixed(0)}%`
-                              }
-                              outerRadius={80}
-                              fill="#8884d8"
-                              dataKey="value"
-                            >
-                              {[
-                                {
-                                  name: "Analytical",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.analytical || 0,
-                                  color: "#3B82F6",
-                                },
-                                {
-                                  name: "Creative",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.creative || 0,
-                                  color: "#8B5CF6",
-                                },
-                                {
-                                  name: "Social",
-                                  value:
-                                    quizData?.personalityDistribution?.social ||
-                                    0,
-                                  color: "#10B981",
-                                },
-                                {
-                                  name: "Leadership",
-                                  value:
-                                    quizData?.personalityDistribution
-                                      ?.leadership || 0,
-                                  color: "#F59E0B",
-                                },
-                              ].map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={entry.color}
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend />
-                          </RechartsPieChart>
-                        </ResponsiveContainer>
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Detailed Quizzes
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {quizData?.authenticatedQuizzes || 0}
+                        </p>
+                        <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+                          <UserCheck className="w-3 h-3 mr-1" />
+                          Logged-in users
+                        </p>
                       </div>
-
-                      {/* Quiz Type Distribution */}
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                          Quiz Type Distribution
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart
-                            data={[
-                              {
-                                name: "Mock Quiz",
-                                value: quizData?.guestQuizzes || 0,
-                                fill: "#3B82F6",
-                              },
-                              {
-                                name: "Detailed Quiz",
-                                value: quizData?.authenticatedQuizzes || 0,
-                                fill: "#10B981",
-                              },
-                            ]}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="value" fill="#3B82F6" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                      <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                        <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
                       </div>
                     </div>
+                  </div>
 
-                    {/* Additional Analysis Charts */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {/* Personality Scores Breakdown */}
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                          Personality Scores Breakdown
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart
-                            data={[
-                              {
-                                name: "Analytical",
-                                score:
-                                  quizData?.personalityDistribution
-                                    ?.analytical || 0,
-                              },
-                              {
-                                name: "Creative",
-                                score:
-                                  quizData?.personalityDistribution?.creative ||
-                                  0,
-                              },
-                              {
-                                name: "Social",
-                                score:
-                                  quizData?.personalityDistribution?.social ||
-                                  0,
-                              },
-                              {
-                                name: "Leadership",
-                                score:
-                                  quizData?.personalityDistribution
-                                    ?.leadership || 0,
-                              },
-                            ]}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="score" fill="#8B5CF6" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Mock Quizzes
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {quizData?.guestQuizzes || 0}
+                        </p>
+                        <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center mt-1">
+                          <Users className="w-3 h-3 mr-1" />
+                          Guest users
+                        </p>
                       </div>
-
-                      {/* Completion Time Analysis */}
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                          Completion Time Analysis
-                        </h3>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <AreaChart
-                            data={[
-                              {
-                                name: "Mock Quiz",
-                                time: quizData?.averageCompletionTime
-                                  ? Math.round(
-                                      quizData.averageCompletionTime * 0.6
-                                    )
-                                  : 120,
-                              },
-                              {
-                                name: "Detailed Quiz",
-                                time: quizData?.averageCompletionTime || 300,
-                              },
-                            ]}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis
-                              label={{
-                                value: "Seconds",
-                                angle: -90,
-                                position: "insideLeft",
-                              }}
-                            />
-                            <Tooltip
-                              formatter={(value) => [`${value}s`, "Avg. Time"]}
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="time"
-                              stroke="#F59E0B"
-                              fill="#F59E0B"
-                              fillOpacity={0.6}
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
+                      <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                        <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                       </div>
                     </div>
+                  </div>
 
-                    {/* Quiz Insights Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                          Key Insights
-                        </h3>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Most Common Personality
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
-                              {quizData?.mostCommonPersonality || "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Total Answers
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {quizData?.totalAnswers || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Completion Rate
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {quizData?.totalQuizzes > 0 ? "100%" : "0%"}
-                            </span>
-                          </div>
-                        </div>
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Avg. Time
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {Math.round(quizData?.averageCompletionTime || 0)}s
+                        </p>
+                        <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
+                          <Clock className="w-3 h-3 mr-1" />
+                          Completion time
+                        </p>
                       </div>
-
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                          User Engagement
-                        </h3>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Guest Participation
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {quizData?.guestQuizzes || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Registered Participation
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {quizData?.authenticatedQuizzes || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Avg. Time per Quiz
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {Math.round(quizData?.averageCompletionTime || 0)}
-                              s
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                          Popular Choices
-                        </h3>
-                        <div className="space-y-3">
-                          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                                Analytical
-                              </span>
-                              <span className="text-sm font-bold text-blue-900 dark:text-blue-100">
-                                {quizData?.personalityDistribution
-                                  ?.analytical || 0}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
-                                Creative
-                              </span>
-                              <span className="text-sm font-bold text-purple-900 dark:text-purple-100">
-                                {quizData?.personalityDistribution?.creative ||
-                                  0}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-medium text-green-800 dark:text-green-200">
-                                Social
-                              </span>
-                              <span className="text-sm font-bold text-green-900 dark:text-green-100">
-                                {quizData?.personalityDistribution?.social || 0}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                                Leadership
-                              </span>
-                              <span className="text-sm font-bold text-orange-900 dark:text-orange-100">
-                                {quizData?.personalityDistribution
-                                  ?.leadership || 0}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                        <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Recent Quiz Submissions */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Recent Quiz Submissions
-                        </h3>
-                        <button
-                          onClick={fetchQuizData}
-                          className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center"
+                {/* Charts Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Personality Distribution Chart */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                      Personality Distribution
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <RechartsPieChart>
+                        <Pie
+                          data={[
+                            {
+                              name: "Analytical",
+                              value:
+                                quizData?.personalityDistribution?.analytical ||
+                                0,
+                              color: "#3B82F6",
+                            },
+                            {
+                              name: "Creative",
+                              value:
+                                quizData?.personalityDistribution?.creative ||
+                                0,
+                              color: "#8B5CF6",
+                            },
+                            {
+                              name: "Social",
+                              value:
+                                quizData?.personalityDistribution?.social || 0,
+                              color: "#10B981",
+                            },
+                            {
+                              name: "Leadership",
+                              value:
+                                quizData?.personalityDistribution?.leadership ||
+                                0,
+                              color: "#F59E0B",
+                            },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) =>
+                            `${name} ${(percent * 100).toFixed(0)}%`
+                          }
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
                         >
-                          <RefreshCw className="w-4 h-4 mr-1" />
-                          Refresh
-                        </button>
+                          {[
+                            {
+                              name: "Analytical",
+                              value:
+                                quizData?.personalityDistribution?.analytical ||
+                                0,
+                              color: "#3B82F6",
+                            },
+                            {
+                              name: "Creative",
+                              value:
+                                quizData?.personalityDistribution?.creative ||
+                                0,
+                              color: "#8B5CF6",
+                            },
+                            {
+                              name: "Social",
+                              value:
+                                quizData?.personalityDistribution?.social || 0,
+                              color: "#10B981",
+                            },
+                            {
+                              name: "Leadership",
+                              value:
+                                quizData?.personalityDistribution?.leadership ||
+                                0,
+                              color: "#F59E0B",
+                            },
+                          ].map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Quiz Type Distribution */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                      Quiz Type Distribution
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={[
+                          {
+                            name: "Mock Quiz",
+                            value: quizData?.guestQuizzes || 0,
+                            fill: "#3B82F6",
+                          },
+                          {
+                            name: "Detailed Quiz",
+                            value: quizData?.authenticatedQuizzes || 0,
+                            fill: "#10B981",
+                          },
+                        ]}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill="#3B82F6" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Additional Analysis Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Personality Scores Breakdown */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                      Personality Scores Breakdown
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={[
+                          {
+                            name: "Analytical",
+                            score:
+                              quizData?.personalityDistribution?.analytical ||
+                              0,
+                          },
+                          {
+                            name: "Creative",
+                            score:
+                              quizData?.personalityDistribution?.creative || 0,
+                          },
+                          {
+                            name: "Social",
+                            score:
+                              quizData?.personalityDistribution?.social || 0,
+                          },
+                          {
+                            name: "Leadership",
+                            score:
+                              quizData?.personalityDistribution?.leadership ||
+                              0,
+                          },
+                        ]}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="score" fill="#8B5CF6" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Completion Time Analysis */}
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                      Completion Time Analysis
+                    </h3>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <AreaChart
+                        data={[
+                          {
+                            name: "Mock Quiz",
+                            time: quizData?.averageCompletionTime
+                              ? Math.round(quizData.averageCompletionTime * 0.6)
+                              : 120,
+                          },
+                          {
+                            name: "Detailed Quiz",
+                            time: quizData?.averageCompletionTime || 300,
+                          },
+                        ]}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis
+                          label={{
+                            value: "Seconds",
+                            angle: -90,
+                            position: "insideLeft",
+                          }}
+                        />
+                        <Tooltip
+                          formatter={(value) => [`${value}s`, "Avg. Time"]}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="time"
+                          stroke="#F59E0B"
+                          fill="#F59E0B"
+                          fillOpacity={0.6}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Quiz Insights Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                      Key Insights
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Most Common Personality
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
+                          {quizData?.mostCommonPersonality || "N/A"}
+                        </span>
                       </div>
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                          <thead className="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                User
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Quiz Type
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Personality
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Completion Time
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Submitted
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {quizData?.recentQuizzes?.length > 0 ? (
-                              quizData.recentQuizzes.map((quiz, index) => (
-                                <tr
-                                  key={index}
-                                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                                >
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                      <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                                        <span className="text-primary-600 dark:text-primary-400 font-medium">
-                                          {quiz.userId?.name
-                                            ?.charAt(0)
-                                            .toUpperCase() || "G"}
-                                        </span>
-                                      </div>
-                                      <div className="ml-4">
-                                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                          {quiz.userId?.name || "Guest User"}
-                                        </div>
-                                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                                          {quiz.userId?.email || "No email"}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                      className={`px-2 py-1 text-xs rounded-full ${
-                                        quiz.quizType === "detailed"
-                                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                                          : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                                      }`}
-                                    >
-                                      {quiz.quizType === "detailed"
-                                        ? "Detailed (15Q)"
-                                        : "Mock (5Q)"}
-                                    </span>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 capitalize">
-                                      {quiz.personalityType || "N/A"}
-                                    </span>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {Math.round(quiz.completionTime || 0)}s
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {new Date(
-                                      quiz.createdAt
-                                    ).toLocaleDateString()}
-                                  </td>
-                                </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td
-                                  colSpan="5"
-                                  className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
-                                >
-                                  No quiz submissions yet
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Total Answers
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {quizData?.totalAnswers || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Completion Rate
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {quizData?.totalQuizzes > 0 ? "100%" : "0%"}
+                        </span>
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                      User Engagement
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Guest Participation
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {quizData?.guestQuizzes || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Registered Participation
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {quizData?.authenticatedQuizzes || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Avg. Time per Quiz
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {Math.round(quizData?.averageCompletionTime || 0)}s
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                      Popular Choices
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                            Analytical
+                          </span>
+                          <span className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                            {quizData?.personalityDistribution?.analytical || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                            Creative
+                          </span>
+                          <span className="text-sm font-bold text-purple-900 dark:text-purple-100">
+                            {quizData?.personalityDistribution?.creative || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                            Social
+                          </span>
+                          <span className="text-sm font-bold text-green-900 dark:text-green-100">
+                            {quizData?.personalityDistribution?.social || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                            Leadership
+                          </span>
+                          <span className="text-sm font-bold text-orange-900 dark:text-orange-100">
+                            {quizData?.personalityDistribution?.leadership || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Quiz Submissions */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Recent Quiz Submissions
+                    </h3>
+                    <button
+                      onClick={fetchQuizData}
+                      className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      Refresh
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                      <thead className="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            User
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Quiz Type
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Personality
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Completion Time
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Submitted
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {quizData?.recentQuizzes?.length > 0 ? (
+                          quizData.recentQuizzes.map((quiz, index) => (
+                            <tr
+                              key={index}
+                              className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                                    <span className="text-primary-600 dark:text-primary-400 font-medium">
+                                      {quiz.userId?.name
+                                        ?.charAt(0)
+                                        .toUpperCase() || "G"}
+                                    </span>
+                                  </div>
+                                  <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                      {quiz.userId?.name || "Guest User"}
+                                    </div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                      {quiz.userId?.email || "No email"}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`px-2 py-1 text-xs rounded-full ${
+                                    quiz.quizType === "detailed"
+                                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                  }`}
+                                >
+                                  {quiz.quizType === "detailed"
+                                    ? "Detailed (15Q)"
+                                    : "Mock (5Q)"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 capitalize">
+                                  {quiz.personalityType || "N/A"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                {Math.round(quiz.completionTime || 0)}s
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                {new Date(quiz.createdAt).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
+                            >
+                              No quiz submissions yet
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         )}
 
         {/* Other tabs */}
