@@ -210,7 +210,9 @@ const AdminDashboard = () => {
 
   // Skeleton Loading Component
   const SkeletonCard = ({ className = "" }) => (
-    <div className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse ${className}`}
+    >
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-2"></div>
@@ -254,7 +256,10 @@ const AdminDashboard = () => {
       </div>
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div
+            key={i}
+            className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+          >
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
             <div className="flex-1">
               <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32 mb-1"></div>
@@ -297,7 +302,10 @@ const AdminDashboard = () => {
             <div className="border-b border-gray-200 dark:border-gray-700">
               <div className="-mb-px flex space-x-8">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-2 py-2 px-1">
+                  <div
+                    key={i}
+                    className="flex items-center space-x-2 py-2 px-1"
+                  >
                     <div className="w-4 h-4 bg-gray-200 dark:bg-gray-600 rounded animate-pulse"></div>
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-16 animate-pulse"></div>
                   </div>
