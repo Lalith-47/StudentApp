@@ -136,11 +136,16 @@ const Quiz = () => {
     questions.length > 0 ? questions : questionsData?.data?.questions || [];
 
   // Debug logging
+  console.log("=== QUIZ DEBUG INFO ===");
   console.log("Debug - questions.length:", questions.length);
   console.log("Debug - questionsData:", questionsData);
   console.log("Debug - actualQuestions.length:", actualQuestions.length);
   console.log("Debug - questionsLoading:", questionsLoading);
   console.log("Debug - questionsError:", questionsError);
+  console.log("Debug - isAuthenticated:", isAuthenticated);
+  console.log("Debug - quizStarted:", quizStarted);
+  console.log("Debug - useQuery enabled:", !quizStarted);
+  console.log("==========================");
 
   const progress =
     actualQuestions.length > 0
@@ -275,17 +280,29 @@ const Quiz = () => {
                       size="md"
                       onClick={async () => {
                         try {
+                          console.log("Testing API call...");
                           const response = await apiService.getQuizQuestions();
-                          console.log("Manual API test:", response);
-                          alert(`API Response: ${JSON.stringify(response).substring(0, 200)}...`);
+                          console.log("Manual API test SUCCESS:", response);
+                          alert(`API Response SUCCESS: ${JSON.stringify(response).substring(0, 200)}...`);
                         } catch (error) {
-                          console.error("Manual API test error:", error);
+                          console.error("Manual API test ERROR:", error);
                           alert(`API Error: ${error.message}`);
                         }
                       }}
                       className="w-full"
                     >
                       Test API Call
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => {
+                        console.log("=== FORCE REFETCH ===");
+                        window.location.reload();
+                      }}
+                      className="w-full"
+                    >
+                      Force Refresh
                     </Button>
                   </div>
                 )}
