@@ -553,36 +553,29 @@ function generateEnhancedResponse(query) {
     queryLower.includes("hey")
   ) {
     return {
-      answer: `Hello! 👋 Welcome to AdhyayanMarg! I'm your career guidance assistant and I'm here to help you with:
+      answer: `Hello! 👋 Welcome to AdhyayanMarg! I'm your career guidance assistant.
 
-🎓 **Education & Career Planning**
-• College selection and admission guidance
-• Course recommendations based on your interests
-• Career exploration and planning
+**I can help you with:**
+• College selection & admissions
+• Career planning & exploration  
 • Exam preparation strategies
+• Engineering colleges (IITs, NITs, Private)
+• Career options after 12th/graduation
+• JEE, NEET preparation tips
 
-💡 **What I Can Help You With:**
-• Engineering colleges and admissions (IITs, NITs, Private colleges)
-• Career options after 12th and graduation
-• JEE, NEET, and other competitive exam preparation
-• Skill development and job market insights
-• Study abroad opportunities
-
-Just ask me anything about your career or education journey, and I'll provide detailed, helpful information to guide your decisions! 
-
-What would you like to know about today?`,
+What would you like to know about your career journey?`,
       relatedQuestions: [
         {
           question: "What are the best engineering colleges in India?",
-          answer: "India has many excellent engineering colleges...",
+          answer: "Top engineering colleges include IITs, NITs, and private institutions...",
         },
         {
           question: "How to prepare for JEE exam?",
-          answer: "JEE preparation requires a systematic approach...",
+          answer: "JEE preparation requires systematic study and practice...",
         },
         {
           question: "What career options are available after 12th?",
-          answer: "After 12th, you have multiple career paths...",
+          answer: "After 12th, you have multiple career paths in various fields...",
         },
       ],
       suggestions: [
@@ -601,34 +594,35 @@ What would you like to know about today?`,
     queryLower.includes("profession")
   ) {
     return {
-      answer: `Great question about career guidance! Here's what I can help you with:
+      answer: `**Career Guidance Summary:**
 
-🎯 **Career Exploration**: Discover career paths that match your interests, skills, and values
-📚 **Education Planning**: Find the right courses, colleges, and programs for your career goals
-💼 **Job Market Insights**: Get information about job prospects, salary expectations, and industry trends
-🎓 **Skill Development**: Learn about essential skills and certifications for your chosen field
-📈 **Career Growth**: Plan your career progression and advancement opportunities
+**Top Career Fields:**
+• **Technology**: Software Development, Data Science, Cybersecurity
+• **Healthcare**: Medicine, Nursing, Allied Health
+• **Business**: Management, Accounting, Marketing
+• **Engineering**: Computer, Mechanical, Civil, Electrical
+• **Creative Arts**: Design, Media, Writing
 
-**Popular Career Fields:**
-• Technology & IT (Software Development, Data Science, Cybersecurity)
-• Healthcare (Medicine, Nursing, Allied Health)
-• Business & Finance (Management, Accounting, Marketing)
-• Engineering (Computer, Mechanical, Civil, Electrical)
-• Creative Arts (Design, Media, Writing, Performing Arts)
+**I can help you with:**
+• Career exploration based on your interests
+• Education planning for your goals
+• Job market insights & salary expectations
+• Skill development recommendations
+• Career growth strategies
 
-Would you like me to help you explore any specific career field or answer questions about career planning?`,
+Which field interests you most?`,
       relatedQuestions: [
         {
           question: "What are the best career options after engineering?",
-          answer: "Engineering graduates have diverse career opportunities...",
+          answer: "Engineering graduates have diverse opportunities in tech, management, research...",
         },
         {
           question: "How to choose the right career path?",
-          answer: "Choosing a career path involves self-assessment...",
+          answer: "Consider your interests, skills, values, and market demand...",
         },
         {
           question: "What skills are in demand in 2024?",
-          answer: "The job market is constantly evolving...",
+          answer: "Tech skills, data analysis, AI/ML, soft skills are highly valued...",
         },
       ],
       suggestions: [
@@ -648,45 +642,42 @@ Would you like me to help you explore any specific career field or answer questi
     queryLower.includes("engineering college")
   ) {
     return {
-      answer: `I'd be happy to help you with college and education information! Here's what I can assist you with:
+      answer: `**Top Engineering Colleges in India:**
 
-🏛️ **Top Engineering Colleges in India:**
-• **IITs**: IIT Delhi, IIT Bombay, IIT Madras, IIT Kanpur, IIT Kharagpur
-• **NITs**: NIT Trichy, NIT Surathkal, NIT Warangal, NIT Rourkela
-• **Private**: BITS Pilani, VIT Vellore, SRM University, Manipal Institute of Technology
+**IITs**: IIT Delhi, IIT Bombay, IIT Madras, IIT Kanpur, IIT Kharagpur
+**NITs**: NIT Trichy, NIT Surathkal, NIT Warangal, NIT Rourkela  
+**Private**: BITS Pilani, VIT Vellore, SRM University, Manipal Institute
 
-📋 **Admission Process:**
-• **JEE Main**: For NITs and other engineering colleges
-• **JEE Advanced**: For IITs and IISc
-• **State Entrance Exams**: For state government colleges
-• **Direct Admission**: For private colleges based on 12th marks
+**Admission Process:**
+• JEE Main → NITs & other colleges
+• JEE Advanced → IITs & IISc
+• State Exams → State colleges
+• Direct Admission → Private colleges (12th marks)
 
-🎯 **Selection Criteria:**
-• Academic performance (10th and 12th marks)
+**Popular Branches:**
+• Computer Science (CSE)
+• Electronics & Communication (ECE)
+• Mechanical, Civil, Electrical Engineering
+
+**Selection Criteria:**
+• 10th & 12th marks
 • Entrance exam scores
-• Personal interview (for some colleges)
-• Extracurricular activities and achievements
+• Personal interview (some colleges)
+• Extracurricular activities
 
-**Popular Engineering Branches:**
-• Computer Science Engineering (CSE)
-• Electronics and Communication Engineering (ECE)
-• Mechanical Engineering (ME)
-• Civil Engineering (CE)
-• Electrical Engineering (EE)
-
-Would you like specific information about any particular college or admission process?`,
+Need specific college information?`,
       relatedQuestions: [
         {
           question: "What is the JEE Main exam pattern?",
-          answer: "JEE Main is conducted in two papers...",
+          answer: "JEE Main has 90 questions (30 each subject) in 3 hours...",
         },
         {
           question: "How to prepare for JEE Advanced?",
-          answer: "JEE Advanced preparation requires...",
+          answer: "Focus on problem-solving skills and advanced concepts...",
         },
         {
           question: "What are the cutoffs for top engineering colleges?",
-          answer: "Cutoffs vary each year based on...",
+          answer: "Cutoffs vary yearly based on difficulty and applications...",
         },
       ],
       suggestions: [
@@ -707,47 +698,45 @@ Would you like specific information about any particular college or admission pr
     queryLower.includes("neet")
   ) {
     return {
-      answer: `I can help you with exam preparation strategies! Here's comprehensive guidance:
+      answer: `**Exam Preparation Summary:**
 
-📚 **JEE Main Preparation:**
-• **Syllabus**: Physics, Chemistry, Mathematics (Class 11-12)
-• **Pattern**: 90 questions (30 each subject), 3 hours duration
-• **Strategy**: Focus on NCERT books, practice previous year papers
-• **Time Management**: Allocate time based on strengths and weaknesses
+**JEE Main:**
+• 90 questions (30 each: Physics, Chemistry, Math)
+• 3 hours duration
+• Focus on NCERT books + previous year papers
+• Time management crucial
 
-🎯 **JEE Advanced Preparation:**
-• **Level**: Higher difficulty than JEE Main
-• **Focus**: Problem-solving skills and conceptual understanding
-• **Resources**: Advanced books, mock tests, coaching materials
-• **Practice**: Solve complex problems and time-bound tests
+**JEE Advanced:**
+• Higher difficulty level
+• Problem-solving & conceptual understanding
+• Advanced books + mock tests
+• Complex problem practice
 
-📖 **Study Tips:**
-• Create a study schedule and stick to it
-• Regular revision is crucial
-• Take mock tests to assess progress
-• Focus on weak areas and improve them
-• Maintain good health and adequate sleep
+**Study Strategy:**
+• Create & follow study schedule
+• Regular revision
+• Mock tests for progress assessment
+• Focus on weak areas
+• Maintain health & sleep
 
-**Popular Study Resources:**
-• NCERT textbooks (foundation)
-• HC Verma (Physics)
-• OP Tandon (Chemistry)
-• RD Sharma (Mathematics)
-• Online platforms: Khan Academy, Unacademy, Vedantu
+**Best Resources:**
+• NCERT (foundation)
+• HC Verma (Physics), OP Tandon (Chemistry), RD Sharma (Math)
+• Online: Khan Academy, Unacademy, Vedantu
 
-Which exam are you preparing for? I can provide more specific guidance!`,
+Which exam are you preparing for?`,
       relatedQuestions: [
         {
           question: "How to manage time during JEE preparation?",
-          answer: "Time management is crucial for JEE success...",
+          answer: "Create daily/weekly schedules, prioritize weak subjects...",
         },
         {
           question: "What are the best books for JEE preparation?",
-          answer: "Choosing the right study material...",
+          answer: "Start with NCERT, then move to advanced books...",
         },
         {
           question: "How to stay motivated during exam preparation?",
-          answer: "Maintaining motivation throughout...",
+          answer: "Set small goals, track progress, take breaks...",
         },
       ],
       suggestions: [
@@ -759,48 +748,153 @@ Which exam are you preparing for? I can provide more specific guidance!`,
     };
   }
 
+  // Engineering specific responses
+  if (
+    queryLower.includes("engineering") ||
+    queryLower.includes("iit") ||
+    queryLower.includes("nit") ||
+    queryLower.includes("btech") ||
+    queryLower.includes("b.tech")
+  ) {
+    return {
+      answer: `**Engineering Colleges & Admissions:**
+
+**Top Tier:**
+• **IITs**: 23 institutes, JEE Advanced required
+• **NITs**: 31 institutes, JEE Main required
+• **IIITs**: 25 institutes, JEE Main required
+
+**Private Top:**
+• BITS Pilani, VIT Vellore, SRM University
+• Manipal Institute, Thapar University
+• Direct admission based on 12th marks
+
+**Popular Branches:**
+• **CSE**: Highest placement, good salary
+• **ECE**: Electronics & communication
+• **Mechanical**: Core engineering
+• **Civil**: Infrastructure & construction
+• **Electrical**: Power & energy systems
+
+**Admission Process:**
+• JEE Main (Jan & Apr) → NITs, IIITs
+• JEE Advanced (May) → IITs
+• State exams → State colleges
+• Direct admission → Private colleges
+
+Need specific college or branch info?`,
+      relatedQuestions: [
+        {
+          question: "What is the JEE Main exam pattern?",
+          answer: "90 questions in 3 hours, 30 each subject...",
+        },
+        {
+          question: "Which engineering branch has best placement?",
+          answer: "CSE typically has highest placement rates...",
+        },
+        {
+          question: "How to prepare for JEE Advanced?",
+          answer: "Focus on problem-solving and advanced concepts...",
+        },
+      ],
+      suggestions: [
+        "What are the best engineering colleges in Bangalore?",
+        "How to get admission in IIT?",
+        "Which engineering branch should I choose?",
+        "What is the fee structure for engineering colleges?",
+      ],
+    };
+  }
+
+  // Simple response for basic queries
+  if (
+    queryLower.includes("what") ||
+    queryLower.includes("how") ||
+    queryLower.includes("when") ||
+    queryLower.includes("where") ||
+    queryLower.includes("why")
+  ) {
+    return {
+      answer: `I understand you have a question about "${query}". 
+
+**I can help you with:**
+• College & university information
+• Career guidance & planning
+• Exam preparation strategies
+• Course recommendations
+• Admission processes
+
+Could you be more specific about what you'd like to know? For example:
+• "What are the best engineering colleges?"
+• "How to prepare for JEE exam?"
+• "What career options are available after 12th?"
+
+This will help me provide you with the most relevant information!`,
+      relatedQuestions: [
+        {
+          question: "What are the best engineering colleges in India?",
+          answer: "Top engineering colleges include IITs, NITs, and private institutions...",
+        },
+        {
+          question: "How to prepare for competitive exams?",
+          answer: "Create a study schedule, focus on weak areas, practice regularly...",
+        },
+        {
+          question: "What are the career options after 12th?",
+          answer: "After 12th, you can pursue engineering, medicine, commerce, arts...",
+        },
+      ],
+      suggestions: [
+        "What are the best courses after 12th science?",
+        "How to choose the right college?",
+        "What are the career options in technology?",
+        "How to prepare for JEE exam?",
+      ],
+    };
+  }
+
   // General guidance response
   return {
-    answer: `I'm here to help you with your career and education journey! Here's how I can assist you:
+    answer: `**I'm your career guidance assistant! Here's how I can help:**
 
-🎓 **Education Guidance:**
-• College selection and admission process
+**Education Guidance:**
+• College selection & admission process
 • Course recommendations based on interests
-• Scholarship and financial aid information
+• Scholarship & financial aid information
 • Study abroad opportunities
 
-💼 **Career Planning:**
-• Career exploration and assessment
-• Industry insights and job market trends
+**Career Planning:**
+• Career exploration & assessment
+• Industry insights & job market trends
 • Skill development recommendations
-• Resume building and interview preparation
+• Resume building & interview prep
 
-📚 **Academic Support:**
+**Academic Support:**
 • Exam preparation strategies
-• Study tips and techniques
+• Study tips & techniques
 • Subject-specific guidance
 • Time management skills
 
-**Popular Topics I Can Help With:**
-• Engineering colleges and admissions
-• Medical and healthcare careers
-• Business and management programs
-• Arts and humanities options
-• Skill-based courses and certifications
+**Popular Topics:**
+• Engineering colleges & admissions
+• Medical & healthcare careers
+• Business & management programs
+• Arts & humanities options
+• Skill-based courses & certifications
 
-Feel free to ask me about any specific topic, and I'll provide detailed, helpful information to guide your decisions!`,
+Ask me about any specific topic for detailed guidance!`,
     relatedQuestions: [
       {
         question: "What are the best career options after 12th?",
-        answer: "After 12th, you have multiple career paths...",
+        answer: "After 12th, you have multiple career paths in various fields...",
       },
       {
         question: "How to choose the right college?",
-        answer: "Choosing the right college involves considering...",
+        answer: "Consider factors like reputation, courses, placement, location...",
       },
       {
         question: "What are the emerging career fields?",
-        answer: "Several new career fields are emerging...",
+        answer: "AI/ML, data science, cybersecurity, renewable energy are growing...",
       },
     ],
     suggestions: [
