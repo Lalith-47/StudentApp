@@ -4,6 +4,8 @@ import { Target, ArrowRight, ArrowLeft } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import apiService from "../utils/api";
 
 const Quiz = () => {
   const { user, isAuthenticated } = useAuth();
@@ -11,9 +13,10 @@ const Quiz = () => {
   const [answers, setAnswers] = useState({});
   const [quizStarted, setQuizStarted] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Simple quiz questions
-  const questions = [
+  // Basic 5 questions for non-logged users
+  const basicQuestions = [
     {
       id: 1,
       question: "What type of work environment do you prefer?",
@@ -66,6 +69,114 @@ const Quiz = () => {
     },
   ];
 
+  // Extended 15 questions for logged-in users (includes basic 5 + 10 more)
+  const extendedQuestions = [
+    ...basicQuestions, // First 5 questions
+    {
+      id: 6,
+      question: "How do you prefer to learn new skills?",
+      options: [
+        { id: "a", text: "Through hands-on practice" },
+        { id: "b", text: "Reading documentation and tutorials" },
+        { id: "c", text: "Working with a mentor" },
+        { id: "d", text: "Taking structured courses" },
+      ],
+    },
+    {
+      id: 7,
+      question: "What type of challenges do you enjoy most?",
+      options: [
+        { id: "a", text: "Technical problem-solving" },
+        { id: "b", text: "Creative design challenges" },
+        { id: "c", text: "Interpersonal situations" },
+        { id: "d", text: "Strategic planning" },
+      ],
+    },
+    {
+      id: 8,
+      question: "How do you handle deadlines?",
+      options: [
+        { id: "a", text: "Plan ahead and work systematically" },
+        { id: "b", text: "Work best under pressure" },
+        { id: "c", text: "Collaborate with others to meet deadlines" },
+        { id: "d", text: "Delegate tasks to team members" },
+      ],
+    },
+    {
+      id: 9,
+      question: "What motivates you to work harder?",
+      options: [
+        { id: "a", text: "Solving complex problems" },
+        { id: "b", text: "Creating something beautiful" },
+        { id: "c", text: "Helping others succeed" },
+        { id: "d", text: "Leading a team to victory" },
+      ],
+    },
+    {
+      id: 10,
+      question: "How do you prefer to communicate ideas?",
+      options: [
+        { id: "a", text: "Through data and charts" },
+        { id: "b", text: "Through visual presentations" },
+        { id: "c", text: "Through face-to-face discussions" },
+        { id: "d", text: "Through written reports" },
+      ],
+    },
+    {
+      id: 11,
+      question: "What type of feedback do you value most?",
+      options: [
+        { id: "a", text: "Detailed technical feedback" },
+        { id: "b", text: "Creative and aesthetic feedback" },
+        { id: "c", text: "Personal and emotional feedback" },
+        { id: "d", text: "Strategic and business feedback" },
+      ],
+    },
+    {
+      id: 12,
+      question: "How do you approach failure?",
+      options: [
+        { id: "a", text: "Analyze what went wrong systematically" },
+        { id: "b", text: "Try a completely different approach" },
+        { id: "c", text: "Seek support from others" },
+        { id: "d", text: "Take responsibility and learn from it" },
+      ],
+    },
+    {
+      id: 13,
+      question: "What type of team role do you naturally take?",
+      options: [
+        { id: "a", text: "Technical expert and problem solver" },
+        { id: "b", text: "Creative contributor and innovator" },
+        { id: "c", text: "Team player and supporter" },
+        { id: "d", text: "Leader and coordinator" },
+      ],
+    },
+    {
+      id: 14,
+      question: "How do you prefer to measure success?",
+      options: [
+        { id: "a", text: "Through quantitative metrics and data" },
+        { id: "b", text: "Through creative output and innovation" },
+        { id: "c", text: "Through positive impact on others" },
+        { id: "d", text: "Through team achievements and growth" },
+      ],
+    },
+    {
+      id: 15,
+      question: "What type of work-life balance do you prefer?",
+      options: [
+        { id: "a", text: "Focused work blocks with clear boundaries" },
+        { id: "b", text: "Flexible schedule with creative freedom" },
+        { id: "c", text: "Collaborative schedule with team interaction" },
+        { id: "d", text: "Dynamic schedule with leadership responsibilities" },
+      ],
+    },
+  ];
+
+  // Choose questions based on authentication status
+  const questions = isAuthenticated ? extendedQuestions : basicQuestions;
+
   const handleAnswerSelect = (questionId, answerId) => {
     setAnswers((prev) => ({
       ...prev,
@@ -73,10 +184,40 @@ const Quiz = () => {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      // Quiz completed - save results if logged in
+      if (isAuthenticated) {
+        setIsSubmitting(true);
+        try {
+          const personalityResult = calculatePersonalityType();
+          const insights = getPersonalityInsights(personalityResult.type);
+          
+          const quizData = {
+            answers: Object.keys(answers).map(questionId => ({
+              questionId: parseInt(questionId),
+              answerId: answers[questionId]
+            })),
+            personalityType: personalityResult.type,
+            scores: personalityResult.scores,
+            strengths: insights.strengths,
+            careerPaths: insights.careerPaths,
+            workEnvironment: insights.workEnvironment,
+            quizType: isAuthenticated ? 'detailed' : 'mock',
+            userType: isAuthenticated ? 'authenticated' : 'guest'
+          };
+
+          await apiService.submitQuiz(quizData);
+          console.log('✅ Quiz results saved to database');
+        } catch (error) {
+          console.error('❌ Failed to save quiz results:', error);
+          // Still show results even if save fails
+        } finally {
+          setIsSubmitting(false);
+        }
+      }
       setShowResults(true);
     }
   };
@@ -86,43 +227,104 @@ const Quiz = () => {
       analytical: 0,
       creative: 0,
       social: 0,
-      leadership: 0
+      leadership: 0,
     };
 
-    // Simple scoring based on answer patterns
+    // Enhanced scoring based on answer patterns for both 5 and 15 questions
     questions.forEach((question, index) => {
       const answer = answers[question.id];
       if (answer) {
-        switch (index) {
-          case 0: // Work environment
+        switch (question.id) {
+          case 1: // Work environment
             if (answer === "a") scores.social += 2;
             else if (answer === "b") scores.analytical += 2;
             else if (answer === "c") scores.leadership += 2;
             else if (answer === "d") scores.creative += 2;
             break;
-          case 1: // Motivation
+          case 2: // Motivation
             if (answer === "a") scores.analytical += 2;
             else if (answer === "b") scores.social += 2;
             else if (answer === "c") scores.creative += 2;
             else if (answer === "d") scores.leadership += 2;
             break;
-          case 2: // Work schedule
+          case 3: // Work schedule
             if (answer === "a") scores.analytical += 1;
             else if (answer === "b") scores.creative += 2;
             else if (answer === "c") scores.leadership += 2;
             else if (answer === "d") scores.creative += 1;
             break;
-          case 3: // Task preferences
+          case 4: // Task preferences
             if (answer === "a") scores.analytical += 2;
             else if (answer === "b") scores.creative += 2;
             else if (answer === "c") scores.social += 2;
             else if (answer === "d") scores.analytical += 1;
             break;
-          case 4: // Career goals
+          case 5: // Career goals
             if (answer === "a") scores.analytical += 2;
             else if (answer === "b") scores.leadership += 2;
             else if (answer === "c") scores.leadership += 2;
             else if (answer === "d") scores.social += 2;
+            break;
+          // Extended questions for logged-in users
+          case 6: // Learning preference
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.analytical += 1;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.analytical += 1;
+            break;
+          case 7: // Challenge preference
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 8: // Deadline handling
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.leadership += 1;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 9: // Motivation
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 10: // Communication style
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 1;
+            break;
+          case 11: // Feedback preference
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 12: // Failure approach
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 1;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 13: // Team role
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 14: // Success measurement
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
+            break;
+          case 15: // Work-life balance
+            if (answer === "a") scores.analytical += 2;
+            else if (answer === "b") scores.creative += 2;
+            else if (answer === "c") scores.social += 2;
+            else if (answer === "d") scores.leadership += 2;
             break;
         }
       }
@@ -130,12 +332,14 @@ const Quiz = () => {
 
     // Find the highest scoring personality type
     const maxScore = Math.max(...Object.values(scores));
-    const personalityType = Object.keys(scores).find(key => scores[key] === maxScore);
-    
+    const personalityType = Object.keys(scores).find(
+      (key) => scores[key] === maxScore
+    );
+
     return {
       type: personalityType,
       scores,
-      maxScore
+      maxScore,
     };
   };
 
@@ -143,36 +347,83 @@ const Quiz = () => {
     const insights = {
       analytical: {
         title: "Analytical Thinker",
-        description: "You excel at problem-solving and logical thinking. You prefer structured environments and enjoy working with data and systems.",
-        strengths: ["Problem-solving", "Logical reasoning", "Attention to detail", "Data analysis"],
-        careerPaths: ["Data Scientist", "Software Engineer", "Research Analyst", "Financial Analyst"],
-        workEnvironment: "Structured, data-driven environments with clear objectives",
-        color: "blue"
+        description:
+          "You excel at problem-solving and logical thinking. You prefer structured environments and enjoy working with data and systems.",
+        strengths: [
+          "Problem-solving",
+          "Logical reasoning",
+          "Attention to detail",
+          "Data analysis",
+        ],
+        careerPaths: [
+          "Data Scientist",
+          "Software Engineer",
+          "Research Analyst",
+          "Financial Analyst",
+        ],
+        workEnvironment:
+          "Structured, data-driven environments with clear objectives",
+        color: "blue",
       },
       creative: {
         title: "Creative Innovator",
-        description: "You thrive in flexible, innovative environments. You enjoy thinking outside the box and bringing new ideas to life.",
-        strengths: ["Innovation", "Design thinking", "Adaptability", "Visual communication"],
-        careerPaths: ["Graphic Designer", "Product Manager", "Marketing Specialist", "Content Creator"],
-        workEnvironment: "Flexible, creative spaces with room for experimentation",
-        color: "purple"
+        description:
+          "You thrive in flexible, innovative environments. You enjoy thinking outside the box and bringing new ideas to life.",
+        strengths: [
+          "Innovation",
+          "Design thinking",
+          "Adaptability",
+          "Visual communication",
+        ],
+        careerPaths: [
+          "Graphic Designer",
+          "Product Manager",
+          "Marketing Specialist",
+          "Content Creator",
+        ],
+        workEnvironment:
+          "Flexible, creative spaces with room for experimentation",
+        color: "purple",
       },
       social: {
         title: "People Connector",
-        description: "You excel at building relationships and helping others. You prefer collaborative environments and enjoy making a positive impact.",
-        strengths: ["Communication", "Empathy", "Teamwork", "Relationship building"],
-        careerPaths: ["Human Resources", "Sales Representative", "Social Worker", "Teacher"],
+        description:
+          "You excel at building relationships and helping others. You prefer collaborative environments and enjoy making a positive impact.",
+        strengths: [
+          "Communication",
+          "Empathy",
+          "Teamwork",
+          "Relationship building",
+        ],
+        careerPaths: [
+          "Human Resources",
+          "Sales Representative",
+          "Social Worker",
+          "Teacher",
+        ],
         workEnvironment: "Collaborative, people-focused environments",
-        color: "green"
+        color: "green",
       },
       leadership: {
         title: "Natural Leader",
-        description: "You have strong leadership qualities and enjoy taking charge. You excel at motivating others and driving projects forward.",
-        strengths: ["Leadership", "Strategic thinking", "Decision making", "Team motivation"],
-        careerPaths: ["Project Manager", "Business Analyst", "Entrepreneur", "Team Lead"],
-        workEnvironment: "Dynamic, goal-oriented environments with leadership opportunities",
-        color: "orange"
-      }
+        description:
+          "You have strong leadership qualities and enjoy taking charge. You excel at motivating others and driving projects forward.",
+        strengths: [
+          "Leadership",
+          "Strategic thinking",
+          "Decision making",
+          "Team motivation",
+        ],
+        careerPaths: [
+          "Project Manager",
+          "Business Analyst",
+          "Entrepreneur",
+          "Team Lead",
+        ],
+        workEnvironment:
+          "Dynamic, goal-oriented environments with leadership opportunities",
+        color: "orange",
+      },
     };
 
     return insights[personalityType] || insights.analytical;
@@ -207,12 +458,14 @@ const Quiz = () => {
               </div>
 
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                Career Quiz
+                {isAuthenticated ? "Detailed Career Assessment" : "Career Quiz"}
               </h1>
 
               <p className="text-gray-600 dark:text-gray-300 mb-8">
-                Take our quick quiz to discover your career personality and get
-                personalized recommendations.
+                {isAuthenticated 
+                  ? "Take our comprehensive assessment to get detailed career insights and personalized recommendations saved to your profile."
+                  : "Take our quick quiz to discover your career personality and get personalized recommendations."
+                }
               </p>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-8">
@@ -223,10 +476,14 @@ const Quiz = () => {
                     </span>
                   </div>
                   <div className="flex items-center">
-                    <span className="font-medium">3-5 Minutes</span>
+                    <span className="font-medium">
+                      {isAuthenticated ? "8-12 Minutes" : "3-5 Minutes"}
+                    </span>
                   </div>
                   <div className="flex items-center">
-                    <span className="font-medium">Free Results</span>
+                    <span className="font-medium">
+                      {isAuthenticated ? "Saved Results" : "Free Results"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -236,7 +493,7 @@ const Quiz = () => {
                 onClick={startQuiz}
                 className="min-h-[52px] text-lg px-8"
               >
-                Start Quiz
+                {isAuthenticated ? "Start Assessment" : "Start Quiz"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
 
@@ -259,33 +516,33 @@ const Quiz = () => {
   if (showResults) {
     const personalityResult = calculatePersonalityType();
     const insights = getPersonalityInsights(personalityResult.type);
-    
+
     const getColorClasses = (color) => {
       const colorMap = {
         blue: {
           bg: "bg-blue-100 dark:bg-blue-900/20",
           text: "text-blue-600 dark:text-blue-400",
           border: "border-blue-200 dark:border-blue-700",
-          accent: "bg-blue-500"
+          accent: "bg-blue-500",
         },
         purple: {
           bg: "bg-purple-100 dark:bg-purple-900/20",
           text: "text-purple-600 dark:text-purple-400",
           border: "border-purple-200 dark:border-purple-700",
-          accent: "bg-purple-500"
+          accent: "bg-purple-500",
         },
         green: {
           bg: "bg-green-100 dark:bg-green-900/20",
           text: "text-green-600 dark:text-green-400",
           border: "border-green-200 dark:border-green-700",
-          accent: "bg-green-500"
+          accent: "bg-green-500",
         },
         orange: {
           bg: "bg-orange-100 dark:bg-orange-900/20",
           text: "text-orange-600 dark:text-orange-400",
           border: "border-orange-200 dark:border-orange-700",
-          accent: "bg-orange-500"
-        }
+          accent: "bg-orange-500",
+        },
       };
       return colorMap[color] || colorMap.blue;
     };
@@ -302,7 +559,9 @@ const Quiz = () => {
           >
             {/* Header */}
             <Card className="p-8 text-center">
-              <div className={`w-20 h-20 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <div
+                className={`w-20 h-20 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-6`}
+              >
                 <Target className={`w-10 h-10 ${colors.text}`} />
               </div>
 
@@ -311,7 +570,10 @@ const Quiz = () => {
               </h1>
 
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Based on your responses, here's your personalized career assessment:
+                {isAuthenticated 
+                  ? "Based on your detailed responses, here's your comprehensive career assessment. Your results have been saved to your profile!"
+                  : "Based on your responses, here's your personalized career assessment:"
+                }
               </p>
             </Card>
 
@@ -332,24 +594,33 @@ const Quiz = () => {
                   Your Personality Scores
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {Object.entries(personalityResult.scores).map(([type, score]) => (
-                    <div key={type} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="capitalize font-medium text-gray-700 dark:text-gray-300">
-                          {type}
-                        </span>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                          {score}
-                        </span>
+                  {Object.entries(personalityResult.scores).map(
+                    ([type, score]) => (
+                      <div
+                        key={type}
+                        className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="capitalize font-medium text-gray-700 dark:text-gray-300">
+                            {type}
+                          </span>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">
+                            {score}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div
+                            className={`${colors.accent} h-2 rounded-full transition-all duration-500`}
+                            style={{
+                              width: `${
+                                (score / personalityResult.maxScore) * 100
+                              }%`,
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className={`${colors.accent} h-2 rounded-full transition-all duration-500`}
-                          style={{ width: `${(score / personalityResult.maxScore) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               </div>
             </Card>
@@ -490,9 +761,21 @@ const Quiz = () => {
                 Previous
               </Button>
 
-              <Button onClick={handleNext} disabled={!selectedAnswer}>
-                {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
-                <ArrowRight className="w-4 h-4 ml-2" />
+              <Button 
+                onClick={handleNext} 
+                disabled={!selectedAnswer || isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <LoadingSpinner size="sm" className="mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
             </div>
           </Card>
