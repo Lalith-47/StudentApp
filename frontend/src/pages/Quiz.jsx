@@ -47,22 +47,30 @@ const Quiz = () => {
       enabled: !quizStarted, // Only fetch when quiz hasn't started
       staleTime: 0, // Always fetch fresh data
       cacheTime: 0, // Don't cache
-      onSuccess: (response) => {
-        console.log("Quiz questions response:", response);
-        if (response && response.data && response.data.questions) {
-          console.log("Setting questions:", response.data.questions.length);
-          setQuestions(response.data.questions);
-          setQuizData(response.data);
-        } else {
-          console.error("Invalid quiz questions response:", response);
-          setQuestions([]);
-        }
-      },
-      onError: (error) => {
-        console.error("Quiz questions fetch error:", error);
-      },
     }
   );
+
+  // Handle successful data fetch with useEffect
+  useEffect(() => {
+    if (questionsData) {
+      console.log("Quiz questions response:", questionsData);
+      if (questionsData && questionsData.data && questionsData.data.questions) {
+        console.log("Setting questions:", questionsData.data.questions.length);
+        setQuestions(questionsData.data.questions);
+        setQuizData(questionsData.data);
+      } else {
+        console.error("Invalid quiz questions response:", questionsData);
+        setQuestions([]);
+      }
+    }
+  }, [questionsData]);
+
+  // Handle errors
+  useEffect(() => {
+    if (questionsError) {
+      console.error("Quiz questions fetch error:", questionsError);
+    }
+  }, [questionsError]);
 
   const submitQuizMutation = useMutation(
     (quizData) => apiService.submitQuiz(quizData),
@@ -253,14 +261,33 @@ const Quiz = () => {
                 </Button>
 
                 {actualQuestions.length === 0 && (
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={() => window.location.reload()}
-                    className="mt-4"
-                  >
-                    Refresh Page
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => window.location.reload()}
+                      className="w-full"
+                    >
+                      Refresh Page
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={async () => {
+                        try {
+                          const response = await apiService.getQuizQuestions();
+                          console.log("Manual API test:", response);
+                          alert(`API Response: ${JSON.stringify(response).substring(0, 200)}...`);
+                        } catch (error) {
+                          console.error("Manual API test error:", error);
+                          alert(`API Error: ${error.message}`);
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      Test API Call
+                    </Button>
+                  </div>
                 )}
 
                 {!isAuthenticated && (
