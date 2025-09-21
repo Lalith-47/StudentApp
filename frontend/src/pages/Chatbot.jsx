@@ -67,9 +67,6 @@ const Chatbot = () => {
 
   const submitQueryMutation = useMutation(apiService.submitFaqQuery, {
     onSuccess: (response) => {
-      console.log("Full response object:", response);
-      console.log("Response data:", response.data);
-      console.log("Response data.data:", response.data?.data);
       setIsTyping(false);
 
       // Check if we have the expected response structure
@@ -86,7 +83,6 @@ const Chatbot = () => {
         };
         setMessages((prev) => [...prev, botResponse]);
       } else {
-        console.error("Unexpected response structure:", response);
         const errorResponse = {
           id: Date.now(),
           type: "bot",
@@ -153,7 +149,6 @@ const Chatbot = () => {
 
     // Simulate typing delay
     setTimeout(() => {
-      console.log("Sending query data:", queryData);
       submitQueryMutation.mutate(queryData);
     }, 1000);
   };
