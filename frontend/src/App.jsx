@@ -4,6 +4,7 @@ import Layout from "./components/Layout/Layout";
 import LoadingSpinner from "./components/UI/LoadingSpinner";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import AdminProtectedRoute from "./components/Auth/AdminProtectedRoute";
+import ThemeFavicon from "./components/ThemeFavicon";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -14,7 +15,6 @@ const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const Quiz = React.lazy(() => import("./pages/Quiz"));
 const Roadmap = React.lazy(() => import("./pages/Roadmap"));
 const Colleges = React.lazy(() => import("./pages/Colleges"));
-const Stories = React.lazy(() => import("./pages/Stories"));
 const Chatbot = React.lazy(() => import("./pages/Chatbot"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
@@ -24,6 +24,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <ThemeFavicon />
         <div className="min-h-screen bg-white dark:bg-gray-900">
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
@@ -34,7 +35,6 @@ function App() {
                 <Route path="quiz" element={<Quiz />} />
                 <Route path="roadmap" element={<Roadmap />} />
                 <Route path="colleges" element={<Colleges />} />
-                <Route path="stories" element={<Stories />} />
                 <Route path="chatbot" element={<Chatbot />} />
                 <Route
                   path="dashboard"

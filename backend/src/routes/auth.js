@@ -164,7 +164,9 @@ router.post(
         user = await User.findOne({ email }).select("+password");
       } else {
         // Use mock users
+        console.log("Looking for user with email:", email);
         user = await findUserByEmailWithPassword(email);
+        console.log("Found user:", user ? "Yes" : "No");
       }
 
       if (!user) {

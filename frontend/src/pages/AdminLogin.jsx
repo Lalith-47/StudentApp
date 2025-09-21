@@ -133,7 +133,7 @@ const AdminLogin = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="admin@adhyayanmarg.com"
+                placeholder="Enter admin email"
                 leftIcon={<Mail className="w-4 h-4 text-gray-400" />}
                 error={errors.email}
                 required
@@ -151,7 +151,7 @@ const AdminLogin = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="admin123"
+                placeholder="Enter password"
                 leftIcon={<Lock className="w-4 h-4 text-gray-400" />}
                 rightIcon={
                   <button
@@ -202,36 +202,6 @@ const AdminLogin = () => {
               </button>
             </div>
           </form>
-
-          {/* Admin Credentials Info */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">i</span>
-              </div>
-              <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                Demo Credentials
-              </h3>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3">
-                <span className="text-xs font-medium text-blue-700 dark:text-blue-300 w-12">
-                  Email:
-                </span>
-                <code className="text-xs bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded font-mono text-blue-800 dark:text-blue-200">
-                  admin@adhyayanmarg.com
-                </code>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-xs font-medium text-blue-700 dark:text-blue-300 w-12">
-                  Password:
-                </span>
-                <code className="text-xs bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded font-mono text-blue-800 dark:text-blue-200">
-                  admin123
-                </code>
-              </div>
-            </div>
-          </div>
         </Card>
       </motion.div>
     </div>

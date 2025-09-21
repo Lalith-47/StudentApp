@@ -9,37 +9,108 @@ const hashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
 
-// Initialize with an admin user for demo purposes
-const initializeAdminUser = async () => {
-  const adminUser = {
-    id: "admin-001",
-    name: "System Administrator",
-    email: "admin@adhyayanmarg.com",
-    password: await hashPassword("admin123"),
-    role: "admin",
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date(),
-    lastLogin: null,
-    analytics: {
-      totalInteractions: 0,
-      completedCourses: 0,
-      appliedInternships: 0,
-      appliedScholarships: 0,
-      totalHours: 0,
-      achievements: 0,
-      lastUpdated: new Date(),
+// Initialize with demo users for testing
+const initializeDemoUsers = async () => {
+  const demoUsers = [
+    {
+      id: "admin-001",
+      name: "System Administrator",
+      email: "admin@adhyayanmarg.com",
+      password: await hashPassword("admin123"),
+      role: "admin",
+      isActive: true,
+      isVerified: true,
+      createdAt: new Date(),
+      lastLogin: null,
+      analytics: {
+        totalInteractions: 0,
+        completedCourses: 0,
+        appliedInternships: 0,
+        appliedScholarships: 0,
+        totalHours: 0,
+        achievements: 0,
+        lastUpdated: new Date(),
+      },
     },
-  };
+    {
+      id: "student-001",
+      name: "Lalith Kumar",
+      email: "Lalith22p3347@gmail.com",
+      password: await hashPassword("student123"),
+      role: "student",
+      isActive: true,
+      isVerified: true,
+      createdAt: new Date(),
+      lastLogin: null,
+      analytics: {
+        totalInteractions: 15,
+        completedCourses: 3,
+        appliedInternships: 2,
+        appliedScholarships: 1,
+        totalHours: 45,
+        achievements: 5,
+        lastUpdated: new Date(),
+      },
+    },
+    {
+      id: "student-002",
+      name: "Priya Sharma",
+      email: "Lalithkcet.47@gmail.com",
+      password: await hashPassword("student123"),
+      role: "student",
+      isActive: true,
+      isVerified: true,
+      createdAt: new Date(),
+      lastLogin: null,
+      analytics: {
+        totalInteractions: 8,
+        completedCourses: 2,
+        appliedInternships: 1,
+        appliedScholarships: 0,
+        totalHours: 32,
+        achievements: 3,
+        lastUpdated: new Date(),
+      },
+    },
+    {
+      id: "student-003",
+      name: "Rahul Kumar",
+      email: "rahul@example.com",
+      password: await hashPassword("student123"),
+      role: "student",
+      isActive: true,
+      isVerified: true,
+      createdAt: new Date(),
+      lastLogin: null,
+      analytics: {
+        totalInteractions: 12,
+        completedCourses: 4,
+        appliedInternships: 3,
+        appliedScholarships: 2,
+        totalHours: 58,
+        achievements: 7,
+        lastUpdated: new Date(),
+      },
+    },
+  ];
 
-  // Only add if not already exists
-  if (!users.find((user) => user.email === adminUser.email)) {
-    users.push(adminUser);
+  // Add users if they don't already exist
+  for (const user of demoUsers) {
+    if (!users.find((existingUser) => existingUser.email === user.email)) {
+      users.push(user);
+    }
   }
 };
 
-// Initialize admin user when module loads
-initializeAdminUser();
+// Initialize demo users when module loads
+(async () => {
+  await initializeDemoUsers();
+  console.log("Demo users initialized:", users.length, "users");
+  console.log(
+    "User emails:",
+    users.map((u) => u.email)
+  );
+})();
 
 // Helper function to compare password
 const comparePassword = async (password, hashedPassword) => {

@@ -4,7 +4,6 @@
     "quiz": "Career Quiz",
     "roadmap": "Roadmap",
     "colleges": "Colleges",
-    "stories": "Success Stories",
     "chatbot": "Chatbot",
     "dashboard": "Dashboard",
     "language": "Language"
@@ -25,10 +24,6 @@
       "colleges": {
         "title": "College Finder",
         "description": "Find and compare colleges that match your goals"
-      },
-      "stories": {
-        "title": "Success Stories",
-        "description": "Learn from real people who achieved their dreams"
       }
     }
   },

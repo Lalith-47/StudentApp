@@ -37,15 +37,24 @@ const Stories = () => {
   const loadStories = async () => {
     try {
       setLoading(true);
-      console.log("Loading stories from API...");
+      console.log("🔄 Loading stories from API...");
       const response = await apiService.getStories();
-      console.log("Stories API response:", response.data);
+      console.log("📡 API Response:", response);
+      console.log("📊 Response Data:", response.data);
+
       if (response.data.success) {
+        console.log(
+          "✅ Stories loaded successfully:",
+          response.data.data.length
+        );
+        console.log("📚 First story:", response.data.data[0]);
         setStories(response.data.data);
-        console.log("Stories loaded successfully:", response.data.data.length);
+      } else {
+        console.error("❌ API returned success: false", response.data);
+        setError("Failed to load stories");
       }
     } catch (err) {
-      console.error("Error loading stories:", err);
+      console.error("💥 Error loading stories:", err);
       setError("Failed to load stories");
     } finally {
       setLoading(false);
@@ -63,172 +72,6 @@ const Stories = () => {
     }
   };
 
-  // Mock data for stories (fallback)
-  const mockStories = [
-    {
-      _id: "1",
-      title:
-        "From Small Town to Silicon Valley: My Journey as a Software Engineer",
-      author: {
-        name: "Priya Sharma",
-        currentRole: "Senior Software Engineer",
-        company: "Google",
-        experience: "5 years",
-        profileImage:
-          "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
-      },
-      content:
-        "Growing up in a small town in Rajasthan, I never imagined I would one day work at Google in Silicon Valley. My journey began with a simple dream of becoming a computer engineer...",
-      summary:
-        "A inspiring story of how determination and hard work helped a small-town girl achieve her dreams in the tech industry.",
-      category: "Success Story",
-      tags: ["software engineering", "career growth", "motivation"],
-      course: {
-        name: "Computer Science Engineering",
-        college: "IIT Delhi",
-        year: 2018,
-      },
-      careerPath: {
-        from: "Student",
-        to: "Senior Software Engineer",
-        timeline: "5 years",
-      },
-      keyAchievements: [
-        "Graduated from IIT Delhi with distinction",
-        "Got placed at Google through campus placement",
-        "Led multiple high-impact projects",
-        "Mentored 20+ junior engineers",
-      ],
-      challenges: [
-        "Language barrier in initial days",
-        "Adapting to fast-paced tech environment",
-        "Work-life balance in demanding role",
-      ],
-      advice: [
-        "Never give up on your dreams",
-        "Continuous learning is key",
-        "Build strong professional network",
-        "Take calculated risks",
-      ],
-      readTime: 8,
-      likes: 245,
-      views: 1250,
-      comments: [
-        {
-          author: "Rahul Kumar",
-          content: "Very inspiring story! Thank you for sharing.",
-          date: new Date(),
-          likes: 12,
-        },
-      ],
-      isFeatured: true,
-      publishedAt: new Date("2024-01-15"),
-    },
-    {
-      _id: "2",
-      title: "How I Switched from Engineering to Data Science",
-      author: {
-        name: "Rahul Kumar",
-        currentRole: "Data Scientist",
-        company: "Microsoft",
-        experience: "3 years",
-        profileImage:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-      },
-      content:
-        "After completing my mechanical engineering degree, I realized my true passion lay in data and analytics. Here's how I made the career switch...",
-      summary:
-        "A detailed account of transitioning from mechanical engineering to data science, including the challenges and learning curve.",
-      category: "Career Change",
-      tags: ["data science", "career change", "learning"],
-      course: {
-        name: "Data Science",
-        college: "IIIT Hyderabad",
-        year: 2021,
-      },
-      careerPath: {
-        from: "Mechanical Engineer",
-        to: "Data Scientist",
-        timeline: "2 years",
-      },
-      keyAchievements: [
-        "Completed online data science certification",
-        "Built portfolio of 10+ projects",
-        "Landed job at Microsoft",
-        "Published research papers",
-      ],
-      challenges: [
-        "Learning programming from scratch",
-        "Understanding statistical concepts",
-        "Building portfolio without experience",
-      ],
-      advice: [
-        "Start with fundamentals",
-        "Build projects to showcase skills",
-        "Network with industry professionals",
-        "Be patient with the learning process",
-      ],
-      readTime: 6,
-      likes: 189,
-      views: 890,
-      comments: [],
-      isFeatured: false,
-      publishedAt: new Date("2024-01-10"),
-    },
-    {
-      _id: "3",
-      title: "My Journey from Dropout to Successful Entrepreneur",
-      author: {
-        name: "Anita Singh",
-        currentRole: "Founder & CEO",
-        company: "TechStart India",
-        experience: "4 years",
-        profileImage:
-          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-      },
-      content:
-        "Dropping out of college was one of the hardest decisions of my life, but it led me to discover my entrepreneurial spirit...",
-      summary:
-        "An inspiring story of how dropping out of college led to building a successful tech startup.",
-      category: "Entrepreneurship",
-      tags: ["entrepreneurship", "startup", "innovation"],
-      course: {
-        name: "Business Administration",
-        college: "Self-taught",
-        year: 2020,
-      },
-      careerPath: {
-        from: "College Dropout",
-        to: "Successful Entrepreneur",
-        timeline: "4 years",
-      },
-      keyAchievements: [
-        "Built company from scratch",
-        "Raised $2M in funding",
-        "Employed 50+ people",
-        "Expanded to 3 cities",
-      ],
-      challenges: [
-        "Convincing family about dropping out",
-        "Learning business skills",
-        "Finding initial funding",
-        "Building a team",
-      ],
-      advice: [
-        "Follow your passion",
-        "Learn from failures",
-        "Build a strong network",
-        "Stay persistent",
-      ],
-      readTime: 10,
-      likes: 312,
-      views: 1560,
-      comments: [],
-      isFeatured: true,
-      publishedAt: new Date("2024-01-05"),
-    },
-  ];
-
   const categories = [
     "All",
     "Success Story",
@@ -238,12 +81,9 @@ const Stories = () => {
     "Industry Insights",
   ];
 
-  // Use API data if available, otherwise fallback to mock data
-  const storiesToUse = stories.length > 0 ? stories : mockStories;
-  const featuredToUse =
-    featuredStories.length > 0
-      ? featuredStories
-      : mockStories.filter((story) => story.isFeatured);
+  // Use API data only
+  const storiesToUse = stories;
+  const featuredToUse = featuredStories;
 
   const filteredStories = storiesToUse.filter((story) => {
     const matchesSearch =
@@ -296,18 +136,18 @@ const Stories = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="container-wide">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center py-8 sm:py-12 lg:py-16"
         >
-          <h1 className="heading-2 mb-4 text-gray-900 dark:text-white">
+          <h1 className="text-responsive-3xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-6">
             {t("stories.title")}
           </h1>
-          <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
+          <p className="text-responsive-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             {t("stories.subtitle")}
           </p>
         </motion.div>
@@ -318,17 +158,22 @@ const Stories = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mb-12"
+            className="mb-8 sm:mb-12 lg:mb-16"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="heading-3 text-gray-900 dark:text-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+              <h2 className="text-responsive-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                <TrendingUp className="w-6 h-6 text-primary-500 mr-2" />
                 {t("stories.featured")}
               </h2>
-              <Button variant="outline" onClick={() => setShowFeatured(true)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowFeatured(true)}
+                className="touch-target w-full sm:w-auto"
+              >
                 View All Featured
               </Button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid-responsive-3 gap-6 lg:gap-8">
               {featuredToUse.slice(0, 3).map((story, index) => (
                 <StoryCard
                   key={story._id || `featured-${index}`}
@@ -345,37 +190,54 @@ const Stories = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-8"
+          className="mb-8 sm:mb-12"
         >
-          <Card>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Input
-                  placeholder="Search stories..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                />
-              </div>
+          <Card className="p-4 sm:p-6 lg:p-8 shadow-lg border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+            <div className="space-y-4">
+              <h3 className="text-responsive-lg font-semibold text-gray-900 dark:text-white">
+                {t("stories.filterStories")}
+              </h3>
 
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input"
-              >
-                <option value="">Category</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Search stories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                    className="w-full touch-target"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 lg:flex-shrink-0">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="input w-full sm:w-auto min-w-[150px] touch-target"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+
+                  <Button
+                    variant={showFeatured ? "primary" : "outline"}
+                    onClick={() => setShowFeatured(!showFeatured)}
+                    className="w-full sm:w-auto whitespace-nowrap touch-target"
+                  >
+                    {showFeatured ? "Show All" : "Featured Only"}
+                  </Button>
+                </div>
+              </div>
             </div>
           </Card>
         </motion.div>
 
         {/* Stories Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid-responsive-3 gap-6 lg:gap-8">
           {filteredStories.map((story, index) => (
             <StoryCard
               key={story._id || `story-${index}`}
@@ -389,15 +251,27 @@ const Stories = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
+            className="text-center py-12 sm:py-16 lg:py-20"
           >
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-gray-400" />
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-responsive-lg font-medium text-gray-900 dark:text-white mb-3">
               No stories found
             </h3>
-            <p className="text-gray-600">Try adjusting your search criteria</p>
+            <p className="text-responsive-base text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+              Try adjusting your search criteria or browse all stories
+            </p>
+            <Button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("");
+                setShowFeatured(false);
+              }}
+              className="mt-6 touch-target"
+            >
+              Clear Filters
+            </Button>
           </motion.div>
         )}
       </div>
@@ -448,37 +322,40 @@ const StoryCard = ({ story, index }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="h-full"
     >
-      <Card hover className="h-full">
+      <Card
+        hover
+        className="h-full shadow-lg hover:shadow-2xl transition-all duration-500 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-0 group overflow-hidden"
+      >
         {/* Author Info */}
-        <div className="flex items-center space-x-3 mb-4">
-          <img
-            src={story.author.profileImage}
-            alt={story.author.name}
-            className="w-12 h-12 rounded-full object-cover"
-          />
-          <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl flex-shrink-0 shadow-lg">
+            {story.author.name.charAt(0)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-gray-900 dark:text-white truncate text-responsive-sm">
               {story.author.name}
             </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-responsive-xs text-gray-600 dark:text-gray-300 truncate">
               {story.author.currentRole} at {story.author.company}
             </p>
           </div>
         </div>
 
         {/* Story Content */}
-        <div className="mb-4">
-          <h3 className="heading-4 mb-3 text-gray-900 dark:text-white">
+        <div className="mb-4 sm:mb-6 flex-1 flex flex-col">
+          <h3 className="text-responsive-lg font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 line-clamp-2 leading-tight">
             {story.title}
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-responsive-sm text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 flex-1 line-clamp-4 leading-relaxed">
             {contentToShow}
           </p>
           {!showFullContent && (
             <button
               onClick={() => setShowFullContent(true)}
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-responsive-xs font-medium transition-colors duration-200 self-start touch-target"
             >
               {t("stories.readMore")}
             </button>
@@ -486,7 +363,7 @@ const StoryCard = ({ story, index }) => {
           {showFullContent && (
             <button
               onClick={() => setShowFullContent(false)}
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-responsive-xs font-medium transition-colors duration-200 self-start touch-target"
             >
               {t("stories.readLess")}
             </button>
@@ -494,10 +371,15 @@ const StoryCard = ({ story, index }) => {
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="badge-primary">{story.category}</span>
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
+          <span className="badge-primary text-responsive-xs px-3 py-1.5 rounded-full">
+            {story.category}
+          </span>
           {story.tags.slice(0, 2).map((tag, tagIndex) => (
-            <span key={tagIndex} className="badge-secondary">
+            <span
+              key={tagIndex}
+              className="badge-secondary text-responsive-xs px-3 py-1.5 rounded-full"
+            >
               {tag}
             </span>
           ))}
@@ -541,31 +423,38 @@ const StoryCard = ({ story, index }) => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 sm:pt-6 border-t border-gray-100 dark:border-gray-700 gap-4">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <button
               onClick={handleLike}
               disabled={liking}
-              className={`flex items-center space-x-1 text-sm ${
+              className={`flex items-center space-x-2 text-responsive-sm transition-all duration-200 touch-target ${
                 isLiked ? "text-red-600" : "text-gray-500 hover:text-red-600"
               } ${liking ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
-              <span>{likes}</span>
+              <Heart
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                  isLiked ? "fill-current" : ""
+                }`}
+              />
+              <span className="font-medium">{likes}</span>
               {liking && <LoadingSpinner size="sm" />}
             </button>
-            <button className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-              <MessageCircle className="w-4 h-4" />
-              <span>{story.comments.length}</span>
+            <button className="flex items-center space-x-2 text-responsive-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-200 touch-target">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-medium">{story.comments.length}</span>
             </button>
-            <button className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-              <Share2 className="w-4 h-4" />
-              <span>Share</span>
+            <button className="flex items-center space-x-2 text-responsive-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-200 touch-target">
+              <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline font-medium">Share</span>
             </button>
           </div>
           <div className="flex items-center space-x-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+              <Star
+                key={i}
+                className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current"
+              />
             ))}
           </div>
         </div>

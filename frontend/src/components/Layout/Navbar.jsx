@@ -33,11 +33,6 @@ const Navbar = () => {
       current: location.pathname === "/colleges",
     },
     {
-      name: t("nav.stories"),
-      href: "/stories",
-      current: location.pathname === "/stories",
-    },
-    {
       name: t("nav.chatbot"),
       href: "/chatbot",
       current: location.pathname === "/chatbot",
@@ -88,16 +83,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300">
+      <div className="container-wide">
+        <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18 transition-all duration-300">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CG</span>
+          <Link
+            to="/"
+            className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 group"
+          >
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-primary rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+              <span className="text-white font-bold text-xs sm:text-sm">
+                AM
+              </span>
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">
-              AdhyayanMarg
+            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-300">
+              <span className="hidden sm:inline">AdhyayanMarg</span>
+              <span className="sm:hidden">AM</span>
             </span>
           </Link>
 
@@ -108,10 +109,10 @@ const Navbar = () => {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap rounded-md",
+                  "px-3 py-2 text-sm font-medium transition-all duration-200 whitespace-nowrap rounded-md touch-target",
                   item.current
-                    ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
-                    : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-sm"
                 )}
               >
                 {item.name}
@@ -120,17 +121,19 @@ const Navbar = () => {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-1 sm:space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
             {/* Theme Toggle */}
-            <ThemeToggle />
+            <div className="touch-target">
+              <ThemeToggle />
+            </div>
 
-            {/* Language Selector - Hidden on very small screens */}
+            {/* Language Selector - Responsive visibility */}
             <div className="relative hidden sm:block">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center space-x-1 px-2"
+                className="flex items-center space-x-1 px-2 touch-target"
               >
                 <Globe className="w-4 h-4" />
                 <span className="hidden md:block">
@@ -139,13 +142,16 @@ const Navbar = () => {
               </Button>
 
               {isLanguageOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-in slide-in-from-top-2 duration-200">
                   {languages.map((language) => (
                     <button
                       key={language.code}
-                      onClick={() => changeLanguage(language.code)}
+                      onClick={() => {
+                        changeLanguage(language.code);
+                        setIsLanguageOpen(false);
+                      }}
                       className={cn(
-                        "w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2 text-gray-900 dark:text-gray-100",
+                        "w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2 text-gray-900 dark:text-gray-100 touch-target transition-colors duration-200",
                         i18n.language === language.code &&
                           "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400"
                       )}
@@ -160,9 +166,9 @@ const Navbar = () => {
 
             {/* Authentication Buttons */}
             {isAuthenticated ? (
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {/* User Info - Responsive */}
-                <div className="flex items-center space-x-1 sm:space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg">
+                <div className="flex items-center space-x-1 sm:space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg touch-target">
                   <User className="w-4 h-4 flex-shrink-0" />
                   <span
                     className="hidden sm:block truncate max-w-20 md:max-w-32 lg:max-w-40 font-medium"
@@ -177,7 +183,7 @@ const Navbar = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleLogout}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 touch-target transition-all duration-200"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -193,7 +199,7 @@ const Navbar = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate("/admin-login")}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target transition-all duration-200"
                 >
                   <Shield className="w-4 h-4" />
                   <span className="hidden sm:block font-medium">
@@ -206,7 +212,7 @@ const Navbar = () => {
                   variant="primary"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="hidden sm:flex px-3 sm:px-4 py-2 font-medium"
+                  className="hidden sm:flex px-3 sm:px-4 py-2 font-medium touch-target transition-all duration-200"
                 >
                   {t("auth.signIn")}
                 </Button>
@@ -218,7 +224,7 @@ const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden ml-1"
+              className="lg:hidden ml-1 touch-target"
             >
               {isOpen ? (
                 <X className="w-5 h-5" />
@@ -231,18 +237,18 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4">
-            <div className="flex flex-col space-y-1">
+          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-in slide-in-from-top-2 duration-300 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
+            <div className="flex flex-col space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    "px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
+                    "px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 touch-target",
                     item.current
-                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900"
-                      : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900 shadow-sm"
+                      : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-sm"
                   )}
                 >
                   {item.name}
@@ -250,11 +256,11 @@ const Navbar = () => {
               ))}
 
               {/* Mobile Language Selector */}
-              <div className="px-3 py-2">
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">
                   Language
                 </div>
-                <div className="flex space-x-2">
+                <div className="grid grid-cols-3 gap-2">
                   {languages.map((language) => (
                     <button
                       key={language.code}
@@ -263,13 +269,16 @@ const Navbar = () => {
                         setIsOpen(false);
                       }}
                       className={cn(
-                        "px-3 py-1 text-sm rounded-md border transition-colors",
+                        "px-3 py-2 text-sm rounded-md border transition-all duration-200 touch-target",
                         i18n.language === language.code
-                          ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700"
-                          : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700 shadow-sm"
+                          : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-sm"
                       )}
                     >
-                      {language.flag} {language.name}
+                      <div className="flex flex-col items-center space-y-1">
+                        <span className="text-lg">{language.flag}</span>
+                        <span className="text-xs">{language.name}</span>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -278,8 +287,8 @@ const Navbar = () => {
               {/* Mobile Auth Buttons */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                 {isAuthenticated ? (
-                  <div className="space-y-3 px-3">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                  <div className="space-y-3 px-4">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg">
                       <User className="w-4 h-4" />
                       <span className="font-medium">{user?.name}</span>
                     </div>
@@ -290,14 +299,14 @@ const Navbar = () => {
                         handleLogout();
                         setIsOpen(false);
                       }}
-                      className="flex items-center space-x-2 w-full justify-start"
+                      className="flex items-center space-x-2 w-full justify-start touch-target hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>{t("auth.signOut")}</span>
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-2 px-3">
+                  <div className="space-y-3 px-4">
                     <Button
                       variant="primary"
                       size="sm"
@@ -305,7 +314,7 @@ const Navbar = () => {
                         navigate("/login");
                         setIsOpen(false);
                       }}
-                      className="w-full"
+                      className="w-full touch-target"
                     >
                       {t("auth.signIn")}
                     </Button>
@@ -316,7 +325,7 @@ const Navbar = () => {
                         navigate("/admin-login");
                         setIsOpen(false);
                       }}
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target"
                     >
                       <Shield className="w-4 h-4 mr-2" />
                       Admin Portal

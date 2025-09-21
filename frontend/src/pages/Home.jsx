@@ -51,13 +51,6 @@ const Home = () => {
       link: "/colleges",
       color: "text-purple-600 bg-purple-100",
     },
-    {
-      icon: <Users className="w-8 h-8" />,
-      title: t("home.features.stories.title"),
-      description: t("home.features.stories.description"),
-      link: "/stories",
-      color: "text-orange-600 bg-orange-100",
-    },
   ];
 
   const stats = [
@@ -224,23 +217,26 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white">
-        <div className="container-custom section-padding">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="container-wide relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center py-12 sm:py-16 lg:py-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="heading-1 text-white mb-6">{t("home.title")}</h1>
-              <p className="text-xl text-primary-100 mb-8 leading-relaxed">
+              <h1 className="text-responsive-3xl font-bold text-white mb-6 sm:mb-8 leading-tight">
+                {t("home.title")}
+              </h1>
+              <p className="text-responsive-lg text-primary-100 mb-8 sm:mb-10 leading-relaxed">
                 {t("home.subtitle")}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <Link to="/quiz">
                   <Button
                     size="lg"
-                    className="bg-white text-primary-600 hover:bg-gray-50"
+                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto"
                   >
                     {t("home.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -250,7 +246,7 @@ const Home = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-white text-white hover:bg-white hover:text-primary-600"
+                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto"
                   >
                     Explore Roadmaps
                   </Button>
