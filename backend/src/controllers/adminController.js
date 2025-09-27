@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 // Get admin dashboard statistics
 const getDashboardStats = async (req, res) => {
@@ -487,6 +488,149 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
+// Reset user password
+const resetUserPassword = async (req, res) => {
+  try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message:
+          "Database not connected. Please ensure MongoDB is running and properly configured.",
+      });
+    }
+
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+
+    // Validate new password
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
+      });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update the password (it will be hashed by the pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password reset successfully",
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Reset user password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error resetting user password",
+    });
+  }
+};
+
+// Delete user
+const deleteUser = async (req, res) => {
+  try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message:
+          "Database not connected. Please ensure MongoDB is running and properly configured.",
+      });
+    }
+
+    const { userId } = req.params;
+    const { adminPassword } = req.body;
+
+    // Validate admin password
+    if (!adminPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin password is required",
+      });
+    }
+
+    // Get admin user from token
+    const adminId = req.user.id;
+    const admin = await User.findById(adminId).select("+password");
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin user not found",
+      });
+    }
+
+    // Verify admin password
+    const isPasswordValid = await bcrypt.compare(adminPassword, admin.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid admin password",
+      });
+    }
+
+    // Find the user to delete
+    const userToDelete = await User.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Prevent admin from deleting themselves
+    if (userId === adminId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot delete your own account",
+      });
+    }
+
+    // Check if the user to delete is an admin
+    if (userToDelete.role === "admin") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete admin accounts",
+      });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.json({
+      success: true,
+      message: "User deleted successfully",
+      data: {
+        deletedUserId: userId,
+        deletedUserName: userToDelete.name,
+        deletedUserEmail: userToDelete.email,
+      },
+    });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting user",
+    });
+  }
+};
+
 // Get quiz data for admin dashboard
 const getQuizData = async (req, res) => {
   try {
@@ -651,5 +795,7 @@ module.exports = {
   getDashboardStats,
   getUsers,
   updateUserStatus,
+  resetUserPassword,
+  deleteUser,
   getQuizData,
 };

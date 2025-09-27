@@ -85,6 +85,28 @@ const AdminDashboard = () => {
   const [quizLoading, setQuizLoading] = useState(false);
   const [lastQuizRefresh, setLastQuizRefresh] = useState(null);
 
+  // Password reset state
+  const [passwordResetModal, setPasswordResetModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordResetLoading, setPasswordResetLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Success popup state
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Delete user state
+  const [deleteUserModal, setDeleteUserModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [deleteUserLoading, setDeleteUserLoading] = useState(false);
+
+  // Refresh state
+  const [refreshing, setRefreshing] = useState(false);
+
   // Settings state
   const [settings, setSettings] = useState({
     maintenanceMode: false,
@@ -133,7 +155,7 @@ const AdminDashboard = () => {
     if (activeTab === "quiz") {
       const interval = setInterval(() => {
         console.log("Auto-refreshing quiz data...");
-        fetchQuizData();
+        fetchQuizData(true); // Force refresh for auto-refresh
       }, 30000); // 30 seconds
 
       return () => clearInterval(interval);
@@ -197,12 +219,16 @@ const AdminDashboard = () => {
     fetchUsers(newPage, searchTerm, roleFilter, statusFilter);
   };
 
-  const fetchQuizData = async () => {
+  const fetchQuizData = async (forceRefresh = false) => {
     try {
       setQuizLoading(true);
-      console.log("Fetching quiz data...");
+      console.log(
+        "Fetching quiz data...",
+        forceRefresh ? "(Force refresh)" : ""
+      );
 
-      const response = await apiService.getAdminQuizData();
+      // Add cache busting parameter for force refresh
+      const response = await apiService.getAdminQuizData(forceRefresh);
       console.log("Quiz data response:", response.data);
 
       if (response.data.success && response.data.data) {
@@ -231,29 +257,49 @@ const AdminDashboard = () => {
         console.log("Mapped quiz data:", mappedData);
         setQuizData(mappedData);
         setLastQuizRefresh(new Date());
+
+        // Show success message for manual refresh
+        if (forceRefresh) {
+          setSuccessMessage("✅ Quiz data refreshed successfully!");
+          setShowSuccessPopup(true);
+          setTimeout(() => {
+            setShowSuccessPopup(false);
+          }, 3000);
+        }
       } else {
         throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error("Error fetching quiz data:", error);
 
-      // Set fallback data if API fails
-      setQuizData({
-        totalQuizzes: 0,
-        guestQuizzes: 0,
-        authenticatedQuizzes: 0,
-        personalityDistribution: {
-          analytical: 0,
-          creative: 0,
-          social: 0,
-          leadership: 0,
-          explorer: 0,
-        },
-        recentQuizzes: [],
-        averageCompletionTime: 0,
-        totalAnswers: 0,
-        mostCommonPersonality: "analytical",
-      });
+      // Show error message for manual refresh
+      if (forceRefresh) {
+        setSuccessMessage("❌ Failed to refresh quiz data. Please try again.");
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+        }, 3000);
+      }
+
+      // Only reset data if this is the initial load, not a refresh
+      if (!forceRefresh) {
+        setQuizData({
+          totalQuizzes: 0,
+          guestQuizzes: 0,
+          authenticatedQuizzes: 0,
+          personalityDistribution: {
+            analytical: 0,
+            creative: 0,
+            social: 0,
+            leadership: 0,
+            explorer: 0,
+          },
+          recentQuizzes: [],
+          averageCompletionTime: 0,
+          totalAnswers: 0,
+          mostCommonPersonality: "analytical",
+        });
+      }
     } finally {
       setQuizLoading(false);
     }
@@ -266,6 +312,188 @@ const AdminDashboard = () => {
       fetchUsers(currentPage, searchTerm, roleFilter, statusFilter);
     } catch (error) {
       console.error("Error updating user status:", error);
+    }
+  };
+
+  // Password reset functions
+  const handlePasswordReset = (user) => {
+    console.log("Opening password reset modal for user:", user);
+    console.log("User ID:", user.id);
+    console.log("User _id:", user._id);
+    setSelectedUser(user);
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setPasswordResetModal(true);
+  };
+
+  const handlePasswordResetSubmit = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setSuccessMessage("❌ Password must be at least 6 characters long");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setSuccessMessage("❌ Passwords do not match");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+      return;
+    }
+
+    setPasswordResetLoading(true);
+    try {
+      console.log("Attempting password reset for user:", selectedUser);
+      console.log("User ID:", selectedUser.id);
+      console.log("New password:", newPassword);
+      console.log("Auth token:", localStorage.getItem("authToken"));
+
+      // Test the API call manually
+      const endpoint = `/admin/users/${selectedUser.id}/password`;
+      console.log("API endpoint:", endpoint);
+      console.log("Request data:", { newPassword });
+
+      const response = await apiService.resetUserPassword(selectedUser.id, {
+        newPassword,
+      });
+      console.log("Password reset response:", response);
+
+      // Show success popup
+      setSuccessMessage(
+        `Password reset successfully for ${selectedUser.name}!`
+      );
+      setShowSuccessPopup(true);
+
+      // Close password reset modal
+      setPasswordResetModal(false);
+      setSelectedUser(null);
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+
+      // Auto-hide success popup after 3 seconds
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      console.error("Error details:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      console.error("Error message:", error.message);
+      console.error("Full error object:", error);
+
+      let errorMessage = "Failed to reset password. Please try again.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // Show error popup
+      setSuccessMessage(`❌ ${errorMessage}`);
+      setShowSuccessPopup(true);
+
+      // Auto-hide error popup after 4 seconds
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 4000);
+    } finally {
+      setPasswordResetLoading(false);
+    }
+  };
+
+  // Delete user functions
+  const handleDeleteUser = (user) => {
+    setUserToDelete(user);
+    setAdminPassword("");
+    setDeleteUserModal(true);
+  };
+
+  const handleDeleteUserSubmit = async () => {
+    if (!adminPassword) {
+      setSuccessMessage("❌ Admin password is required");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+      return;
+    }
+
+    setDeleteUserLoading(true);
+    try {
+      await apiService.deleteUser(userToDelete.id, { adminPassword });
+
+      // Show success popup
+      setSuccessMessage(`User ${userToDelete.name} deleted successfully!`);
+      setShowSuccessPopup(true);
+
+      // Close delete modal
+      setDeleteUserModal(false);
+      setUserToDelete(null);
+      setAdminPassword("");
+
+      // Refresh users list
+      fetchUsers();
+
+      // Auto-hide success popup after 3 seconds
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      console.error("Error details:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      console.error("Error message:", error.message);
+      console.error("Full error object:", error);
+
+      let errorMessage = "Failed to delete user. Please try again.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // Show error popup
+      setSuccessMessage(`❌ ${errorMessage}`);
+      setShowSuccessPopup(true);
+
+      // Auto-hide error popup after 4 seconds
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 4000);
+    } finally {
+      setDeleteUserLoading(false);
+    }
+  };
+
+  // Refresh all data
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Refresh dashboard stats
+      await fetchDashboardStats();
+
+      // Refresh users list
+      await fetchUsers();
+
+      // Refresh quiz data with force refresh
+      await fetchQuizData(true);
+
+      setSuccessMessage("✅ Data refreshed successfully!");
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Refresh error:", error);
+      setSuccessMessage("❌ Failed to refresh data. Please try again.");
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -507,6 +735,28 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200"
+              >
+                <svg
+                  className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                <span className="text-sm font-medium">
+                  {refreshing ? "Refreshing..." : "Refresh Data"}
+                </span>
+              </button>
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -761,6 +1011,32 @@ const AdminDashboard = () => {
                 User Management
               </h3>
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={() =>
+                    fetchUsers(
+                      currentPage,
+                      searchTerm,
+                      roleFilter,
+                      statusFilter
+                    )
+                  }
+                  className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors duration-200"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <span className="text-sm">Refresh</span>
+                </button>
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
@@ -873,17 +1149,19 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
+                            {user.role !== "admin" && (
+                              <button
+                                onClick={() => handleDeleteUser(user)}
+                                className="px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-200"
+                              >
+                                Delete
+                              </button>
+                            )}
                             <button
-                              onClick={() =>
-                                handleUserStatusUpdate(user.id, !user.isActive)
-                              }
-                              className={`px-2 py-1 text-xs rounded ${
-                                user.isActive
-                                  ? "bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-200"
-                                  : "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200"
-                              }`}
+                              onClick={() => handlePasswordReset(user)}
+                              className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200"
                             >
-                              {user.isActive ? "Deactivate" : "Activate"}
+                              Reset Password
                             </button>
                             <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                               <MoreHorizontal className="w-4 h-4" />
@@ -972,7 +1250,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="flex flex-col items-end space-y-2">
                     <button
-                      onClick={fetchQuizData}
+                      onClick={() => fetchQuizData(true)}
                       disabled={quizLoading}
                       className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
@@ -988,6 +1266,11 @@ const AdminDashboard = () => {
                     {lastQuizRefresh && (
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         Last updated: {lastQuizRefresh.toLocaleTimeString()}
+                        {quizLoading && (
+                          <span className="ml-2 text-primary-600 dark:text-primary-400">
+                            • Refreshing...
+                          </span>
+                        )}
                       </p>
                     )}
                   </div>
@@ -1398,11 +1681,18 @@ const AdminDashboard = () => {
                 {/* Recent Quiz Submissions */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Recent Quiz Submissions
-                    </h3>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Recent Quiz Submissions
+                      </h3>
+                      {quizLoading && (
+                        <p className="text-xs text-primary-600 dark:text-primary-400 mt-1">
+                          Updating submissions...
+                        </p>
+                      )}
+                    </div>
                     <button
-                      onClick={fetchQuizData}
+                      onClick={() => fetchQuizData(true)}
                       disabled={quizLoading}
                       className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -1946,6 +2236,290 @@ const AdminDashboard = () => {
               <Button size="lg" className="bg-green-600 hover:bg-green-700">
                 Save All Settings
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Password Reset Modal */}
+        {passwordResetModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 max-w-md mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Reset Password for {selectedUser?.name}
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Enter new password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      {showPassword ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Confirm new password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      {showConfirmPassword ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => {
+                      setPasswordResetModal(false);
+                      setSelectedUser(null);
+                      setNewPassword("");
+                      setConfirmPassword("");
+                      setShowPassword(false);
+                      setShowConfirmPassword(false);
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePasswordResetSubmit}
+                    disabled={passwordResetLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
+                  >
+                    {passwordResetLoading ? "Resetting..." : "Reset Password"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete User Confirmation Modal */}
+        {deleteUserModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 max-w-md mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Delete User: {userToDelete?.name}
+              </h3>
+              <div className="space-y-4">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <svg
+                      className="w-5 h-5 text-red-600 dark:text-red-400 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
+                    </svg>
+                    <p className="text-sm text-red-800 dark:text-red-200">
+                      <strong>Warning:</strong> This action cannot be undone.
+                      The user will be permanently deleted from the database.
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Enter your admin password to confirm deletion
+                  </label>
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter admin password"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => {
+                      setDeleteUserModal(false);
+                      setUserToDelete(null);
+                      setAdminPassword("");
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteUserSubmit}
+                    disabled={deleteUserLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-lg"
+                  >
+                    {deleteUserLoading ? "Deleting..." : "Delete User"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success/Error Popup */}
+        {showSuccessPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100">
+              <div className="mb-4">
+                {successMessage.includes("❌") ? (
+                  <div className="w-16 h-16 mx-auto bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mb-4">
+                    <svg
+                      className="w-8 h-8 text-red-600 dark:text-red-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                    <svg
+                      className="w-8 h-8 text-green-600 dark:text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <h3
+                className={`text-lg font-semibold mb-2 ${
+                  successMessage.includes("❌")
+                    ? "text-red-900 dark:text-red-100"
+                    : "text-green-900 dark:text-green-100"
+                }`}
+              >
+                {successMessage.includes("❌") ? "Error" : "Success!"}
+              </h3>
+              <p
+                className={`text-sm ${
+                  successMessage.includes("❌")
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-green-700 dark:text-green-300"
+                }`}
+              >
+                {successMessage.replace("❌ ", "")}
+              </p>
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className={`mt-4 px-6 py-2 rounded-lg font-medium transition-colors ${
+                  successMessage.includes("❌")
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
+              >
+                OK
+              </button>
             </div>
           </div>
         )}

@@ -19,6 +19,13 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Add cache busting headers for quiz data requests
+    if (config.url?.includes("/admin/quiz-data")) {
+      config.headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+      config.headers["Pragma"] = "no-cache";
+      config.headers["Expires"] = "0";
+    }
+
     // Add request timestamp for debugging
     config.metadata = { startTime: new Date() };
 
@@ -152,6 +159,8 @@ export const endpoints = {
     dashboard: "/admin/dashboard",
     users: "/admin/users",
     updateUserStatus: (userId) => `/admin/users/${userId}/status`,
+    resetUserPassword: (userId) => `/admin/users/${userId}/password`,
+    deleteUser: (userId) => `/admin/users/${userId}`,
     quizData: "/admin/quiz-data",
   },
 
@@ -226,7 +235,16 @@ export const apiService = {
   getAdminUsers: (params) => api.get(endpoints.admin.users, { params }),
   updateUserStatus: (userId, data) =>
     api.patch(endpoints.admin.updateUserStatus(userId), data),
-  getAdminQuizData: () => api.get(endpoints.admin.quizData),
+  resetUserPassword: (userId, data) =>
+    api.patch(endpoints.admin.resetUserPassword(userId), data),
+  deleteUser: (userId, data) =>
+    api.delete(endpoints.admin.deleteUser(userId), { data }),
+  getAdminQuizData: (forceRefresh = false) => {
+    const url = forceRefresh
+      ? `${endpoints.admin.quizData}?t=${Date.now()}`
+      : endpoints.admin.quizData;
+    return api.get(url);
+  },
 };
 
 export default api;

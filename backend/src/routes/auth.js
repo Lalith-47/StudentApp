@@ -170,9 +170,9 @@ router.post(
       }
 
       if (!user) {
-        return res.status(401).json({
+        return res.status(404).json({
           success: false,
-          message: "Invalid email or password",
+          message: "No user found in the system",
         });
       }
 
@@ -189,7 +189,7 @@ router.post(
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
-          message: "Invalid email or password",
+          message: "Invalid password",
         });
       }
 

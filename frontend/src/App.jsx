@@ -10,8 +10,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Lazy load pages for better performance
 const Home = React.lazy(() => import("./pages/Home"));
-const Login = React.lazy(() => import("./pages/Login"));
-const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
+const UnifiedLogin = React.lazy(() => import("./pages/UnifiedLogin"));
 const Quiz = React.lazy(() => import("./pages/Quiz"));
 const Roadmap = React.lazy(() => import("./pages/Roadmap"));
 const Colleges = React.lazy(() => import("./pages/Colleges"));
@@ -28,8 +27,7 @@ function App() {
         <div className="min-h-screen bg-white dark:bg-gray-900">
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/login" element={<UnifiedLogin />} />
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="quiz" element={<Quiz />} />

@@ -4,6 +4,8 @@ const {
   getDashboardStats,
   getUsers,
   updateUserStatus,
+  resetUserPassword,
+  deleteUser,
   getQuizData,
 } = require("../controllers/adminController");
 
@@ -21,6 +23,12 @@ router.get("/users", getUsers);
 
 // Update user status
 router.patch("/users/:userId/status", updateUserStatus);
+
+// Reset user password
+router.patch("/users/:userId/password", resetUserPassword);
+
+// Delete user
+router.delete("/users/:userId", deleteUser);
 
 // Get quiz data for admin dashboard
 router.get("/quiz-data", getQuizData);

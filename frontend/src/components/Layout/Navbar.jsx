@@ -377,27 +377,14 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* Admin Portal Button - Responsive */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/admin-login")}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target transition-all duration-200"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span className="hidden sm:block font-medium">
-                    Admin Portal
-                  </span>
-                </Button>
-
-                {/* Sign In Button - Responsive */}
+                {/* Login Button - Responsive */}
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="hidden sm:flex px-3 sm:px-4 py-2 font-medium touch-target transition-all duration-200"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 font-medium touch-target transition-all duration-200"
                 >
-                  {t("auth.signIn")}
+                  <span className="font-medium">Login/Signup</span>
                 </Button>
               </div>
             )}
@@ -499,19 +486,7 @@ const Navbar = () => {
                       }}
                       className="w-full touch-target min-h-[48px] text-base"
                     >
-                      {t("auth.signIn")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={() => {
-                        navigate("/admin-login");
-                        setIsOpen(false);
-                      }}
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 touch-target min-h-[48px] text-base"
-                    >
-                      <Shield className="w-4 h-4 mr-2" />
-                      Admin Portal
+                      Login/Signup
                     </Button>
                   </div>
                 )}
