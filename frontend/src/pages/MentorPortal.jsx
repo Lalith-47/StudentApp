@@ -28,11 +28,131 @@ const MentorPortal = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("students");
   const [students, setStudents] = useState([]);
+  const [assignedStudents, setAssignedStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all"); // all, assigned, unassigned
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [stats, setStats] = useState(null);
+
+  // Fetch students data
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getMentorStudents({
+        search: searchTerm,
+        filter: filter,
+        page: 1,
+        limit: 50
+      });
+      
+      if (response.data.success) {
+        setStudents(response.data.students);
+      }
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch assigned students
+  const fetchAssignedStudents = async () => {
+    try {
+      const response = await apiService.getMentorAssignedStudents();
+      if (response.data.success) {
+        setAssignedStudents(response.data.students);
+      }
+    } catch (error) {
+      console.error("Error fetching assigned students:", error);
+    }
+  };
+
+  // Fetch dashboard stats
+  const fetchStats = async () => {
+    try {
+      const response = await apiService.getMentorDashboardStats();
+      if (response.data.success) {
+        setStats(response.data.stats);
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  // Assign students to mentor
+  const handleAssignStudents = async () => {
+    if (selectedStudents.length === 0) return;
+    
+    try {
+      setLoading(true);
+      const response = await apiService.assignStudents({
+        studentIds: selectedStudents
+      });
+      
+      if (response.data.success) {
+        setSelectedStudents([]);
+        fetchStudents();
+        fetchAssignedStudents();
+        fetchStats();
+      }
+    } catch (error) {
+      console.error("Error assigning students:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Unassign students from mentor
+  const handleUnassignStudents = async () => {
+    if (selectedStudents.length === 0) return;
+    
+    try {
+      setLoading(true);
+      const response = await apiService.unassignStudents({
+        studentIds: selectedStudents
+      });
+      
+      if (response.data.success) {
+        setSelectedStudents([]);
+        fetchStudents();
+        fetchAssignedStudents();
+        fetchStats();
+      }
+    } catch (error) {
+      console.error("Error unassigning students:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle student selection
+  const handleStudentSelect = (studentId) => {
+    setSelectedStudents(prev => 
+      prev.includes(studentId) 
+        ? prev.filter(id => id !== studentId)
+        : [...prev, studentId]
+    );
+  };
+
+  // Handle select all
+  const handleSelectAll = () => {
+    const availableStudents = students.filter(student => student.canAssign);
+    if (selectedStudents.length === availableStudents.length) {
+      setSelectedStudents([]);
+    } else {
+      setSelectedStudents(availableStudents.map(student => student._id));
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    fetchStudents();
+    fetchAssignedStudents();
+    fetchStats();
+  }, [searchTerm, filter]);
 
   // Mock data for demonstration
   const mockStudents = [
@@ -173,7 +293,7 @@ const MentorPortal = () => {
                   Total Students
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.totalStudents}
+                  {stats?.totalStudents || 0}
                 </p>
               </div>
             </div>
@@ -189,7 +309,7 @@ const MentorPortal = () => {
                   Active Students
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.activeStudents}
+                  {stats?.activeStudents || 0}
                 </p>
               </div>
             </div>
@@ -205,7 +325,7 @@ const MentorPortal = () => {
                   Avg Progress
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.avgProgress}%
+                  {stats?.avgProgress || 0}%
                 </p>
               </div>
             </div>
@@ -221,7 +341,7 @@ const MentorPortal = () => {
                   Avg Aptitude
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.avgAptitude}
+                  {stats?.avgAptitude || 0}
                 </p>
               </div>
             </div>
@@ -255,7 +375,7 @@ const MentorPortal = () => {
         {/* Students Tab */}
         {activeTab === "students" && (
           <div className="space-y-6">
-            {/* Search and Actions */}
+            {/* Search and Filter */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <Input
@@ -266,52 +386,98 @@ const MentorPortal = () => {
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
                 />
               </div>
-              <Button
-                onClick={() => {
-                  /* Add student functionality */
-                }}
-                className="flex items-center"
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Student
-              </Button>
+                <option value="all">All Students</option>
+                <option value="assigned">Assigned</option>
+                <option value="unassigned">Unassigned</option>
+              </select>
             </div>
+
+            {/* Action Buttons */}
+            {selectedStudents.length > 0 && (
+              <div className="flex gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <Button
+                  onClick={handleAssignStudents}
+                  disabled={loading}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Assign Selected ({selectedStudents.length})
+                </Button>
+                <Button
+                  onClick={handleUnassignStudents}
+                  disabled={loading}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Unassign Selected
+                </Button>
+                <Button
+                  onClick={() => setSelectedStudents([])}
+                  className="bg-gray-600 hover:bg-gray-700 text-white"
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            )}
 
             {/* Students List */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredStudents.map((student) => (
-                <motion.div
-                  key={student.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card className="p-6 hover:shadow-lg transition-shadow duration-200">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center">
-                        <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                          <span className="text-primary-600 dark:text-primary-400 font-semibold">
-                            {student.avatar}
-                          </span>
+              {loading ? (
+                <div className="col-span-full text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">Loading students...</p>
+                </div>
+              ) : students.length === 0 ? (
+                <div className="col-span-full text-center py-8">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400">No students found</p>
+                </div>
+              ) : (
+                students.map((student) => (
+                  <motion.div
+                    key={student._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card className={`p-6 hover:shadow-lg transition-shadow duration-200 ${
+                      student.isAssigned ? 'border-green-200 dark:border-green-800' : 'border-gray-200 dark:border-gray-700'
+                    }`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center">
+                          <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                            <span className="text-primary-600 dark:text-primary-400 font-semibold">
+                              {student.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="ml-3">
+                            <h3 className="font-semibold text-gray-900 dark:text-white">
+                              {student.name}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              {student.email}
+                            </p>
+                            {student.isAssigned && (
+                              <p className="text-xs text-green-600 dark:text-green-400">
+                                Assigned to: {student.assignedMentor?.name || 'Unknown'}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="ml-3">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
-                            {student.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            {student.email}
-                          </p>
+                        <div className="flex items-center space-x-2">
+                          {student.canAssign && (
+                            <input
+                              type="checkbox"
+                              checked={selectedStudents.includes(student._id)}
+                              onChange={() => handleStudentSelect(student._id)}
+                              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                            />
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedStudents.includes(student.id)}
-                          onChange={() => handleStudentSelection(student.id)}
-                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                        />
-                      </div>
-                    </div>
 
                     <div className="space-y-3">
                       <div>

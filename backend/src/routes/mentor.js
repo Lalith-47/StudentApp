@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const {
   getStudents,
   assignStudents,
+  unassignStudents,
   getAssignedStudents,
   sendMessage,
   getDashboardStats,
@@ -75,6 +76,29 @@ router.post(
     next();
   },
   assignStudents
+);
+
+// Unassign students from mentor
+router.post(
+  "/unassign-students",
+  authenticateMentor,
+  [
+    body("studentIds")
+      .isArray({ min: 1 })
+      .withMessage("At least one student ID is required"),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+    next();
+  },
+  unassignStudents
 );
 
 // Send message to students

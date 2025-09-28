@@ -186,6 +186,16 @@ export const endpoints = {
     logout: "/auth/logout",
     verify: "/auth/verify",
   },
+
+  // Mentor
+  mentor: {
+    students: "/mentor/students",
+    assignedStudents: "/mentor/assigned-students",
+    assignStudents: "/mentor/assign-students",
+    unassignStudents: "/mentor/unassign-students",
+    sendMessage: "/mentor/send-message",
+    dashboardStats: "/mentor/dashboard-stats",
+  },
 };
 
 // API functions
@@ -270,6 +280,14 @@ export const apiService = {
     return api.get(url);
   },
   createUser: (userData) => api.post(endpoints.admin.createUser, userData),
+
+  // Mentor
+  getMentorStudents: (params) => api.get(endpoints.mentor.students, { params }),
+  getMentorAssignedStudents: () => api.get(endpoints.mentor.assignedStudents),
+  assignStudents: (data) => api.post(endpoints.mentor.assignStudents, data),
+  unassignStudents: (data) => api.post(endpoints.mentor.unassignStudents, data),
+  sendMessageToStudents: (data) => api.post(endpoints.mentor.sendMessage, data),
+  getMentorDashboardStats: () => api.get(endpoints.mentor.dashboardStats),
 };
 
 export default api;

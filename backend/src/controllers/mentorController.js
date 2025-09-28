@@ -1,16 +1,16 @@
 const User = require("../models/User");
 const { ensureDbConnection } = require("../utils/database");
 
-// Get all students for a mentor
+// Get all students for a mentor with assignment status
 const getStudents = async (req, res) => {
   try {
     ensureDbConnection();
 
     const mentorId = req.user.id;
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const { page = 1, limit = 10, search = "", filter = "all" } = req.query;
 
-    // For now, return all students (in a real app, you'd have mentor-student relationships)
-    const query = {
+    // Build query based on filter
+    let query = {
       role: "student",
       ...(search && {
         $or: [
@@ -20,17 +20,39 @@ const getStudents = async (req, res) => {
       }),
     };
 
+    // Apply filter for assignment status
+    if (filter === "assigned") {
+      query.mentorId = { $exists: true, $ne: null };
+    } else if (filter === "unassigned") {
+      query.$or = [
+        { mentorId: { $exists: false } },
+        { mentorId: null },
+      ];
+    }
+
     const students = await User.find(query)
-      .select("name email role profile analytics lastLogin")
+      .select("name email role profile analytics lastLogin mentorId")
+      .populate("mentorId", "name email")
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ lastLogin: -1 });
 
     const total = await User.countDocuments(query);
 
+    // Add assignment status to each student
+    const studentsWithStatus = students.map(student => ({
+      ...student.toObject(),
+      isAssigned: !!student.mentorId,
+      assignedMentor: student.mentorId ? {
+        name: student.mentorId.name,
+        email: student.mentorId.email
+      } : null,
+      canAssign: !student.mentorId || student.mentorId._id.toString() === mentorId
+    }));
+
     res.json({
       success: true,
-      students,
+      students: studentsWithStatus,
       pagination: {
         current: page,
         pages: Math.ceil(total / limit),
@@ -54,6 +76,17 @@ const assignStudents = async (req, res) => {
     const { studentIds } = req.body;
     const mentorId = req.user.id;
 
+    // Check if students are already assigned to other mentors
+    const students = await User.find({ _id: { $in: studentIds }, role: "student" });
+    const alreadyAssigned = students.filter(s => s.mentorId && s.mentorId.toString() !== mentorId);
+
+    if (alreadyAssigned.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Some students are already assigned to other mentors: ${alreadyAssigned.map(s => s.name).join(", ")}`,
+      });
+    }
+
     // Update students with mentor assignment
     await User.updateMany(
       { _id: { $in: studentIds }, role: "student" },
@@ -66,6 +99,33 @@ const assignStudents = async (req, res) => {
     });
   } catch (error) {
     console.error("Assign students error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// Unassign students from mentor
+const unassignStudents = async (req, res) => {
+  try {
+    ensureDbConnection();
+
+    const { studentIds } = req.body;
+    const mentorId = req.user.id;
+
+    // Only allow unassigning students assigned to this mentor
+    await User.updateMany(
+      { _id: { $in: studentIds }, role: "student", mentorId },
+      { $unset: { mentorId: 1 } }
+    );
+
+    res.json({
+      success: true,
+      message: "Students unassigned successfully",
+    });
+  } catch (error) {
+    console.error("Unassign students error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -183,6 +243,7 @@ const getDashboardStats = async (req, res) => {
 module.exports = {
   getStudents,
   assignStudents,
+  unassignStudents,
   getAssignedStudents,
   sendMessage,
   getDashboardStats,
