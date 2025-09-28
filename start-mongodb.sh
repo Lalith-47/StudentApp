@@ -52,3 +52,4 @@ else
     echo "💡 Please install Docker or use MongoDB Atlas"
     exit 1
 fi
+

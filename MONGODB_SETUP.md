@@ -159,3 +159,4 @@ cat backend/.env | grep MONGODB_URI
 5. **Test persistence** by creating users/data
 
 Your application will now maintain a robust, persistent connection to MongoDB with automatic reconnection capabilities!
+

@@ -139,6 +139,7 @@ const getDashboardStats = async (req, res) => {
           activeUsers: [{ $match: { isActive: true } }, { $count: "count" }],
           adminUsers: [{ $match: { role: "admin" } }, { $count: "count" }],
           studentUsers: [{ $match: { role: "student" } }, { $count: "count" }],
+          mentorUsers: [{ $match: { role: "mentor" } }, { $count: "count" }],
           newUsersThisMonth: [
             {
               $match: {
@@ -166,6 +167,7 @@ const getDashboardStats = async (req, res) => {
     const activeUsers = stats.activeUsers[0]?.count || 0;
     const adminUsers = stats.adminUsers[0]?.count || 0;
     const studentUsers = stats.studentUsers[0]?.count || 0;
+    const mentorUsers = stats.mentorUsers[0]?.count || 0;
     const newUsersThisMonth = stats.newUsersThisMonth[0]?.count || 0;
     const newUsersToday = stats.newUsersToday[0]?.count || 0;
 
@@ -290,6 +292,7 @@ const getDashboardStats = async (req, res) => {
           activeUsers,
           adminUsers,
           studentUsers,
+          mentorUsers,
           newUsersThisMonth,
           newUsersToday,
         },
@@ -804,9 +807,83 @@ const getQuizData = async (req, res) => {
   }
 };
 
+// Create new user (admin only)
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, password, and role are required",
+      });
+    }
+
+    // Validate role
+    const validRoles = ["student", "mentor", "admin"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role. Must be 'student', 'mentor', or 'admin'",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with this email",
+      });
+    }
+
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      password,
+      role,
+      isActive: true,
+      isVerified: true,
+      analytics: {
+        totalInteractions: 0,
+        completedCourses: 0,
+        appliedInternships: 0,
+        appliedScholarships: 0,
+        totalHours: 0,
+        achievements: 0,
+        lastUpdated: new Date(),
+      },
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getUsers,
+  createUser,
   updateUserStatus,
   resetUserPassword,
   deleteUser,

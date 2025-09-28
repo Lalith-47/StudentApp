@@ -18,6 +18,7 @@ const faqRoutes = require("./routes/faq");
 const analyticsRoutes = require("./routes/analytics");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
+const mentorRoutes = require("./routes/mentor");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -82,6 +83,7 @@ app.use("/api/faq", faqRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/mentor", mentorRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -102,13 +104,13 @@ const { createIndexes } = require("./config/indexes");
 // Start server with enhanced database connection
 const startServer = async () => {
   try {
-          // Connect to MongoDB with persistent connection
-          await dbManager.connect();
+    // Connect to MongoDB with persistent connection
+    await dbManager.connect();
 
-          // Create database indexes for performance
-          await createIndexes();
+    // Create database indexes for performance
+    await createIndexes();
 
-          app.listen(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);

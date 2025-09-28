@@ -8,7 +8,7 @@ const CACHE_DURATION = 30 * 1000; // 30 seconds
 // Create axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  timeout: 10000,
+  timeout: 8000, // Reduced from 10 seconds to 8 seconds
   headers: {
     "Content-Type": "application/json",
   },
@@ -68,31 +68,40 @@ api.interceptors.response.use(
 
       switch (status) {
         case 401:
-          // Unauthorized - clear token and redirect to login
-          localStorage.removeItem("authToken");
-          toast.error("Session expired. Please login again.");
+          // Only show toast for 401 errors that are not from login attempts
+          // Login 401 errors should be handled by the component, not the interceptor
+          if (!error.config?.url?.includes("/auth/login")) {
+            localStorage.removeItem("authToken");
+            toast.error("Session expired. Please login again.");
+          }
           break;
         case 403:
-          toast.error("Access denied. You do not have permission.");
+          // Don't show automatic toast for 403 - let components handle it
+          console.warn("Access denied for:", error.config?.url);
           break;
         case 404:
-          toast.error("Resource not found.");
+          // Don't show automatic toast for 404 - let components handle it
+          console.warn("Resource not found:", error.config?.url);
           break;
         case 429:
           toast.error("Too many requests. Please try again later.");
           break;
         case 500:
-          toast.error("Server error. Please try again later.");
+          // Don't show automatic toast for 500 - let components handle it
+          console.warn("Server error for:", error.config?.url);
           break;
         default:
-          toast.error(data?.message || "An error occurred.");
+          // Don't show automatic toast for other errors - let components handle it
+          console.warn("API error for:", error.config?.url, data?.message);
       }
     } else if (error.request) {
-      // Network error
-      toast.error("Network error. Please check your connection.");
+      // Network error - don't show automatic toasts, let components handle their own errors
+      console.warn("Network error for:", error.config?.url, error.message);
+      // Components will handle their own error messages
     } else {
-      // Other error
-      toast.error("An unexpected error occurred.");
+      // Other error - don't show automatic toasts
+      console.warn("API error:", error.message);
+      // Components will handle their own error messages
     }
 
     return Promise.reject(error);
@@ -162,6 +171,7 @@ export const endpoints = {
   admin: {
     dashboard: "/admin/dashboard",
     users: "/admin/users",
+    createUser: "/admin/users",
     updateUserStatus: (userId) => `/admin/users/${userId}/status`,
     resetUserPassword: (userId) => `/admin/users/${userId}/password`,
     deleteUser: (userId) => `/admin/users/${userId}`,
@@ -259,6 +269,7 @@ export const apiService = {
       : endpoints.admin.quizData;
     return api.get(url);
   },
+  createUser: (userData) => api.post(endpoints.admin.createUser, userData),
 };
 
 export default api;

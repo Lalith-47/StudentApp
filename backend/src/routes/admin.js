@@ -3,6 +3,7 @@ const { authenticateToken, requireRole } = require("../middleware/auth");
 const {
   getDashboardStats,
   getUsers,
+  createUser,
   updateUserStatus,
   resetUserPassword,
   deleteUser,
@@ -20,6 +21,9 @@ router.get("/dashboard", getDashboardStats);
 
 // Get users with pagination and filtering
 router.get("/users", getUsers);
+
+// Create new user
+router.post("/users", createUser);
 
 // Update user status
 router.patch("/users/:userId/status", updateUserStatus);

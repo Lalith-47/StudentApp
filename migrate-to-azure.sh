@@ -282,3 +282,4 @@ main() {
 
 # Run migration
 main "$@"
+

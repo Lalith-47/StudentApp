@@ -43,3 +43,4 @@ echo ""
 echo "🚀 Next steps:"
 echo "  1. Restart your backend: pkill -f 'npm run dev' && cd backend && npm run dev"
 echo "  2. Test the connection - it should now connect to the adhyayanmarg database"
+

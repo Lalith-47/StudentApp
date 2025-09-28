@@ -199,3 +199,4 @@ echo "✅ MongoDB setup complete on Azure VM!"
 - ✅ **Great documentation**: Comprehensive guides
 
 **Your Azure credits will give you months of MongoDB hosting that never pauses!**
+

@@ -83,3 +83,4 @@ echo "   App User: mongodb://app_user:azure_secure_password_2024@$PUBLIC_IP:2701
 echo "   Admin User: mongodb://admin:admin_secure_password_2024@$PUBLIC_IP:27017/adhyayanmarg?authSource=admin"
 echo ""
 echo "🛡️ Your MongoDB runs 24/7 without auto-pause!"
+

@@ -44,3 +44,4 @@ echo "🚀 Next steps:"
 echo "  1. Start your backend: cd backend && npm run dev"
 echo "  2. Test your application"
 echo "  3. Your MongoDB now runs 24/7 without auto-pause!"
+

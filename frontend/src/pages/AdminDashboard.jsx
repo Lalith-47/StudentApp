@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { apiService } from "../utils/api";
 import Button from "../components/UI/Button";
@@ -69,6 +70,7 @@ import {
 } from "recharts";
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
@@ -108,6 +110,18 @@ const AdminDashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [lastFetchTime, setLastFetchTime] = useState(null);
 
+  // Create user modal state
+  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [createUserForm, setCreateUserForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "student",
+  });
+  const [createUserLoading, setCreateUserLoading] = useState(false);
+  const [createUserErrors, setCreateUserErrors] = useState({});
+
   // Settings state
   const [settings, setSettings] = useState({
     maintenanceMode: false,
@@ -146,21 +160,45 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     console.log("AdminDashboard useEffect triggered");
-    // Only fetch data if not already loaded (prevent unnecessary API calls)
-    if (!dashboardData) {
-      fetchDashboardData();
+    console.log("User:", user);
+    console.log("User role:", user?.role);
+    console.log("Quiz data state:", quizData);
+
+    // Only fetch data if user is authenticated and data is not already loaded
+    if (user && user.role === "admin") {
+      // Sequential loading to prevent overwhelming the server
+      const loadData = async () => {
+        try {
+          if (!dashboardData) {
+            console.log("Fetching dashboard data...");
+            await fetchDashboardData();
+          }
+          if (users.length === 0) {
+            console.log("Fetching users...");
+            await fetchUsers();
+          }
+          // Always fetch quiz data on component load for admin users
+          console.log("Fetching quiz data on component load...");
+          await fetchQuizData();
+        } catch (error) {
+          console.error("Error loading admin dashboard data:", error);
+          // Don't show toast here, let individual functions handle their own errors
+        }
+      };
+
+      loadData();
     }
-    if (users.length === 0) {
-      fetchUsers();
-    }
-    if (!quizData) {
-      fetchQuizData();
-    }
-  }, []);
+  }, [user]); // Add user as dependency
 
   // Auto-refresh quiz data every 60 seconds when quiz tab is active (reduced frequency)
   useEffect(() => {
     if (activeTab === "quiz") {
+      // Fetch quiz data immediately when quiz tab is accessed
+      if (!quizData) {
+        console.log("Quiz tab accessed, fetching quiz data...");
+        fetchQuizData();
+      }
+
       const interval = setInterval(() => {
         console.log("Auto-refreshing quiz data...");
         fetchQuizData(true); // Force refresh for auto-refresh
@@ -168,7 +206,7 @@ const AdminDashboard = () => {
 
       return () => clearInterval(interval);
     }
-  }, [activeTab]);
+  }, [activeTab, quizData]);
 
   const fetchDashboardData = async (forceRefresh = false) => {
     // Simple cache: only fetch if data is older than 30 seconds or force refresh
@@ -186,8 +224,20 @@ const AdminDashboard = () => {
     }
 
     try {
+      setLoading(true);
+      setError(null); // Clear any previous errors
       console.log("Fetching dashboard data...");
-      const response = await apiService.getAdminDashboard();
+
+      // Add timeout to prevent hanging requests
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Request timeout")), 15000); // 15 second timeout
+      });
+
+      const response = await Promise.race([
+        apiService.getAdminDashboard(),
+        timeoutPromise,
+      ]);
+
       console.log("Dashboard data response:", response.data);
 
       if (response.data.success) {
@@ -212,6 +262,11 @@ const AdminDashboard = () => {
           "Database not connected. Please ensure MongoDB is running and properly configured.";
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
+      } else if (
+        error.code === "ECONNABORTED" ||
+        error.message === "Request timeout"
+      ) {
+        errorMessage = "Request timed out. Please try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -224,6 +279,8 @@ const AdminDashboard = () => {
 
   const fetchUsers = async (page = 1, search = "", role = "", status = "") => {
     try {
+      setLoading(true);
+      setError(null); // Clear any previous errors
       console.log("Fetching users...");
       const params = {
         page,
@@ -233,12 +290,22 @@ const AdminDashboard = () => {
         ...(status && { status }),
       };
 
-      const response = await apiService.getAdminUsers(params);
+      // Add timeout to prevent hanging requests
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Request timeout")), 15000); // 15 second timeout
+      });
+
+      const response = await Promise.race([
+        apiService.getAdminUsers(params),
+        timeoutPromise,
+      ]);
+
       console.log("Users data response:", response.data);
 
       if (response.data.success) {
         setUsers(response.data.data.users);
         setPagination(response.data.data.pagination);
+        setError(null); // Clear any previous errors
       } else {
         throw new Error(response.data.message || "Failed to fetch users data");
       }
@@ -255,6 +322,11 @@ const AdminDashboard = () => {
           "Database not connected. Please ensure MongoDB is running and properly configured.";
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
+      } else if (
+        error.code === "ECONNABORTED" ||
+        error.message === "Request timeout"
+      ) {
+        errorMessage = "Request timed out. Please try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -282,10 +354,16 @@ const AdminDashboard = () => {
         "Fetching quiz data...",
         forceRefresh ? "(Force refresh)" : ""
       );
+      console.log(
+        "API service getAdminQuizData function:",
+        apiService.getAdminQuizData
+      );
 
       // Add cache busting parameter for force refresh
       const response = await apiService.getAdminQuizData(forceRefresh);
       console.log("Quiz data response:", response.data);
+      console.log("Quiz data response status:", response.status);
+      console.log("Quiz data response success:", response.data.success);
 
       if (response.data.success && response.data.data) {
         const backendData = response.data.data;
@@ -311,8 +389,10 @@ const AdminDashboard = () => {
         };
 
         console.log("Mapped quiz data:", mappedData);
+        console.log("Setting quiz data state...");
         setQuizData(mappedData);
         setLastQuizRefresh(new Date());
+        console.log("Quiz data state set successfully");
 
         // Show success message for manual refresh
         if (forceRefresh) {
@@ -368,6 +448,82 @@ const AdminDashboard = () => {
       fetchUsers(currentPage, searchTerm, roleFilter, statusFilter);
     } catch (error) {
       console.error("Error updating user status:", error);
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+
+    // Validate form
+    const errors = {};
+    if (!createUserForm.name.trim()) {
+      errors.name = "Name is required";
+    }
+    if (!createUserForm.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(createUserForm.email)) {
+      errors.email = "Please enter a valid email";
+    }
+    if (!createUserForm.password) {
+      errors.password = "Password is required";
+    } else if (createUserForm.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    if (createUserForm.password !== createUserForm.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+    if (!createUserForm.role) {
+      errors.role = "Role is required";
+    }
+
+    setCreateUserErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    setCreateUserLoading(true);
+    try {
+      const response = await apiService.createUser({
+        name: createUserForm.name,
+        email: createUserForm.email,
+        password: createUserForm.password,
+        role: createUserForm.role,
+      });
+
+      if (response.data.success) {
+        setShowCreateUserModal(false);
+        setCreateUserForm({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          role: "student",
+        });
+        setCreateUserErrors({});
+
+        // Refresh users list
+        fetchUsers(currentPage, searchTerm, roleFilter, statusFilter);
+
+        // Show success message
+        setSuccessMessage("✅ User created successfully!");
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+        }, 3000);
+      } else {
+        setCreateUserErrors({
+          general: response.data.message || "Failed to create user",
+        });
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      setCreateUserErrors({
+        general:
+          error.response?.data?.message ||
+          "Failed to create user. Please try again.",
+      });
+    } finally {
+      setCreateUserLoading(false);
     }
   };
 
@@ -934,19 +1090,18 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                      Quiz Submissions
+                      Total Mentors
                     </p>
                     <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                      {quizData?.totalQuizzes || 0}
+                      {dashboardData?.userStats?.mentorUsers || 0}
                     </p>
-                    <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
-                      <Target className="w-3 h-3 mr-1" />
-                      {quizData?.authenticatedQuizzes || 0} detailed,{" "}
-                      {quizData?.guestQuizzes || 0} mock
+                    <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center mt-1">
+                      <Users className="w-3 h-3 mr-1" />
+                      Active mentors in the system
                     </p>
                   </div>
-                  <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                    <Target className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                    <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                 </div>
               </div>
@@ -1052,10 +1207,12 @@ const AdminDashboard = () => {
                         className={`px-2 py-1 text-xs rounded-full ${
                           user.role === "admin"
                             ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                            : user.role === "mentor"
+                            ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
                             : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         }`}
                       >
-                        {user.role}
+                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </span>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {new Date(user.createdAt).toLocaleDateString()}
@@ -1076,6 +1233,13 @@ const AdminDashboard = () => {
                 User Management
               </h3>
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setShowCreateUserModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Account</span>
+                </button>
                 <button
                   onClick={() =>
                     fetchUsers(
@@ -1119,6 +1283,7 @@ const AdminDashboard = () => {
                 >
                   <option value="">All Roles</option>
                   <option value="admin">Admin</option>
+                  <option value="mentor">Mentor</option>
                   <option value="student">Student</option>
                 </select>
                 <select
@@ -1189,10 +1354,13 @@ const AdminDashboard = () => {
                             className={`px-2 py-1 text-xs rounded-full ${
                               user.role === "admin"
                                 ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                : user.role === "mentor"
+                                ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
                                 : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                             }`}
                           >
-                            {user.role}
+                            {user.role.charAt(0).toUpperCase() +
+                              user.role.slice(1)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -1312,6 +1480,12 @@ const AdminDashboard = () => {
                     <p className="text-gray-600 dark:text-gray-400 mt-1">
                       Track quiz submissions and user engagement
                     </p>
+                    {!quizData && !quizLoading && (
+                      <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
+                        No quiz data loaded. Click "Load Data" to fetch quiz
+                        statistics.
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-col items-end space-y-2">
                     <button
@@ -1325,7 +1499,11 @@ const AdminDashboard = () => {
                         <RefreshCw className="w-4 h-4" />
                       )}
                       <span>
-                        {quizLoading ? "Refreshing..." : "Refresh Data"}
+                        {quizLoading
+                          ? "Refreshing..."
+                          : !quizData
+                          ? "Load Data"
+                          : "Refresh Data"}
                       </span>
                     </button>
                     {lastQuizRefresh && (
@@ -1350,7 +1528,17 @@ const AdminDashboard = () => {
                           Total Quizzes
                         </p>
                         <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {quizData?.totalQuizzes || 0}
+                          {quizLoading ? (
+                            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <span
+                              onClick={() =>
+                                console.log("Current quizData:", quizData)
+                              }
+                            >
+                              {quizData?.totalQuizzes || 0}
+                            </span>
+                          )}
                         </p>
                         <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
                           <Target className="w-3 h-3 mr-1" />
@@ -1920,7 +2108,7 @@ const AdminDashboard = () => {
                     </div>
                     <input
                       type="text"
-                      defaultValue="AdhyayanMarg"
+                      defaultValue="Praniti"
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm w-48"
                     />
                   </div>
@@ -2585,6 +2773,168 @@ const AdminDashboard = () => {
               >
                 OK
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Create User Modal */}
+        {showCreateUserModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 max-w-md mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Create New Account
+              </h3>
+              <form onSubmit={handleCreateUser} className="space-y-4">
+                {createUserErrors.general && (
+                  <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg text-sm">
+                    {createUserErrors.general}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={createUserForm.name}
+                    onChange={(e) =>
+                      setCreateUserForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter full name"
+                  />
+                  {createUserErrors.name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {createUserErrors.name}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={createUserForm.email}
+                    onChange={(e) =>
+                      setCreateUserForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter email address"
+                  />
+                  {createUserErrors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {createUserErrors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Role
+                  </label>
+                  <select
+                    value={createUserForm.role}
+                    onChange={(e) =>
+                      setCreateUserForm((prev) => ({
+                        ...prev,
+                        role: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="student">Student</option>
+                    <option value="mentor">Mentor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  {createUserErrors.role && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {createUserErrors.role}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={createUserForm.password}
+                    onChange={(e) =>
+                      setCreateUserForm((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter password"
+                  />
+                  {createUserErrors.password && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {createUserErrors.password}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    value={createUserForm.confirmPassword}
+                    onChange={(e) =>
+                      setCreateUserForm((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Confirm password"
+                  />
+                  {createUserErrors.confirmPassword && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {createUserErrors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateUserModal(false);
+                      setCreateUserForm({
+                        name: "",
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                        role: "student",
+                      });
+                      setCreateUserErrors({});
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createUserLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 rounded-lg"
+                  >
+                    {createUserLoading ? "Creating..." : "Create Account"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

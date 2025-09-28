@@ -61,7 +61,7 @@ router.post(
         });
       }
 
-      const { name, email, password } = req.body;
+      const { name, email, password, role = "student" } = req.body;
 
       // Check if user already exists
       const existingUser = await User.findOne({ email });
@@ -72,12 +72,21 @@ router.post(
         });
       }
 
+      // Validate role
+      const validRoles = ["student", "mentor"];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid role. Must be 'student' or 'mentor'",
+        });
+      }
+
       // Create new user (password will be hashed by pre-save hook)
       const user = new User({
         name,
         email,
         password,
-        role: "student",
+        role,
         isActive: true,
         isVerified: true,
         analytics: {
@@ -142,7 +151,7 @@ router.post(
         });
       }
 
-      const { email, password } = req.body;
+      const { email, password, role } = req.body;
 
       // Ensure database connection is available
       ensureDbConnection();
@@ -154,6 +163,14 @@ router.post(
         return res.status(404).json({
           success: false,
           message: "No user found in the system",
+        });
+      }
+
+      // Check if user role matches the requested role
+      if (role && user.role !== role) {
+        return res.status(401).json({
+          success: false,
+          message: `Invalid credentials for ${role} login`,
         });
       }
 

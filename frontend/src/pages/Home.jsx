@@ -197,7 +197,7 @@ const Home = () => {
       name: "Priya Sharma",
       role: "Software Engineer at Google",
       content:
-        "AdhyayanMarg helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
+        "Praniti helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
       rating: 5,
       image:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
@@ -266,7 +266,7 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
+              className="mt-8 lg:mt-0 lg:ml-8 xl:ml-12"
             >
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
                 <div className="space-y-4">
@@ -499,7 +499,7 @@ const Home = () => {
             className="text-center mb-16"
           >
             <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
-              How AdhyayanMarg Works
+              How Praniti Works
             </h2>
             <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
               Our proven 3-step process helps you discover, plan, and achieve
