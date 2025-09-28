@@ -4,18 +4,12 @@ import { motion } from "framer-motion";
 import {
   Users,
   UserCheck,
-  TrendingUp,
   MessageSquare,
-  Star,
-  BookOpen,
-  Target,
   BarChart3,
-  Plus,
   Search,
   Filter,
-  Send,
   CheckCircle,
-  AlertCircle,
+  Clock,
 } from "lucide-react";
 import Card from "../components/UI/Card";
 import Button from "../components/UI/Button";
@@ -28,14 +22,14 @@ const MentorPortal = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("students");
   const [students, setStudents] = useState([]);
-  const [assignedStudents, setAssignedStudents] = useState([]);
-  const [selectedStudents, setSelectedStudents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all"); // all, assigned, unassigned
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [stats, setStats] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    assignedStudents: 0,
+    unassignedStudents: 0,
+    totalInteractions: 0,
+  });
 
   // Fetch students data
   const fetchStudents = async () => {
@@ -43,13 +37,21 @@ const MentorPortal = () => {
       setLoading(true);
       const response = await apiService.getMentorStudents({
         search: searchTerm,
-        filter: filter,
         page: 1,
-        limit: 50
+        limit: 50,
       });
-      
+
       if (response.data.success) {
         setStudents(response.data.students);
+        setStats((prev) => ({
+          ...prev,
+          totalStudents: response.data.students.length,
+          assignedStudents: response.data.students.filter((s) => s.isAssigned)
+            .length,
+          unassignedStudents: response.data.students.filter(
+            (s) => !s.isAssigned
+          ).length,
+        }));
       }
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -58,192 +60,23 @@ const MentorPortal = () => {
     }
   };
 
-  // Fetch assigned students
-  const fetchAssignedStudents = async () => {
-    try {
-      const response = await apiService.getMentorAssignedStudents();
-      if (response.data.success) {
-        setAssignedStudents(response.data.students);
-      }
-    } catch (error) {
-      console.error("Error fetching assigned students:", error);
-    }
-  };
-
-  // Fetch dashboard stats
-  const fetchStats = async () => {
-    try {
-      const response = await apiService.getMentorDashboardStats();
-      if (response.data.success) {
-        setStats(response.data.stats);
-      }
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    }
-  };
-
-  // Assign students to mentor
-  const handleAssignStudents = async () => {
-    if (selectedStudents.length === 0) return;
-    
-    try {
-      setLoading(true);
-      const response = await apiService.assignStudents({
-        studentIds: selectedStudents
-      });
-      
-      if (response.data.success) {
-        setSelectedStudents([]);
-        fetchStudents();
-        fetchAssignedStudents();
-        fetchStats();
-      }
-    } catch (error) {
-      console.error("Error assigning students:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Unassign students from mentor
-  const handleUnassignStudents = async () => {
-    if (selectedStudents.length === 0) return;
-    
-    try {
-      setLoading(true);
-      const response = await apiService.unassignStudents({
-        studentIds: selectedStudents
-      });
-      
-      if (response.data.success) {
-        setSelectedStudents([]);
-        fetchStudents();
-        fetchAssignedStudents();
-        fetchStats();
-      }
-    } catch (error) {
-      console.error("Error unassigning students:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle student selection
-  const handleStudentSelect = (studentId) => {
-    setSelectedStudents(prev => 
-      prev.includes(studentId) 
-        ? prev.filter(id => id !== studentId)
-        : [...prev, studentId]
-    );
-  };
-
-  // Handle select all
-  const handleSelectAll = () => {
-    const availableStudents = students.filter(student => student.canAssign);
-    if (selectedStudents.length === availableStudents.length) {
-      setSelectedStudents([]);
-    } else {
-      setSelectedStudents(availableStudents.map(student => student._id));
-    }
-  };
-
   // Load data on component mount
   useEffect(() => {
     fetchStudents();
-    fetchAssignedStudents();
-    fetchStats();
-  }, [searchTerm, filter]);
-
-  // Mock data for demonstration
-  const mockStudents = [
-    {
-      id: 1,
-      name: "Priya Sharma",
-      email: "priya@example.com",
-      progress: 85,
-      careerPath: "Software Engineering",
-      lastActive: "2 hours ago",
-      aptitudeScore: 92,
-      strengths: ["Problem Solving", "Logical Thinking", "Teamwork"],
-      avatar: "PS",
-    },
-    {
-      id: 2,
-      name: "Arjun Patel",
-      email: "arjun@example.com",
-      progress: 72,
-      careerPath: "Data Science",
-      lastActive: "1 day ago",
-      aptitudeScore: 88,
-      strengths: ["Analytical Skills", "Mathematics", "Research"],
-      avatar: "AP",
-    },
-    {
-      id: 3,
-      name: "Sneha Reddy",
-      email: "sneha@example.com",
-      progress: 91,
-      careerPath: "Product Management",
-      lastActive: "3 hours ago",
-      aptitudeScore: 95,
-      strengths: ["Leadership", "Communication", "Strategic Thinking"],
-      avatar: "SR",
-    },
-  ];
-
-  useEffect(() => {
-    setStudents(mockStudents);
   }, []);
 
-  const handleStudentSelection = (studentId) => {
-    setSelectedStudents((prev) =>
-      prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
-        : [...prev, studentId]
-    );
-  };
-
-  const handleSendMessage = async () => {
-    if (!message.trim() || selectedStudents.length === 0) return;
-
-    setLoading(true);
-    try {
-      // API call to send message
-      console.log(
-        "Sending message:",
-        message,
-        "to students:",
-        selectedStudents
-      );
-      setMessage("");
-      setSelectedStudents([]);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
-      setLoading(false);
+  // Refetch students when search term changes
+  useEffect(() => {
+    if (searchTerm.length > 2 || searchTerm.length === 0) {
+      fetchStudents();
     }
-  };
+  }, [searchTerm]);
 
-  const handleSendFeedback = async (studentId) => {
-    if (!feedback.trim()) return;
-
-    setLoading(true);
-    try {
-      // API call to send feedback
-      console.log("Sending feedback:", feedback, "to student:", studentId);
-      setFeedback("");
-    } catch (error) {
-      console.error("Error sending feedback:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredStudents = students.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const tabs = [
+    { id: "students", label: "Students", icon: Users },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "messages", label: "Messages", icon: MessageSquare },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -255,13 +88,18 @@ const MentorPortal = () => {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Mentor Portal
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-gray-600 dark:text-gray-400">
                 Welcome back, {user?.name || "Mentor"}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 px-3 py-1 rounded-full text-sm font-medium">
-                {stats.totalStudents} Students
+              <div className="text-right">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Total Students
+                </p>
+                <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                  {stats.totalStudents}
+                </p>
               </div>
             </div>
           </div>
@@ -277,11 +115,11 @@ const MentorPortal = () => {
                 <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Total Students
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.totalStudents || 0}
+                  {stats.totalStudents}
                 </p>
               </div>
             </div>
@@ -293,11 +131,27 @@ const MentorPortal = () => {
                 <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Active Students
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Assigned
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.activeStudents || 0}
+                  {stats.assignedStudents}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Pending
+                </p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {stats.unassignedStudents}
                 </p>
               </div>
             </div>
@@ -306,30 +160,14 @@ const MentorPortal = () => {
           <Card className="p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <MessageSquare className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Avg Progress
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Interactions
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.avgProgress || 0}%
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                <Star className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Avg Aptitude
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.avgAptitude || 0}
+                  {stats.totalInteractions}
                 </p>
               </div>
             </div>
@@ -337,91 +175,70 @@ const MentorPortal = () => {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-          <nav className="-mb-px flex space-x-8">
-            {[
-              { id: "students", label: "My Students", icon: Users },
-              { id: "analytics", label: "Analytics", icon: BarChart3 },
-              { id: "messages", label: "Messages", icon: MessageSquare },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                <tab.icon className="w-4 h-4 mr-2" />
-                {tab.label}
-              </button>
-            ))}
-          </nav>
+        <div className="mb-8">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                      activeTab === tab.id
+                        ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
 
-        {/* Students Tab */}
+        {/* Tab Content */}
         {activeTab === "students" && (
-          <div className="space-y-6">
-            {/* Search and Filter */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <Input
-                  type="text"
-                  placeholder="Search students..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                />
+          <div>
+            {/* Search and Filters */}
+            <div className="mb-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      type="text"
+                      placeholder="Search students..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <Button className="flex items-center space-x-2">
+                  <Filter className="w-4 h-4" />
+                  <span>Filter</span>
+                </Button>
               </div>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="all">All Students</option>
-                <option value="assigned">Assigned</option>
-                <option value="unassigned">Unassigned</option>
-              </select>
             </div>
-
-            {/* Action Buttons */}
-            {selectedStudents.length > 0 && (
-              <div className="flex gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <Button
-                  onClick={handleAssignStudents}
-                  disabled={loading}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  Assign Selected ({selectedStudents.length})
-                </Button>
-                <Button
-                  onClick={handleUnassignStudents}
-                  disabled={loading}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Unassign Selected
-                </Button>
-                <Button
-                  onClick={() => setSelectedStudents([])}
-                  className="bg-gray-600 hover:bg-gray-700 text-white"
-                >
-                  Clear Selection
-                </Button>
-              </div>
-            )}
 
             {/* Students List */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {loading ? (
                 <div className="col-span-full text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                  <p className="mt-2 text-gray-600 dark:text-gray-400">Loading students...</p>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    Loading students...
+                  </p>
                 </div>
               ) : students.length === 0 ? (
                 <div className="col-span-full text-center py-8">
                   <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No students found</p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    No students found
+                  </p>
                 </div>
               ) : (
                 students.map((student) => (
@@ -431,9 +248,13 @@ const MentorPortal = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className={`p-6 hover:shadow-lg transition-shadow duration-200 ${
-                      student.isAssigned ? 'border-green-200 dark:border-green-800' : 'border-gray-200 dark:border-gray-700'
-                    }`}>
+                    <Card
+                      className={`p-6 hover:shadow-lg transition-shadow duration-200 ${
+                        student.isAssigned
+                          ? "border-green-200 dark:border-green-800"
+                          : "border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center">
                           <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
@@ -450,182 +271,100 @@ const MentorPortal = () => {
                             </p>
                             {student.isAssigned && (
                               <p className="text-xs text-green-600 dark:text-green-400">
-                                Assigned to: {student.assignedMentor?.name || 'Unknown'}
+                                Assigned to:{" "}
+                                {student.assignedMentor?.name || "Unknown"}
                               </p>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          {student.canAssign && (
-                            <input
-                              type="checkbox"
-                              checked={selectedStudents.includes(student._id)}
-                              onChange={() => handleStudentSelect(student._id)}
-                              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                            />
+                          {student.isAssigned ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Assigned
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Pending
+                            </span>
                           )}
                         </div>
                       </div>
 
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-600 dark:text-gray-300">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600 dark:text-gray-400">
                             Progress
                           </span>
-                          <span className="font-medium">
-                            {student.progress}%
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {student.analytics?.totalHours || 0} hours
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${student.progress}%` }}
-                          />
+
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Interactions
+                          </span>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {student.analytics?.totalInteractions || 0}
+                          </span>
+                        </div>
+
+                        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              <MessageSquare className="w-4 h-4 mr-1" />
+                              Chat
+                            </Button>
+                            <Button size="sm" className="flex-1">
+                              <UserCheck className="w-4 h-4 mr-1" />
+                              Assign
+                            </Button>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Career Path:
-                        </span>
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {student.careerPath}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Aptitude Score:
-                        </span>
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                          {student.aptitudeScore}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Last Active:
-                        </span>
-                        <span className="text-gray-900 dark:text-white">
-                          {student.lastActive}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex flex-wrap gap-1">
-                        {student.strengths.map((strength, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full"
-                          >
-                            {strength}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          /* View details */
-                        }}
-                        className="flex-1"
-                      >
-                        <BookOpen className="w-4 h-4 mr-1" />
-                        View Details
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          /* Start chat */
-                        }}
-                        className="flex-1"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        Chat
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-                </motion.div>
-              ))}
+                    </Card>
+                  </motion.div>
+                ))
+              )}
             </div>
-
-            {/* Bulk Actions */}
-            {selectedStudents.length > 0 && (
-              <Card className="p-4 bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800">
-                <div className="flex items-center justify-between">
-                  <span className="text-primary-700 dark:text-primary-300 font-medium">
-                    {selectedStudents.length} student(s) selected
-                  </span>
-                  <div className="flex space-x-2">
-                    <Input
-                      type="text"
-                      placeholder="Send message..."
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!message.trim() || loading}
-                      size="sm"
-                    >
-                      <Send className="w-4 h-4 mr-1" />
-                      Send
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
           </div>
         )}
 
-        {/* Analytics Tab */}
         {activeTab === "analytics" && (
-          <div className="space-y-6">
+          <div>
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Student Performance Overview
+                Analytics Dashboard
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Career Path Distribution
-                  </h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        Software Engineering
-                      </span>
-                      <span className="text-sm font-medium">40%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        Data Science
-                      </span>
-                      <span className="text-sm font-medium">30%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        Product Management
-                      </span>
-                      <span className="text-sm font-medium">30%</span>
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                    {stats.totalStudents}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Total Students
                   </div>
                 </div>
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Progress Trends
-                  </h4>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    <p>• 85% of students show consistent progress</p>
-                    <p>• Average completion time: 3.2 weeks</p>
-                    <p>• 92% satisfaction rate</p>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    {stats.assignedStudents}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Assigned Students
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                    {stats.unassignedStudents}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Pending Assignments
                   </div>
                 </div>
               </div>
@@ -633,40 +372,17 @@ const MentorPortal = () => {
           </div>
         )}
 
-        {/* Messages Tab */}
         {activeTab === "messages" && (
-          <div className="space-y-6">
+          <div>
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Recent Conversations
+                Messages
               </h3>
-              <div className="space-y-4">
-                {students.slice(0, 3).map((student) => (
-                  <div
-                    key={student.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                  >
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                        <span className="text-primary-600 dark:text-primary-400 font-semibold text-sm">
-                          {student.avatar}
-                        </span>
-                      </div>
-                      <div className="ml-3">
-                        <h4 className="font-medium text-gray-900 dark:text-white">
-                          {student.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Last message 2 hours ago
-                        </p>
-                      </div>
-                    </div>
-                    <Button size="sm" variant="outline">
-                      <MessageSquare className="w-4 h-4 mr-1" />
-                      Reply
-                    </Button>
-                  </div>
-                ))}
+              <div className="text-center py-8">
+                <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">
+                  No messages yet. Start a conversation with your students!
+                </p>
               </div>
             </Card>
           </div>
