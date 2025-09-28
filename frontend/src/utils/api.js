@@ -195,6 +195,17 @@ export const endpoints = {
     unassignStudents: "/mentor/unassign-students",
     sendMessage: "/mentor/send-message",
     dashboardStats: "/mentor/dashboard-stats",
+    studentProfile: (studentId) => `/mentor/student/${studentId}/profile`,
+    studentAptitude: (studentId) => `/mentor/student/${studentId}/aptitude`,
+    careerRecommendations: (studentId) =>
+      `/mentor/student/${studentId}/career-recommendations`,
+    guidanceSession: "/mentor/guidance-session",
+    performanceFeedback: "/mentor/performance-feedback",
+    analytics: "/mentor/analytics",
+    studentTimeline: (studentId) => `/mentor/student/${studentId}/timeline`,
+    sessions: "/mentor/sessions",
+    messages: "/mentor/messages",
+    sendMessageToStudent: "/mentor/send-message-to-student",
   },
 };
 
@@ -288,6 +299,27 @@ export const apiService = {
   unassignStudents: (data) => api.post(endpoints.mentor.unassignStudents, data),
   sendMessageToStudents: (data) => api.post(endpoints.mentor.sendMessage, data),
   getMentorDashboardStats: () => api.get(endpoints.mentor.dashboardStats),
+
+  // New mentor functionalities
+  getStudentProfile: (studentId) =>
+    api.get(endpoints.mentor.studentProfile(studentId)),
+  getStudentAptitude: (studentId) =>
+    api.get(endpoints.mentor.studentAptitude(studentId)),
+  getCareerRecommendations: (studentId) =>
+    api.get(endpoints.mentor.careerRecommendations(studentId)),
+  recordGuidanceSession: (data) =>
+    api.post(endpoints.mentor.guidanceSession, data),
+  submitPerformanceFeedback: (data) =>
+    api.post(endpoints.mentor.performanceFeedback, data),
+
+  // Enhanced mentor functionalities
+  getMentorAnalytics: () => api.get(endpoints.mentor.analytics),
+  getStudentTimeline: (studentId) =>
+    api.get(endpoints.mentor.studentTimeline(studentId)),
+  getSessionHistory: (params) => api.get(endpoints.mentor.sessions, { params }),
+  getMessages: (params) => api.get(endpoints.mentor.messages, { params }),
+  sendMessageToStudent: (data) =>
+    api.post(endpoints.mentor.sendMessageToStudent, data),
 };
 
 export default api;
