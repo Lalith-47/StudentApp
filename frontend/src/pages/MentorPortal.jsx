@@ -549,6 +549,7 @@ const MentorPortal = () => {
                         Chat
                       </Button>
                     </div>
+                  </div>
                   </Card>
                 </motion.div>
               ))}
