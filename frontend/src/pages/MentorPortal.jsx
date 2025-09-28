@@ -550,7 +550,7 @@ const MentorPortal = () => {
                       </Button>
                     </div>
                   </div>
-                  </Card>
+                </Card>
                 </motion.div>
               ))}
             </div>
