@@ -52,13 +52,24 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(morgan("combined"));
 app.use(logger);
 
-// Health check endpoint
+// Enhanced health check endpoint with database status
 app.get("/health", (req, res) => {
+  const dbStatus = dbManager.getStatus();
+
   res.status(200).json({
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || "development",
+    database: {
+      status: dbStatus.isConnected ? "connected" : "disconnected",
+      readyState: dbStatus.readyState,
+      host: dbStatus.host,
+      port: dbStatus.port,
+      name: dbStatus.name,
+      retries: dbStatus.retries,
+      healthy: dbManager.isHealthy(),
+    },
   });
 });
 
@@ -84,42 +95,44 @@ app.use("*", (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Database connection
-const connectDB = async () => {
+// Enhanced database connection with persistent connection and auto-reconnection
+const dbManager = require("./config/database");
+
+// Start server with enhanced database connection
+const startServer = async () => {
   try {
-    if (process.env.MONGODB_URI) {
-      await mongoose.connect(process.env.MONGODB_URI);
-      console.log("✅ MongoDB connected successfully");
-    } else {
-      console.log("⚠️  MongoDB URI not provided, running in dummy mode");
-    }
+    // Connect to MongoDB with persistent connection
+    await dbManager.connect();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(
+        `🗄️  Database: ${dbManager.isHealthy() ? "Connected" : "Disconnected"}`
+      );
+    });
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
-    console.log("⚠️  Running in dummy mode without database");
+    console.error("❌ Failed to start server:", error.message);
+    console.log("🔄 Retrying in 5 seconds...");
+
+    // Retry connection after 5 seconds
+    setTimeout(() => {
+      startServer();
+    }, 5000);
   }
 };
 
-// Start server
-const startServer = async () => {
-  await connectDB();
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-  });
-};
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
+// Enhanced graceful shutdown
+process.on("SIGTERM", async () => {
   console.log("SIGTERM received, shutting down gracefully");
-  mongoose.connection.close();
+  await dbManager.gracefulShutdown();
   process.exit(0);
 });
 
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
   console.log("SIGINT received, shutting down gracefully");
-  mongoose.connection.close();
+  await dbManager.gracefulShutdown();
   process.exit(0);
 });
 

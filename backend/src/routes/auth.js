@@ -3,21 +3,8 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const {
-  createUser,
-  findUserByEmail,
-  findUserByEmailWithPassword,
-  findUserById,
-  updateUser,
-  comparePassword,
-} = require("../data/mockUsers");
-const mongoose = require("mongoose");
+const { ensureDbConnection } = require("../utils/database");
 const router = express.Router();
-
-// Check if database is connected
-const isDbConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -157,17 +144,11 @@ router.post(
 
       const { email, password } = req.body;
 
-      let user;
+      // Ensure database connection is available
+      ensureDbConnection();
 
-      if (isDbConnected()) {
-        // Use MongoDB
-        user = await User.findOne({ email }).select("+password");
-      } else {
-        // Use mock users
-        console.log("Looking for user with email:", email);
-        user = await findUserByEmailWithPassword(email);
-        console.log("Found user:", user ? "Yes" : "No");
-      }
+      // Use MongoDB only
+      const user = await User.findOne({ email }).select("+password");
 
       if (!user) {
         return res.status(404).json({
@@ -184,8 +165,8 @@ router.post(
         });
       }
 
-      // Compare password
-      const isPasswordValid = await comparePassword(password, user.password);
+      // Compare password using bcrypt
+      const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
@@ -195,11 +176,7 @@ router.post(
 
       // Update last login
       user.lastLogin = new Date();
-      if (isDbConnected()) {
-        await user.save();
-      } else {
-        await updateUser(user.id, { lastLogin: new Date() });
-      }
+      await user.save();
 
       // Generate JWT token
       const token = jwt.sign(
