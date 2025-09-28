@@ -245,18 +245,6 @@ const MentorPortal = () => {
       student.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const stats = {
-    totalStudents: students.length,
-    activeStudents: students.filter((s) => s.lastActive.includes("hour"))
-      .length,
-    avgProgress: Math.round(
-      students.reduce((acc, s) => acc + s.progress, 0) / students.length
-    ),
-    avgAptitude: Math.round(
-      students.reduce((acc, s) => acc + s.aptitudeScore, 0) / students.length
-    ),
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}

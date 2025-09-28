@@ -131,45 +131,30 @@ const getDashboardStats = async (req, res) => {
       });
     }
 
-    // Optimize: Use single aggregation pipeline for all user statistics
-    const userStatsAgg = await User.aggregate([
-      {
-        $facet: {
-          totalUsers: [{ $count: "count" }],
-          activeUsers: [{ $match: { isActive: true } }, { $count: "count" }],
-          adminUsers: [{ $match: { role: "admin" } }, { $count: "count" }],
-          studentUsers: [{ $match: { role: "student" } }, { $count: "count" }],
-          mentorUsers: [{ $match: { role: "mentor" } }, { $count: "count" }],
-          newUsersThisMonth: [
-            {
-              $match: {
-                createdAt: {
-                  $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-                },
-              },
-            },
-            { $count: "count" },
-          ],
-          newUsersToday: [
-            {
-              $match: {
-                createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-              },
-            },
-            { $count: "count" },
-          ],
+    // Use individual count queries for better Azure Cosmos DB compatibility
+    const [
+      totalUsers,
+      activeUsers,
+      adminUsers,
+      studentUsers,
+      mentorUsers,
+      newUsersThisMonth,
+      newUsersToday,
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ isActive: true }),
+      User.countDocuments({ role: "admin" }),
+      User.countDocuments({ role: "student" }),
+      User.countDocuments({ role: "mentor" }),
+      User.countDocuments({
+        createdAt: {
+          $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         },
-      },
+      }),
+      User.countDocuments({
+        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+      }),
     ]);
-
-    const stats = userStatsAgg[0];
-    const totalUsers = stats.totalUsers[0]?.count || 0;
-    const activeUsers = stats.activeUsers[0]?.count || 0;
-    const adminUsers = stats.adminUsers[0]?.count || 0;
-    const studentUsers = stats.studentUsers[0]?.count || 0;
-    const mentorUsers = stats.mentorUsers[0]?.count || 0;
-    const newUsersThisMonth = stats.newUsersThisMonth[0]?.count || 0;
-    const newUsersToday = stats.newUsersToday[0]?.count || 0;
 
     // Get recent users (last 10)
     const recentUsers = await User.find()

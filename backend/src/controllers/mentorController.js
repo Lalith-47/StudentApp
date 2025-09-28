@@ -24,10 +24,7 @@ const getStudents = async (req, res) => {
     if (filter === "assigned") {
       query.mentorId = { $exists: true, $ne: null };
     } else if (filter === "unassigned") {
-      query.$or = [
-        { mentorId: { $exists: false } },
-        { mentorId: null },
-      ];
+      query.$or = [{ mentorId: { $exists: false } }, { mentorId: null }];
     }
 
     const students = await User.find(query)
@@ -40,14 +37,17 @@ const getStudents = async (req, res) => {
     const total = await User.countDocuments(query);
 
     // Add assignment status to each student
-    const studentsWithStatus = students.map(student => ({
+    const studentsWithStatus = students.map((student) => ({
       ...student.toObject(),
       isAssigned: !!student.mentorId,
-      assignedMentor: student.mentorId ? {
-        name: student.mentorId.name,
-        email: student.mentorId.email
-      } : null,
-      canAssign: !student.mentorId || student.mentorId._id.toString() === mentorId
+      assignedMentor: student.mentorId
+        ? {
+            name: student.mentorId.name,
+            email: student.mentorId.email,
+          }
+        : null,
+      canAssign:
+        !student.mentorId || student.mentorId._id.toString() === mentorId,
     }));
 
     res.json({
@@ -77,13 +77,20 @@ const assignStudents = async (req, res) => {
     const mentorId = req.user.id;
 
     // Check if students are already assigned to other mentors
-    const students = await User.find({ _id: { $in: studentIds }, role: "student" });
-    const alreadyAssigned = students.filter(s => s.mentorId && s.mentorId.toString() !== mentorId);
+    const students = await User.find({
+      _id: { $in: studentIds },
+      role: "student",
+    });
+    const alreadyAssigned = students.filter(
+      (s) => s.mentorId && s.mentorId.toString() !== mentorId
+    );
 
     if (alreadyAssigned.length > 0) {
       return res.status(400).json({
         success: false,
-        message: `Some students are already assigned to other mentors: ${alreadyAssigned.map(s => s.name).join(", ")}`,
+        message: `Some students are already assigned to other mentors: ${alreadyAssigned
+          .map((s) => s.name)
+          .join(", ")}`,
       });
     }
 
