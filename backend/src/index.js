@@ -97,14 +97,18 @@ app.use(errorHandler);
 
 // Enhanced database connection with persistent connection and auto-reconnection
 const dbManager = require("./config/database");
+const { createIndexes } = require("./config/indexes");
 
 // Start server with enhanced database connection
 const startServer = async () => {
   try {
-    // Connect to MongoDB with persistent connection
-    await dbManager.connect();
+          // Connect to MongoDB with persistent connection
+          await dbManager.connect();
 
-    app.listen(PORT, () => {
+          // Create database indexes for performance
+          await createIndexes();
+
+          app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);

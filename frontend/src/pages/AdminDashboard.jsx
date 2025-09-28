@@ -106,6 +106,7 @@ const AdminDashboard = () => {
 
   // Refresh state
   const [refreshing, setRefreshing] = useState(false);
+  const [lastFetchTime, setLastFetchTime] = useState(null);
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -145,38 +146,79 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     console.log("AdminDashboard useEffect triggered");
-    fetchDashboardData();
-    fetchUsers();
-    fetchQuizData();
+    // Only fetch data if not already loaded (prevent unnecessary API calls)
+    if (!dashboardData) {
+      fetchDashboardData();
+    }
+    if (users.length === 0) {
+      fetchUsers();
+    }
+    if (!quizData) {
+      fetchQuizData();
+    }
   }, []);
 
-  // Auto-refresh quiz data every 30 seconds when quiz tab is active
+  // Auto-refresh quiz data every 60 seconds when quiz tab is active (reduced frequency)
   useEffect(() => {
     if (activeTab === "quiz") {
       const interval = setInterval(() => {
         console.log("Auto-refreshing quiz data...");
         fetchQuizData(true); // Force refresh for auto-refresh
-      }, 30000); // 30 seconds
+      }, 60000); // 60 seconds (reduced from 30 seconds)
 
       return () => clearInterval(interval);
     }
   }, [activeTab]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (forceRefresh = false) => {
+    // Simple cache: only fetch if data is older than 30 seconds or force refresh
+    const now = Date.now();
+    const cacheTime = 30 * 1000; // 30 seconds
+    if (
+      !forceRefresh &&
+      lastFetchTime &&
+      now - lastFetchTime < cacheTime &&
+      dashboardData
+    ) {
+      console.log("Using cached dashboard data");
+      setLoading(false);
+      return;
+    }
+
     try {
       console.log("Fetching dashboard data...");
       const response = await apiService.getAdminDashboard();
       console.log("Dashboard data response:", response.data);
-      setDashboardData(response.data.data);
+
+      if (response.data.success) {
+        setDashboardData(response.data.data);
+        setLastFetchTime(now);
+        setError(null); // Clear any previous errors
+      } else {
+        throw new Error(
+          response.data.message || "Failed to fetch dashboard data"
+        );
+      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      if (error.response?.status === 503) {
-        setError(
-          "Database not connected. Please ensure MongoDB is running and properly configured."
-        );
-      } else {
-        setError("Failed to load dashboard data");
+      let errorMessage = "Failed to load dashboard data";
+
+      if (error.response?.status === 401) {
+        errorMessage = "Authentication required. Please login again.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "Access denied. Admin privileges required.";
+      } else if (error.response?.status === 503) {
+        errorMessage =
+          "Database not connected. Please ensure MongoDB is running and properly configured.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -193,17 +235,31 @@ const AdminDashboard = () => {
 
       const response = await apiService.getAdminUsers(params);
       console.log("Users data response:", response.data);
-      setUsers(response.data.data.users);
-      setPagination(response.data.data.pagination);
+
+      if (response.data.success) {
+        setUsers(response.data.data.users);
+        setPagination(response.data.data.pagination);
+      } else {
+        throw new Error(response.data.message || "Failed to fetch users data");
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
-      if (error.response?.status === 503) {
-        setError(
-          "Database not connected. Please ensure MongoDB is running and properly configured."
-        );
-      } else {
-        setError("Failed to load users data");
+      let errorMessage = "Failed to load users data";
+
+      if (error.response?.status === 401) {
+        errorMessage = "Authentication required. Please login again.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "Access denied. Admin privileges required.";
+      } else if (error.response?.status === 503) {
+        errorMessage =
+          "Database not connected. Please ensure MongoDB is running and properly configured.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -467,18 +523,27 @@ const AdminDashboard = () => {
     }
   };
 
-  // Refresh all data
+  // Optimized refresh - only refresh what's currently visible
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      // Refresh dashboard stats
-      await fetchDashboardStats();
+      // Refresh only the active tab data in parallel
+      const refreshPromises = [];
 
-      // Refresh users list
-      await fetchUsers();
+      // Always refresh dashboard data
+      refreshPromises.push(fetchDashboardData(true));
 
-      // Refresh quiz data with force refresh
-      await fetchQuizData(true);
+      // Only refresh other data if their tabs are active
+      if (activeTab === "users" || users.length === 0) {
+        refreshPromises.push(fetchUsers());
+      }
+
+      if (activeTab === "quiz" || !quizData) {
+        refreshPromises.push(fetchQuizData(true));
+      }
+
+      // Execute all refreshes in parallel
+      await Promise.allSettled(refreshPromises);
 
       setSuccessMessage("✅ Data refreshed successfully!");
       setShowSuccessPopup(true);

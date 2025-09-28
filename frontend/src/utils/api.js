@@ -1,6 +1,10 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
+// Simple cache for API responses
+const apiCache = new Map();
+const CACHE_DURATION = 30 * 1000; // 30 seconds
+
 // Create axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
@@ -230,8 +234,18 @@ export const apiService = {
   logout: () => api.post(endpoints.auth.logout),
   verifyToken: (token) => api.post(endpoints.auth.verify, { token }),
 
-  // Admin
-  getAdminDashboard: () => api.get(endpoints.admin.dashboard),
+  // Admin with caching
+  getAdminDashboard: () => {
+    const cacheKey = "admin-dashboard";
+    const cached = apiCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return Promise.resolve(cached.response);
+    }
+    return api.get(endpoints.admin.dashboard).then((response) => {
+      apiCache.set(cacheKey, { response, timestamp: Date.now() });
+      return response;
+    });
+  },
   getAdminUsers: (params) => api.get(endpoints.admin.users, { params }),
   updateUserStatus: (userId, data) =>
     api.patch(endpoints.admin.updateUserStatus(userId), data),

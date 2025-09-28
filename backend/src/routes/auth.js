@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const { ensureDbConnection } = require("../utils/database");
+const { ensureDbConnection, isDbConnected } = require("../utils/database");
 const router = express.Router();
 
 // Middleware to verify JWT token
@@ -209,13 +209,8 @@ router.post(
 // Get current user
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    let user;
-
-    if (isDbConnected()) {
-      user = await User.findById(req.user.id);
-    } else {
-      user = await findUserById(req.user.id);
-    }
+    // Use MongoDB only - remove dummy mode logic
+    const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({

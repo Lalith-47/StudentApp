@@ -74,8 +74,20 @@ const AdminLogin = () => {
       }
     } catch (error) {
       console.error("Admin login error:", error);
-      const errorMessage =
-        error.response?.data?.message || "Network error. Please try again.";
+      let errorMessage = "Network error. Please try again.";
+
+      if (error.response?.status === 401) {
+        if (error.response?.data?.message?.includes("password")) {
+          errorMessage = "Invalid password";
+        } else if (error.response?.data?.message?.includes("user")) {
+          errorMessage = "No user found with this email";
+        } else {
+          errorMessage = "Invalid credentials";
+        }
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
       setErrors({ general: errorMessage });
     } finally {
       setLoading(false);

@@ -377,6 +377,19 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-1 sm:space-x-2">
+                {/* Admin Login Button - Responsive */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/admin/login")}
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 font-medium touch-target transition-all duration-200"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:block font-medium">
+                    Admin Login
+                  </span>
+                </Button>
+
                 {/* Login Button - Responsive */}
                 <Button
                   variant="primary"
@@ -487,6 +500,18 @@ const Navbar = () => {
                       className="w-full touch-target min-h-[48px] text-base"
                     >
                       Login/Signup
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      onClick={() => {
+                        navigate("/admin/login");
+                        setIsOpen(false);
+                      }}
+                      className="w-full touch-target min-h-[48px] text-base text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 flex items-center justify-center space-x-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      <span>Admin Login</span>
                     </Button>
                   </div>
                 )}
