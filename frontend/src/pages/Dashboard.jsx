@@ -1313,7 +1313,7 @@ const Dashboard = () => {
         className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-4 sm:p-6 lg:p-8 text-white"
       >
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3">
-          Welcome back, {user?.name || "Student"}! 👋
+          Welcome, {user?.name || "Student"}! 👋
         </h2>
         <p className="text-primary-100 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
           Here's your personalized dashboard with all your learning progress and
