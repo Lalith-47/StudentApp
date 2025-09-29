@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "../../utils/helpers";
 import LoadingSpinner from "./LoadingSpinner";
 
@@ -11,24 +12,32 @@ const Button = ({
   className = "",
   onClick,
   type = "button",
+  animation = true,
+  fullWidth = false,
+  align = "center",
   ...props
 }) => {
-  const baseClasses =
-    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseClasses = cn(
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden",
+    fullWidth && "w-full",
+    align === "left" && "justify-start",
+    align === "right" && "justify-end",
+    align === "center" && "justify-center"
+  );
 
   const variants = {
     primary:
-      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm hover:shadow-md",
+      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg hover:shadow-xl hover:scale-105",
     secondary:
-      "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-primary-500 shadow-sm hover:shadow-md",
+      "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-primary-500 shadow-md hover:shadow-lg hover:scale-105",
     outline:
-      "border border-primary-600 dark:border-primary-400 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900 focus:ring-primary-500",
+      "border-2 border-primary-600 dark:border-primary-400 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900 focus:ring-primary-500 hover:scale-105",
     ghost:
-      "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500",
+      "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500 hover:scale-105",
     danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-md",
+      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl hover:scale-105",
     success:
-      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md",
+      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-lg hover:shadow-xl hover:scale-105",
   };
 
   const sizes = {
@@ -38,17 +47,28 @@ const Button = ({
     xl: "px-8 py-4 text-lg min-h-[52px]",
   };
 
+  const MotionButton = motion.button;
+
   return (
-    <button
+    <MotionButton
       type={type}
       className={cn(baseClasses, variants[variant], sizes[size], className)}
       disabled={disabled || loading}
       onClick={onClick}
+      whileHover={animation && !disabled && !loading ? { scale: 1.05 } : {}}
+      whileTap={animation && !disabled && !loading ? { scale: 0.95 } : {}}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       {...props}
     >
       {loading && <LoadingSpinner size="sm" className="mr-2" text="" />}
-      {children}
-    </button>
+      <motion.span
+        className="relative z-10"
+        initial={false}
+        animate={loading ? { opacity: 0.7 } : { opacity: 1 }}
+      >
+        {children}
+      </motion.span>
+    </MotionButton>
   );
 };
 

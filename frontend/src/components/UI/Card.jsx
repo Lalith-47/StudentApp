@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "../../utils/helpers";
 
 const Card = ({
@@ -6,6 +7,8 @@ const Card = ({
   className = "",
   hover = false,
   padding = "md",
+  animation = "fadeIn",
+  delay = 0,
   ...props
 }) => {
   const paddingClasses = {
@@ -16,19 +19,42 @@ const Card = ({
     xl: "p-10",
   };
 
+  const animations = {
+    fadeIn: {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.3, delay },
+    },
+    slideUp: {
+      initial: { opacity: 0, y: 30 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.4, delay },
+    },
+    scaleIn: {
+      initial: { opacity: 0, scale: 0.95 },
+      animate: { opacity: 1, scale: 1 },
+      transition: { duration: 0.3, delay },
+    },
+  };
+
+  const MotionCard = motion.div;
+
   return (
-    <div
+    <MotionCard
       className={cn(
         "bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-100 dark:border-gray-700",
         paddingClasses[padding],
         hover &&
-          "transition-all duration-200 hover:shadow-medium hover:-translate-y-1",
+          "transition-all duration-300 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer",
         className
       )}
+      {...animations[animation]}
+      whileHover={hover ? { scale: 1.02, y: -4 } : {}}
+      whileTap={hover ? { scale: 0.98 } : {}}
       {...props}
     >
       {children}
-    </div>
+    </MotionCard>
   );
 };
 

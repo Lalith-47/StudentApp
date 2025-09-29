@@ -19,6 +19,13 @@ import {
   Briefcase,
   Heart,
   Zap,
+  Activity,
+  BarChart3,
+  Sparkles,
+  Rocket,
+  Shield,
+  Clock,
+  Bookmark,
 } from "lucide-react";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
@@ -35,21 +42,24 @@ const Home = () => {
       title: t("home.features.quiz.title"),
       description: t("home.features.quiz.description"),
       link: "/quiz",
-      color: "text-blue-600 bg-blue-100",
+      color: "text-blue-600 bg-blue-100 dark:bg-blue-900/20",
+      gradient: "from-blue-500 to-blue-600",
     },
     {
       icon: <Map className="w-8 h-8" />,
       title: t("home.features.roadmap.title"),
       description: t("home.features.roadmap.description"),
       link: "/roadmap",
-      color: "text-green-600 bg-green-100",
+      color: "text-green-600 bg-green-100 dark:bg-green-900/20",
+      gradient: "from-green-500 to-green-600",
     },
     {
       icon: <Building2 className="w-8 h-8" />,
       title: t("home.features.colleges.title"),
       description: t("home.features.colleges.description"),
       link: "/colleges",
-      color: "text-purple-600 bg-purple-100",
+      color: "text-purple-600 bg-purple-100 dark:bg-purple-900/20",
+      gradient: "from-purple-500 to-purple-600",
     },
     {
       icon: <MessageCircle className="w-8 h-8" />,
@@ -57,7 +67,26 @@ const Home = () => {
       description:
         "Get personalized career guidance from our intelligent AI assistant",
       link: "/chatbot",
-      color: "text-orange-600 bg-orange-100",
+      color: "text-orange-600 bg-orange-100 dark:bg-orange-900/20",
+      gradient: "from-orange-500 to-orange-600",
+    },
+    {
+      icon: <Activity className="w-8 h-8" />,
+      title: "Activity Tracker",
+      description:
+        "Track your academic activities and progress with detailed analytics",
+      link: "/activity-tracker",
+      color: "text-indigo-600 bg-indigo-100 dark:bg-indigo-900/20",
+      gradient: "from-indigo-500 to-indigo-600",
+    },
+    {
+      icon: <BarChart3 className="w-8 h-8" />,
+      title: "Analytics Dashboard",
+      description:
+        "Comprehensive insights into your academic performance and growth",
+      link: "/dashboard",
+      color: "text-teal-600 bg-teal-100 dark:bg-teal-900/20",
+      gradient: "from-teal-500 to-teal-600",
     },
   ];
 
@@ -240,21 +269,23 @@ const Home = () => {
               <p className="text-responsive-lg text-primary-100 mb-8 sm:mb-10 leading-relaxed">
                 {t("home.subtitle")}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                <Link to="/quiz">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
+                <Link to="/quiz" className="flex-1 sm:flex-none">
                   <Button
                     size="lg"
-                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto min-h-[52px] text-base sm:text-lg"
+                    fullWidth
+                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target min-h-[52px] text-base sm:text-lg"
                   >
                     {t("home.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
-                <Link to="/roadmap">
+                <Link to="/roadmap" className="flex-1 sm:flex-none">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target w-full sm:w-auto min-h-[52px] text-base sm:text-lg"
+                    fullWidth
+                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target min-h-[52px] text-base sm:text-lg"
                   >
                     Explore Roadmaps
                   </Button>
@@ -454,33 +485,73 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.1,
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                whileHover={{
+                  y: -8,
+                  transition: { duration: 0.2 },
+                }}
+                className="group"
               >
-                <Card hover className="h-full text-center flex flex-col">
+                <Card
+                  hover
+                  className="h-full text-center flex flex-col relative overflow-hidden"
+                  animation="scaleIn"
+                  delay={index * 0.1}
+                >
+                  {/* Gradient Background */}
                   <div
-                    className={`inline-flex items-center justify-center w-16 h-16 ${feature.color} rounded-xl mb-6 mx-auto`}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="heading-4 mb-3 text-gray-900 dark:text-white flex-grow-0">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow text-sm sm:text-base leading-relaxed">
-                    {feature.description}
-                  </p>
-                  <div className="mt-auto">
-                    <Link to={feature.link}>
-                      <Button variant="outline" className="w-full min-h-[44px]">
-                        Get Started
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  />
+
+                  <div className="relative z-10">
+                    <motion.div
+                      className={`inline-flex items-center justify-center w-16 h-16 ${feature.color} rounded-xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}
+                      whileHover={{ rotate: 5 }}
+                    >
+                      {feature.icon}
+                    </motion.div>
+
+                    <h3 className="heading-4 mb-3 text-gray-900 dark:text-white flex-grow-0 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+
+                    <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow text-sm sm:text-base leading-relaxed">
+                      {feature.description}
+                    </p>
+
+                    <div className="mt-auto">
+                      <Link to={feature.link} className="block">
+                        <Button
+                          variant="outline"
+                          fullWidth
+                          className="min-h-[44px] group-hover:bg-primary-600 group-hover:text-white group-hover:border-primary-600 transition-all duration-300"
+                          animation={true}
+                        >
+                          Get Started
+                          <motion.div
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: index * 0.2,
+                            }}
+                          >
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </motion.div>
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </Card>
               </motion.div>

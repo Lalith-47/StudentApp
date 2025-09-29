@@ -359,24 +359,26 @@ const Navbar = () => {
                     <Button
                       variant="primary"
                       size="lg"
+                      fullWidth
                       onClick={() => {
                         navigate("/login");
                         setIsOpen(false);
                       }}
-                      className="w-full touch-target min-h-[48px] text-base"
+                      className="touch-target min-h-[48px] text-base"
                     >
                       Login/Signup
                     </Button>
                     <Button
                       variant="ghost"
                       size="lg"
+                      fullWidth
                       onClick={() => {
                         navigate("/admin/login");
                         setIsOpen(false);
                       }}
-                      className="w-full touch-target min-h-[48px] text-base text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 flex items-center justify-center space-x-2"
+                      className="touch-target min-h-[48px] text-base text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                     >
-                      <Shield className="w-4 h-4" />
+                      <Shield className="w-4 h-4 mr-2" />
                       <span>Admin Login</span>
                     </Button>
                   </div>
