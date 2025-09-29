@@ -392,4 +392,16 @@ portfolioSchema.virtual("completenessPercentage").get(function () {
   return Math.round((score / total) * 100);
 });
 
+// Indexes for performance
+portfolioSchema.index({ studentId: 1 }, { unique: true });
+portfolioSchema.index({ status: 1 });
+portfolioSchema.index({ createdAt: -1 });
+portfolioSchema.index({ updatedAt: -1 });
+portfolioSchema.index({ "analytics.views": -1 });
+portfolioSchema.index({ "analytics.downloads": -1 });
+
+// Compound indexes
+portfolioSchema.index({ studentId: 1, status: 1 });
+portfolioSchema.index({ status: 1, updatedAt: -1 });
+
 module.exports = mongoose.model("Portfolio", portfolioSchema);

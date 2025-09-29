@@ -453,4 +453,17 @@ facultyApprovalSchema.virtual("timeSinceSubmission").get(function () {
   ); // days
 });
 
+// Indexes for performance
+facultyApprovalSchema.index({ activityId: 1 });
+facultyApprovalSchema.index({ facultyId: 1 });
+facultyApprovalSchema.index({ status: 1 });
+facultyApprovalSchema.index({ createdAt: -1 });
+facultyApprovalSchema.index({ "reviewDetails.submittedAt": -1 });
+facultyApprovalSchema.index({ "workflow.dueDate": 1 });
+
+// Compound indexes
+facultyApprovalSchema.index({ facultyId: 1, status: 1 });
+facultyApprovalSchema.index({ status: 1, "workflow.dueDate": 1 });
+facultyApprovalSchema.index({ facultyId: 1, createdAt: -1 });
+
 module.exports = mongoose.model("FacultyApproval", facultyApprovalSchema);

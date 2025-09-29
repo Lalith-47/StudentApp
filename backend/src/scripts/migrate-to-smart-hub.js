@@ -13,7 +13,8 @@ const migrateToSmartHub = async () => {
 
     // Connect to MongoDB (Azure Cosmos DB)
     await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb+srv://AdhyayanMargAdmin:%3CTeDxE85wcWtfmq7Q0g%23C%3E@adhyayanmarg-cosmos.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000",
+      process.env.MONGODB_URI ||
+        "mongodb+srv://AdhyayanMargAdmin:%3CTeDxE85wcWtfmq7Q0g%23C%3E@adhyayanmarg-cosmos.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000",
       {
         serverSelectionTimeoutMS: 30000,
         connectTimeoutMS: 30000,

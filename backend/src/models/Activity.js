@@ -310,4 +310,26 @@ activitySchema.statics.getStudentSummary = function (studentId) {
   ]);
 };
 
+// Indexes for performance
+activitySchema.index({ studentId: 1 });
+activitySchema.index({ status: 1 });
+activitySchema.index({ category: 1 });
+activitySchema.index({ createdAt: -1 });
+activitySchema.index({ startDate: 1 });
+activitySchema.index({ endDate: 1 });
+
+// Compound indexes
+activitySchema.index({ studentId: 1, status: 1 });
+activitySchema.index({ studentId: 1, category: 1 });
+activitySchema.index({ status: 1, createdAt: -1 });
+activitySchema.index({ category: 1, status: 1 });
+
+// Text search index
+activitySchema.index({
+  title: "text",
+  description: "text",
+  skills: "text",
+  achievements: "text",
+});
+
 module.exports = mongoose.model("Activity", activitySchema);

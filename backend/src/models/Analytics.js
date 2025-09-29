@@ -481,4 +481,16 @@ analyticsSchema.virtual("completenessPercentage").get(function () {
   return Math.round((score / total) * 100);
 });
 
+// Indexes for performance
+analyticsSchema.index({ institutionId: 1 });
+analyticsSchema.index({ reportType: 1 });
+analyticsSchema.index({ generatedBy: 1 });
+analyticsSchema.index({ generatedAt: -1 });
+analyticsSchema.index({ status: 1 });
+
+// Compound indexes
+analyticsSchema.index({ institutionId: 1, reportType: 1 });
+analyticsSchema.index({ institutionId: 1, generatedAt: -1 });
+analyticsSchema.index({ reportType: 1, status: 1 });
+
 module.exports = mongoose.model("Analytics", analyticsSchema);

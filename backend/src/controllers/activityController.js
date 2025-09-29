@@ -30,20 +30,38 @@ const upload = multer({
   storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
+    files: 5, // Maximum 5 files per request
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt|mp4|avi|mov/;
-    const extname = allowedTypes.test(
+    // Enhanced security: Check both extension and MIME type
+    const allowedExtensions =
+      /\.(jpeg|jpg|png|gif|pdf|doc|docx|txt|mp4|avi|mov)$/i;
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+      "video/mp4",
+      "video/avi",
+      "video/quicktime",
+    ];
+
+    const extname = allowedExtensions.test(
       path.extname(file.originalname).toLowerCase()
     );
-    const mimetype = allowedTypes.test(file.mimetype);
+    const mimetype = allowedMimeTypes.includes(file.mimetype);
 
+    // Additional security: Check file signature
     if (mimetype && extname) {
       return cb(null, true);
     } else {
       cb(
         new Error(
-          "Invalid file type. Only images, documents, and videos are allowed."
+          "Invalid file type. Only images (JPEG, PNG, GIF), documents (PDF, DOC, DOCX, TXT), and videos (MP4, AVI, MOV) are allowed."
         )
       );
     }
@@ -70,29 +88,104 @@ const createActivity = async (req, res) => {
       isHighlighted,
     } = req.body;
 
-    // Validate required fields
-    if (!title || !description || !category || !startDate) {
+    // Enhanced validation
+    const validationErrors = [];
+
+    if (!title || title.trim().length < 3) {
+      validationErrors.push("Title must be at least 3 characters long");
+    }
+
+    if (!description || description.trim().length < 10) {
+      validationErrors.push("Description must be at least 10 characters long");
+    }
+
+    if (!category) {
+      validationErrors.push("Category is required");
+    }
+
+    if (!startDate) {
+      validationErrors.push("Start date is required");
+    }
+
+    if (startDate && new Date(startDate) > new Date()) {
+      validationErrors.push("Start date cannot be in the future");
+    }
+
+    if (endDate && startDate && new Date(endDate) < new Date(startDate)) {
+      validationErrors.push("End date cannot be before start date");
+    }
+
+    if (description && description.length > 1000) {
+      validationErrors.push("Description cannot exceed 1000 characters");
+    }
+
+    if (title && title.length > 200) {
+      validationErrors.push("Title cannot exceed 200 characters");
+    }
+
+    if (validationErrors.length > 0) {
       return res.status(400).json({
         success: false,
-        message: "Title, description, category, and start date are required",
+        message: "Validation failed",
+        errors: validationErrors,
       });
     }
+
+    // Safely parse JSON fields
+    let parsedSkills = [];
+    let parsedAchievements = [];
+    let parsedTags = [];
+    let parsedDuration = null;
+
+    try {
+      parsedSkills = skills ? JSON.parse(skills) : [];
+      parsedAchievements = achievements ? JSON.parse(achievements) : [];
+      parsedTags = tags ? JSON.parse(tags) : [];
+      parsedDuration = duration ? JSON.parse(duration) : null;
+    } catch (parseError) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid JSON format in skills, achievements, or tags",
+      });
+    }
+
+    // Validate arrays
+    if (!Array.isArray(parsedSkills)) {
+      parsedSkills = [];
+    }
+    if (!Array.isArray(parsedAchievements)) {
+      parsedAchievements = [];
+    }
+    if (!Array.isArray(parsedTags)) {
+      parsedTags = [];
+    }
+
+    // Sanitize inputs
+    const sanitizedSkills = parsedSkills.map((s) =>
+      s.toString().trim().slice(0, 50)
+    );
+    const sanitizedAchievements = parsedAchievements.map((a) =>
+      a.toString().trim().slice(0, 200)
+    );
+    const sanitizedTags = parsedTags.map((t) =>
+      t.toString().trim().toLowerCase().slice(0, 30)
+    );
 
     // Create activity
     const activity = new Activity({
       studentId: req.user.id,
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       category,
-      subcategory,
+      subcategory: subcategory ? subcategory.trim() : "",
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,
-      duration: duration ? JSON.parse(duration) : null,
-      location,
-      organizer,
-      skills: skills ? JSON.parse(skills) : [],
-      achievements: achievements ? JSON.parse(achievements) : [],
-      tags: tags ? JSON.parse(tags) : [],
+      duration: parsedDuration,
+      location: location ? location.trim() : "",
+      organizer: organizer ? organizer.trim() : "",
+      skills: sanitizedSkills,
+      achievements: sanitizedAchievements,
+      tags: sanitizedTags,
       isPublic: isPublic === "true",
       isHighlighted: isHighlighted === "true",
       status: "draft",
@@ -116,19 +209,38 @@ const createActivity = async (req, res) => {
       success: true,
       message: "Activity created successfully",
       data: {
-        activity: await Activity.findById(activity._id).populate(
-          "studentId",
-          "name email"
-        ),
+        activity: await Activity.findById(activity._id)
+          .populate("studentId", "name email")
+          .select("-__v"),
         approval: facultyApproval,
       },
     });
   } catch (error) {
     console.error("Create activity error:", error);
+
+    // Handle specific MongoDB errors
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: Object.values(error.errors).map((err) => err.message),
+      });
+    }
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Activity with this title already exists",
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: "Error creating activity",
-      error: error.message,
+      message: "Failed to create activity",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -143,6 +255,24 @@ const uploadAttachments = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "No files uploaded",
+      });
+    }
+
+    // Validate file count
+    if (files.length > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum 5 files allowed per upload",
+      });
+    }
+
+    // Validate total file size
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    if (totalSize > 50 * 1024 * 1024) {
+      // 50MB total limit
+      return res.status(400).json({
+        success: false,
+        message: "Total file size cannot exceed 50MB",
       });
     }
 
@@ -162,15 +292,29 @@ const uploadAttachments = async (req, res) => {
       });
     }
 
-    // Process uploaded files
-    const attachments = files.map((file) => ({
-      filename: file.filename,
-      originalName: file.originalname,
-      mimeType: file.mimetype,
-      size: file.size,
-      url: `/uploads/activities/${req.user.id}/${file.filename}`,
-      uploadedAt: new Date(),
-    }));
+    // Validate existing attachments count
+    const existingAttachments = activity.attachments || [];
+    if (existingAttachments.length + files.length > 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum 10 attachments allowed per activity",
+      });
+    }
+
+    // Process uploaded files with additional validation
+    const attachments = files.map((file) => {
+      // Additional security: Sanitize filename
+      const sanitizedFilename = file.filename.replace(/[^a-zA-Z0-9.-]/g, "_");
+
+      return {
+        filename: sanitizedFilename,
+        originalName: file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_"),
+        mimeType: file.mimetype,
+        size: file.size,
+        url: `/uploads/activities/${req.user.id}/${sanitizedFilename}`,
+        uploadedAt: new Date(),
+      };
+    });
 
     // Add attachments to activity
     activity.attachments.push(...attachments);
@@ -182,14 +326,30 @@ const uploadAttachments = async (req, res) => {
       data: {
         attachments: activity.attachments,
         uploadedCount: attachments.length,
+        totalAttachments: activity.attachments.length,
       },
     });
   } catch (error) {
     console.error("Upload attachments error:", error);
+
+    // Clean up uploaded files on error
+    if (req.files) {
+      try {
+        for (const file of req.files) {
+          await fs.unlink(file.path);
+        }
+      } catch (cleanupError) {
+        console.error("Error cleaning up files:", cleanupError);
+      }
+    }
+
     res.status(500).json({
       success: false,
       message: "Error uploading files",
-      error: error.message,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };

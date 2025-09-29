@@ -1,5 +1,11 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import {
+  handleApiError,
+  getErrorType,
+  ERROR_TYPES,
+  withRetry,
+} from "./errorHandler";
 
 // Simple cache for API responses
 const apiCache = new Map();
@@ -62,47 +68,15 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle common errors
-    if (error.response) {
-      const { status, data } = error.response;
+    // Use the new error handling system
+    const errorInfo = handleApiError(error, {
+      showToast: false, // Let components handle their own error messages
+      logError: true,
+      redirectOnAuth: true,
+    });
 
-      switch (status) {
-        case 401:
-          // Only show toast for 401 errors that are not from login attempts
-          // Login 401 errors should be handled by the component, not the interceptor
-          if (!error.config?.url?.includes("/auth/login")) {
-            localStorage.removeItem("authToken");
-            toast.error("Session expired. Please login again.");
-          }
-          break;
-        case 403:
-          // Don't show automatic toast for 403 - let components handle it
-          console.warn("Access denied for:", error.config?.url);
-          break;
-        case 404:
-          // Don't show automatic toast for 404 - let components handle it
-          console.warn("Resource not found:", error.config?.url);
-          break;
-        case 429:
-          toast.error("Too many requests. Please try again later.");
-          break;
-        case 500:
-          // Don't show automatic toast for 500 - let components handle it
-          console.warn("Server error for:", error.config?.url);
-          break;
-        default:
-          // Don't show automatic toast for other errors - let components handle it
-          console.warn("API error for:", error.config?.url, data?.message);
-      }
-    } else if (error.request) {
-      // Network error - don't show automatic toasts, let components handle their own errors
-      console.warn("Network error for:", error.config?.url, error.message);
-      // Components will handle their own error messages
-    } else {
-      // Other error - don't show automatic toasts
-      console.warn("API error:", error.message);
-      // Components will handle their own error messages
-    }
+    // Add error info to the error object for components to use
+    error.errorInfo = errorInfo;
 
     return Promise.reject(error);
   }

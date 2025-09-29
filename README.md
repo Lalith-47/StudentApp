@@ -15,6 +15,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 ## ✨ Key Features
 
 ### 🎯 For Students
+
 - **Dynamic Dashboard**: Real-time updates on academic performance and activity credits
 - **Activity Tracker**: Upload achievements with proof documents and media
 - **Digital Portfolio**: Auto-generated, shareable portfolios with professional themes
@@ -22,12 +23,14 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 - **Achievement Analytics**: Track progress and skill development
 
 ### 👨‍🏫 For Faculty
+
 - **Approval Panel**: Streamlined review and approval workflows
 - **Performance Tracking**: Monitor student engagement and achievements
 - **Quality Control**: Verification and scoring systems
 - **Workload Management**: Efficient assignment and review processes
 
 ### 🏫 For Institutions
+
 - **Analytics Dashboard**: Comprehensive institutional insights
 - **Compliance Reporting**: NAAC, AICTE, and NIRF report generation
 - **Data Consolidation**: Centralized student achievement tracking
@@ -36,6 +39,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 ## 🏗️ Architecture
 
 ### Backend (Node.js + Express)
+
 - **Database**: Azure Cosmos DB with MongoDB API
 - **Authentication**: JWT-based with role-based access control
 - **File Storage**: Local storage with multer for uploads
@@ -43,6 +47,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 - **API**: RESTful APIs with comprehensive documentation
 
 ### Frontend (React + Vite)
+
 - **Framework**: React 18 with modern hooks
 - **Styling**: Tailwind CSS with dark mode support
 - **State Management**: React Query for server state
@@ -50,6 +55,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 - **Internationalization**: i18next support
 
 ### Mobile (Flutter)
+
 - **Cross-platform**: iOS and Android support
 - **State Management**: Riverpod for reactive programming
 - **Offline Support**: Local storage with Hive
@@ -59,6 +65,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or yarn
 - Azure Cosmos DB account
@@ -67,18 +74,21 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Lalith-47/StudentApp.git
    cd StudentApp
    ```
 
 2. **Setup Azure Cosmos DB**
+
    ```bash
    # Run the automated setup script
    ./setup-cosmos-db.sh
    ```
 
 3. **Manual Setup**
+
    ```bash
    # Backend setup
    cd backend
@@ -103,6 +113,7 @@ Smart Student Hub is a comprehensive platform that transforms how educational in
 ### Environment Configuration
 
 #### Backend (.env)
+
 ```env
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/smart-student-hub
 JWT_SECRET=your-super-secret-jwt-key
@@ -111,6 +122,7 @@ FRONTEND_URL=http://localhost:5173
 ```
 
 #### Frontend (.env)
+
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_APP_NAME=Smart Student Hub
@@ -119,6 +131,7 @@ VITE_APP_NAME=Smart Student Hub
 ## 📊 Database Schema
 
 ### Collections
+
 - **users**: User accounts and profiles
 - **activities**: Student activities and achievements
 - **portfolios**: Digital portfolios
@@ -126,6 +139,7 @@ VITE_APP_NAME=Smart Student Hub
 - **analytics**: Institutional analytics and reports
 
 ### Key Models
+
 ```javascript
 // User Model
 {
@@ -155,12 +169,14 @@ VITE_APP_NAME=Smart Student Hub
 ## 🔧 API Documentation
 
 ### Authentication Endpoints
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `POST /api/auth/logout` - User logout
 - `GET /api/auth/profile` - Get user profile
 
 ### Activity Endpoints
+
 - `GET /api/activities` - Get user activities
 - `POST /api/activities` - Create new activity
 - `PUT /api/activities/:id` - Update activity
@@ -168,17 +184,20 @@ VITE_APP_NAME=Smart Student Hub
 - `POST /api/activities/:id/attachments` - Upload attachments
 
 ### Portfolio Endpoints
+
 - `GET /api/portfolio` - Get user portfolio
 - `POST /api/portfolio` - Create/update portfolio
 - `GET /api/portfolio/pdf` - Download PDF portfolio
 - `GET /api/portfolio/share/:id` - Get shareable link
 
 ### Faculty Endpoints
+
 - `GET /api/faculty/pending` - Get pending approvals
 - `POST /api/faculty/approve/:id` - Approve activity
 - `POST /api/faculty/reject/:id` - Reject activity
 
 ### Analytics Endpoints
+
 - `GET /api/analytics/dashboard` - Get analytics dashboard
 - `POST /api/analytics/report` - Generate institutional report
 - `GET /api/analytics/naac` - Generate NAAC compliance report
@@ -186,6 +205,7 @@ VITE_APP_NAME=Smart Student Hub
 ## 📱 Mobile App Features
 
 ### Core Features
+
 - **Offline Portfolio Viewing**: Access portfolios without internet
 - **Push Notifications**: Real-time updates for approvals
 - **Camera Integration**: Direct photo capture for activities
@@ -193,6 +213,7 @@ VITE_APP_NAME=Smart Student Hub
 - **Dark Mode**: Automatic theme switching
 
 ### Technical Stack
+
 - **Framework**: Flutter 3.0+
 - **State Management**: Riverpod
 - **Local Storage**: Hive
@@ -212,18 +233,21 @@ VITE_APP_NAME=Smart Student Hub
 ## 📈 Analytics & Reporting
 
 ### Student Analytics
+
 - Activity completion rates
 - Skill development tracking
 - Achievement summaries
 - Portfolio performance metrics
 
 ### Faculty Analytics
+
 - Approval workload tracking
 - Review performance metrics
 - Student engagement insights
 - Quality assessment scores
 
 ### Institutional Analytics
+
 - NAAC compliance reporting
 - AICTE compliance tracking
 - NIRF ranking support
@@ -233,6 +257,7 @@ VITE_APP_NAME=Smart Student Hub
 ## 🚀 Deployment
 
 ### Production Setup
+
 ```bash
 # Set production environment
 export NODE_ENV=production
@@ -246,6 +271,7 @@ docker-compose up -d
 ```
 
 ### Azure Deployment
+
 ```bash
 # Deploy to Azure App Service
 az webapp deployment source config-zip \
@@ -257,6 +283,7 @@ az webapp deployment source config-zip \
 ## 🧪 Testing
 
 ### Backend Testing
+
 ```bash
 cd backend
 npm test
@@ -264,6 +291,7 @@ npm run test:coverage
 ```
 
 ### Frontend Testing
+
 ```bash
 cd frontend
 npm test
@@ -271,6 +299,7 @@ npm run test:coverage
 ```
 
 ### Mobile Testing
+
 ```bash
 cd mobile
 flutter test

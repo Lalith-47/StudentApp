@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["student", "mentor", "admin", "counselor"],
+    enum: ["student", "mentor", "admin", "counselor", "faculty"],
     default: "student",
   },
   mentorId: {
@@ -116,5 +116,16 @@ userSchema.methods.toJSON = function () {
   delete userObject.password;
   return userObject;
 };
+
+// Indexes for performance
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ role: 1 });
+userSchema.index({ isActive: 1 });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ lastLogin: -1 });
+
+// Compound indexes
+userSchema.index({ role: 1, isActive: 1 });
+userSchema.index({ email: 1, role: 1 });
 
 module.exports = mongoose.model("User", userSchema);

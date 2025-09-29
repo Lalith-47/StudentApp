@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import AdminProtectedRoute from "./components/Auth/AdminProtectedRoute";
 import RoleProtectedRoute from "./components/Auth/RoleProtectedRoute";
 import ThemeFavicon from "./components/ThemeFavicon";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -28,44 +29,46 @@ function App() {
       <AuthProvider>
         <ThemeFavicon />
         <div className="min-h-screen bg-white dark:bg-gray-900">
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="quiz" element={<Quiz />} />
-                <Route path="roadmap" element={<Roadmap />} />
-                <Route path="colleges" element={<Colleges />} />
-                <Route path="chatbot" element={<Chatbot />} />
-                <Route
-                  path="dashboard"
-                  element={
-                    <RoleProtectedRoute allowedRoles={["student"]}>
-                      <Dashboard />
-                    </RoleProtectedRoute>
-                  }
-                />
-                <Route
-                  path="mentor"
-                  element={
-                    <RoleProtectedRoute allowedRoles={["mentor"]}>
-                      <MentorPortal />
-                    </RoleProtectedRoute>
-                  }
-                />
-                <Route
-                  path="admin"
-                  element={
-                    <AdminProtectedRoute>
-                      <AdminDashboard />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  <Route path="quiz" element={<Quiz />} />
+                  <Route path="roadmap" element={<Roadmap />} />
+                  <Route path="colleges" element={<Colleges />} />
+                  <Route path="chatbot" element={<Chatbot />} />
+                  <Route
+                    path="dashboard"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["student"]}>
+                        <Dashboard />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="mentor"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["mentor"]}>
+                        <MentorPortal />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin"
+                    element={
+                      <AdminProtectedRoute>
+                        <AdminDashboard />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </AuthProvider>
     </ThemeProvider>
