@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
 
-// Simplified connection options for Azure Cosmos DB
+// Optimized connection options for Azure Cosmos DB
 const connectionOptions = {
-  serverSelectionTimeoutMS: 10000,
-  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 30000,
+  connectTimeoutMS: 30000,
+  maxIdleTimeMS: 120000,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 };
 
 class DatabaseManager {
