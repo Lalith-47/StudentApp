@@ -267,7 +267,7 @@ const StudentDashboard = () => {
                   </span>
                 </div>
                 <Button
-                  className="w-full"
+                  fullWidth
                   variant={portfolioStatus.isPublished ? "outline" : "primary"}
                 >
                   {portfolioStatus.isPublished

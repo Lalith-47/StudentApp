@@ -261,7 +261,7 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
               <h1 className="text-responsive-3xl font-bold text-white mb-6 sm:mb-8 leading-tight">
                 {t("home.title")}
@@ -496,10 +496,12 @@ const Home = () => {
                   delay: index * 0.1,
                   type: "spring",
                   stiffness: 100,
+                  damping: 15,
                 }}
                 whileHover={{
                   y: -8,
-                  transition: { duration: 0.2 },
+                  scale: 1.02,
+                  transition: { duration: 0.2, ease: "easeOut" },
                 }}
                 className="group"
               >

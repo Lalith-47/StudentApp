@@ -49,8 +49,23 @@ const Card = ({
         className
       )}
       {...animations[animation]}
-      whileHover={hover ? { scale: 1.02, y: -4 } : {}}
-      whileTap={hover ? { scale: 0.98 } : {}}
+      whileHover={
+        hover
+          ? {
+              scale: 1.02,
+              y: -4,
+              transition: { duration: 0.2, ease: "easeOut" },
+            }
+          : {}
+      }
+      whileTap={
+        hover
+          ? {
+              scale: 0.98,
+              transition: { duration: 0.1, ease: "easeIn" },
+            }
+          : {}
+      }
       {...props}
     >
       {children}

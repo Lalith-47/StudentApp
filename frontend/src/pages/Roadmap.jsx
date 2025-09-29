@@ -26,7 +26,26 @@ const Roadmap = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
 
-  // Mock data for roadmaps
+  // Fetch roadmaps from API
+  const {
+    data: roadmapsData,
+    isLoading: roadmapsLoading,
+    error: roadmapsError,
+  } = useQuery(
+    ["roadmaps", selectedCategory, selectedDifficulty],
+    () =>
+      apiService.getRoadmaps({
+        category: selectedCategory || undefined,
+        difficulty: selectedDifficulty || undefined,
+        limit: 20,
+      }),
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    }
+  );
+
+  // Mock data for roadmaps (fallback)
   const mockRoadmaps = [
     {
       _id: "1",
@@ -715,7 +734,10 @@ const Roadmap = () => {
   ];
   const difficulties = ["All", "Beginner", "Intermediate", "Advanced"];
 
-  const filteredRoadmaps = mockRoadmaps.filter((roadmap) => {
+  // Use API data if available, otherwise fallback to mock data
+  const roadmaps = roadmapsData?.data?.data || mockRoadmaps;
+
+  const filteredRoadmaps = roadmaps.filter((roadmap) => {
     const matchesSearch =
       roadmap.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       roadmap.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -734,6 +756,15 @@ const Roadmap = () => {
 
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
+
+  // Show loading spinner while fetching data
+  if (roadmapsLoading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner text="Loading roadmaps..." />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-4 sm:py-6 lg:py-12">
@@ -801,7 +832,7 @@ const Roadmap = () => {
         </motion.div>
 
         {/* Roadmaps Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {filteredRoadmaps.map((roadmap, index) => (
             <motion.div
               key={roadmap._id}
@@ -809,15 +840,15 @@ const Roadmap = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card hover className="h-full p-4 sm:p-6">
+              <Card hover className="h-full p-3 sm:p-4">
                 <div className="flex flex-col h-full">
                   <div className="flex-1">
-                    <div className="flex justify-between items-start mb-3 sm:mb-4">
+                    <div className="flex justify-between items-start mb-2 sm:mb-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">
+                        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 leading-tight line-clamp-2">
                           {roadmap.courseName}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 line-clamp-2">
                           {roadmap.description}
                         </p>
                       </div>
@@ -909,7 +940,10 @@ const Roadmap = () => {
                       </div>
                     </div>
 
-                    <Button className="w-full touch-target min-h-[44px] text-sm sm:text-base">
+                    <Button
+                      fullWidth
+                      className="touch-target min-h-[44px] text-sm sm:text-base"
+                    >
                       {t("roadmap.view")}
                       <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>

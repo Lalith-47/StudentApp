@@ -454,7 +454,8 @@ const MentorPortal = () => {
                   <div className="space-y-3">
                     <Button
                       onClick={() => setActiveTab("students")}
-                      className="w-full justify-start"
+                      fullWidth
+                      align="left"
                       variant="outline"
                     >
                       <Users className="w-4 h-4 mr-2" />
@@ -462,7 +463,8 @@ const MentorPortal = () => {
                     </Button>
                     <Button
                       onClick={() => setActiveTab("sessions")}
-                      className="w-full justify-start"
+                      fullWidth
+                      align="left"
                       variant="outline"
                     >
                       <Calendar className="w-4 h-4 mr-2" />
@@ -470,7 +472,8 @@ const MentorPortal = () => {
                     </Button>
                     <Button
                       onClick={() => setActiveTab("messages")}
-                      className="w-full justify-start"
+                      fullWidth
+                      align="left"
                       variant="outline"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
@@ -478,7 +481,8 @@ const MentorPortal = () => {
                     </Button>
                     <Button
                       onClick={() => setActiveTab("analytics")}
-                      className="w-full justify-start"
+                      fullWidth
+                      align="left"
                       variant="outline"
                     >
                       <BarChart3 className="w-4 h-4 mr-2" />

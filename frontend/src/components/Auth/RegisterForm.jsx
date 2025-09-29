@@ -206,7 +206,7 @@ const RegisterForm = ({ onSuccess, onError, loading = false }) => {
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} fullWidth>
             {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
           </Button>
 

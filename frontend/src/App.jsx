@@ -7,6 +7,7 @@ import AdminProtectedRoute from "./components/Auth/AdminProtectedRoute";
 import RoleProtectedRoute from "./components/Auth/RoleProtectedRoute";
 import ThemeFavicon from "./components/ThemeFavicon";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PerformanceMonitor from "./components/UI/PerformanceMonitor";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -30,6 +31,7 @@ function App() {
         <ThemeFavicon />
         <div className="min-h-screen bg-white dark:bg-gray-900">
           <ErrorBoundary>
+            <PerformanceMonitor enabled={import.meta.env.DEV} />
             <Suspense fallback={<LoadingSpinner />}>
               <Routes>
                 <Route path="/login" element={<Login />} />

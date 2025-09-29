@@ -310,13 +310,7 @@ activitySchema.statics.getStudentSummary = function (studentId) {
   ]);
 };
 
-// Indexes for performance
-activitySchema.index({ studentId: 1 });
-activitySchema.index({ status: 1 });
-activitySchema.index({ category: 1 });
-activitySchema.index({ createdAt: -1 });
-activitySchema.index({ startDate: 1 });
-activitySchema.index({ endDate: 1 });
+// Indexes for performance (only compound and text indexes)
 
 // Compound indexes
 activitySchema.index({ studentId: 1, status: 1 });

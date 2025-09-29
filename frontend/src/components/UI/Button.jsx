@@ -55,9 +55,29 @@ const Button = ({
       className={cn(baseClasses, variants[variant], sizes[size], className)}
       disabled={disabled || loading}
       onClick={onClick}
-      whileHover={animation && !disabled && !loading ? { scale: 1.05 } : {}}
-      whileTap={animation && !disabled && !loading ? { scale: 0.95 } : {}}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      whileHover={
+        animation && !disabled && !loading
+          ? {
+              scale: 1.02,
+              y: -2,
+              transition: { duration: 0.2, ease: "easeOut" },
+            }
+          : {}
+      }
+      whileTap={
+        animation && !disabled && !loading
+          ? {
+              scale: 0.98,
+              transition: { duration: 0.1, ease: "easeIn" },
+            }
+          : {}
+      }
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        mass: 0.8,
+      }}
       {...props}
     >
       {loading && <LoadingSpinner size="sm" className="mr-2" text="" />}

@@ -200,6 +200,21 @@ class DatabaseManager {
       retries: this.connectionRetries,
     };
   }
+
+  isHealthy() {
+    return this.isConnected();
+  }
+
+  async gracefulShutdown() {
+    try {
+      if (mongoose.connection.readyState !== 0) {
+        await mongoose.connection.close();
+        console.log("✅ Database connection closed gracefully");
+      }
+    } catch (error) {
+      console.error("❌ Error during database shutdown:", error.message);
+    }
+  }
 }
 
 // Create singleton instance

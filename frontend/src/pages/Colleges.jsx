@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 import {
   Search,
   Filter,
@@ -17,6 +18,7 @@ import {
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
 import Input from "../components/UI/Input";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
 import { apiService } from "../utils/api";
 
 const Colleges = () => {
@@ -27,7 +29,26 @@ const Colleges = () => {
   const [compareList, setCompareList] = useState([]);
   const [showComparison, setShowComparison] = useState(false);
 
-  // Mock data for colleges
+  // Fetch colleges from API
+  const {
+    data: collegesData,
+    isLoading: collegesLoading,
+    error: collegesError,
+  } = useQuery(
+    ["colleges", selectedCity, selectedType],
+    () =>
+      apiService.getColleges({
+        city: selectedCity || undefined,
+        type: selectedType || undefined,
+        limit: 20,
+      }),
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    }
+  );
+
+  // Mock data for colleges (fallback)
   const mockColleges = [
     {
       _id: "1",
@@ -699,7 +720,10 @@ const Colleges = () => {
     "Autonomous",
   ];
 
-  const filteredColleges = mockColleges.filter((college) => {
+  // Use API data if available, otherwise fallback to mock data
+  const colleges = collegesData?.data?.data || mockColleges;
+
+  const filteredColleges = colleges.filter((college) => {
     const matchesSearch =
       college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       college.shortName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -735,6 +759,15 @@ const Colleges = () => {
   const canAddToCompare = (collegeId) => {
     return compareList.length < 4 && !isInCompareList(collegeId);
   };
+
+  // Show loading spinner while fetching data
+  if (collegesLoading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner text="Loading colleges..." />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-4 sm:py-6 lg:py-12">
@@ -822,7 +855,7 @@ const Colleges = () => {
                     size="sm"
                     onClick={() => setShowComparison(true)}
                     disabled={compareList.length < 2}
-                    className="w-full sm:w-auto touch-target min-h-[40px] text-xs sm:text-sm"
+                    className="touch-target min-h-[40px] text-xs sm:text-sm"
                   >
                     Compare Now
                   </Button>
@@ -830,7 +863,7 @@ const Colleges = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setCompareList([])}
-                    className="w-full sm:w-auto touch-target min-h-[40px] text-xs sm:text-sm"
+                    className="touch-target min-h-[40px] text-xs sm:text-sm"
                   >
                     Clear All
                   </Button>
@@ -929,7 +962,10 @@ const Colleges = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-2 mt-auto">
-                      <Button className="flex-1 w-full sm:w-auto touch-target min-h-[44px] text-sm">
+                      <Button
+                        fullWidth
+                        className="touch-target min-h-[44px] text-sm"
+                      >
                         {t("colleges.viewDetails")}
                       </Button>
                       <div className="flex gap-2">
