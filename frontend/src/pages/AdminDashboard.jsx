@@ -952,7 +952,7 @@ const AdminDashboard = () => {
                 Admin Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Welcome back, {user?.name}! Here's what's happening today.
+                Welcome, {user?.name}! Here's what's happening today.
               </p>
             </div>
             <div className="flex items-center space-x-4">
