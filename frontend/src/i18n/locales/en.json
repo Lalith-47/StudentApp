@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "Home",
-    "quiz": "Career Quiz",
+    "quiz": "Know-Me",
     "roadmap": "Roadmap",
     "colleges": "Colleges",
     "chatbot": "Chatbot",
@@ -44,7 +44,7 @@
     "savedResults": "Saved Results",
     "freeResults": "Free Results",
     "detailedAssessment": "Detailed Career Assessment",
-    "quickQuiz": "Career Quiz",
+    "quickQuiz": "Know-Me",
     "comprehensiveDescription": "Take our comprehensive assessment to get detailed career insights and personalized recommendations saved to your profile.",
     "quickDescription": "Take our quick quiz to discover your career personality and get personalized recommendations.",
     "signUpPrompt": "Sign up to get detailed career insights!",

@@ -50,7 +50,7 @@ const getDashboardStats = async (req, res) => {
           {
             id: 1,
             user: "John Doe",
-            action: "completed career quiz",
+            action: "completed Know-Me",
             time: "2 minutes ago",
             type: "quiz",
           },
