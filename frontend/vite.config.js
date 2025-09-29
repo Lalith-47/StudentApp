@@ -17,8 +17,8 @@ export default defineConfig({
         "icon-512.svg",
       ],
       manifest: {
-        name: "Praniti - Career Guidance Platform",
-        short_name: "Praniti",
+        name: "Yukti - Career Guidance Platform",
+        short_name: "Yukti",
         description: "Your comprehensive career guidance platform",
         theme_color: "#f59e0b",
         background_color: "#ffffff",

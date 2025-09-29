@@ -294,7 +294,7 @@ const submitFaqQuery = async (req, res) => {
             data: {
               found: true,
               answer: enhancedResponse.answer,
-              aiProvider: "Praniti Assistant",
+              aiProvider: "Yukti Assistant",
               aiModel: "Enhanced Knowledge Base",
               relatedQuestions: enhancedResponse.relatedQuestions,
               suggestions: enhancedResponse.suggestions,
@@ -553,7 +553,7 @@ function generateEnhancedResponse(query) {
     queryLower.includes("hey")
   ) {
     return {
-      answer: `Hello! 👋 Welcome to Praniti! I'm your career guidance assistant.
+      answer: `Hello! 👋 Welcome to Yukti! I'm your career guidance assistant.
 
 **I can help you with:**
 • College selection & admissions

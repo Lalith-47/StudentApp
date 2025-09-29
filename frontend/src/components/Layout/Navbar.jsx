@@ -146,8 +146,8 @@ const Navbar = () => {
               </svg>
             </div>
             <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-300">
-              <span className="hidden sm:inline">Praniti</span>
-              <span className="sm:hidden">P</span>
+              <span className="hidden sm:inline">Yukti</span>
+              <span className="sm:hidden">Y</span>
             </span>
           </Link>
 

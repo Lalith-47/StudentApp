@@ -197,7 +197,7 @@ const Home = () => {
       name: "Priya Sharma",
       role: "Software Engineer at Google",
       content:
-        "Praniti helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
+        "Yukti helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
       rating: 5,
       image:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
@@ -499,7 +499,7 @@ const Home = () => {
             className="text-center mb-16"
           >
             <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
-              How Praniti Works
+              How Yukti Works
             </h2>
             <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
               Our proven 3-step process helps you discover, plan, and achieve

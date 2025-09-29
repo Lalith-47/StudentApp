@@ -90,7 +90,7 @@ const Chatbot = () => {
           timestamp: new Date(),
           helpful: response.data.data.found || false,
           relatedQuestions: response.data.data.relatedQuestions || [],
-          aiProvider: response.data.data.aiProvider || "Praniti Assistant",
+          aiProvider: response.data.data.aiProvider || "Yukti Assistant",
           aiModel: response.data.data.aiModel || "Enhanced Knowledge Base",
         };
         setMessages((prev) => [...prev, botResponse]);
