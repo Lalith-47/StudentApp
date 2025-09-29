@@ -7,6 +7,15 @@ const connectionOptions = {
   maxIdleTimeMS: 120000,
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  // Azure Cosmos DB specific options
+  retryWrites: false, // Cosmos DB doesn't support retryable writes
+  maxPoolSize: 10, // Limit connection pool size for Cosmos DB
+  minPoolSize: 1,
+  maxIdleTimeMS: 120000,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  bufferMaxEntries: 0, // Disable mongoose buffering
+  bufferCommands: false, // Disable mongoose buffering
 };
 
 class DatabaseManager {

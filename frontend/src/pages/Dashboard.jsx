@@ -2250,85 +2250,137 @@ const Dashboard = () => {
             id: 1,
             title: "Football Training Program",
             organization: "Sports Academy",
-            description: "Professional football training with experienced coaches. Learn advanced techniques and strategies.",
+            description:
+              "Professional football training with experienced coaches. Learn advanced techniques and strategies.",
             duration: "3 months",
             level: "Intermediate",
             location: "Mumbai",
             requirements: ["Age 16-25", "Basic fitness", "Football experience"],
-            benefits: ["Professional coaching", "Fitness training", "Tournament participation"],
-            image: "https://images.unsplash.com/photo-1431324155629-1a6ce1c6c6c6?w=400&h=300&fit=crop",
+            benefits: [
+              "Professional coaching",
+              "Fitness training",
+              "Tournament participation",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1431324155629-1a6ce1c6c6c6?w=400&h=300&fit=crop",
           },
           {
             id: 2,
             title: "Basketball Development Camp",
             organization: "Youth Sports Foundation",
-            description: "Comprehensive basketball training focusing on fundamentals and advanced skills.",
+            description:
+              "Comprehensive basketball training focusing on fundamentals and advanced skills.",
             duration: "2 months",
             level: "Beginner",
             location: "Delhi",
             requirements: ["Age 14-22", "Interest in basketball"],
             benefits: ["Skill development", "Team building", "Health benefits"],
-            image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+            image:
+              "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
           },
           {
             id: 3,
             title: "Cricket Coaching Academy",
             organization: "National Cricket Institute",
-            description: "Professional cricket coaching with focus on batting, bowling, and fielding techniques.",
+            description:
+              "Professional cricket coaching with focus on batting, bowling, and fielding techniques.",
             duration: "6 months",
             level: "Advanced",
             location: "Bangalore",
-            requirements: ["Age 15-30", "Cricket experience", "Physical fitness"],
-            benefits: ["Professional coaching", "Match practice", "Career guidance"],
-            image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=300&fit=crop",
+            requirements: [
+              "Age 15-30",
+              "Cricket experience",
+              "Physical fitness",
+            ],
+            benefits: [
+              "Professional coaching",
+              "Match practice",
+              "Career guidance",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=300&fit=crop",
           },
           {
             id: 4,
             title: "Swimming Excellence Program",
             organization: "Aqua Sports Club",
-            description: "Learn swimming techniques from basic to competitive level with certified instructors.",
+            description:
+              "Learn swimming techniques from basic to competitive level with certified instructors.",
             duration: "4 months",
             level: "All Levels",
             location: "Chennai",
             requirements: ["Age 12+", "Basic swimming ability"],
-            benefits: ["Water safety", "Fitness improvement", "Competition training"],
-            image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
+            benefits: [
+              "Water safety",
+              "Fitness improvement",
+              "Competition training",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
           },
           {
             id: 5,
             title: "Tennis Masterclass",
             organization: "Elite Tennis Academy",
-            description: "Professional tennis training with focus on technique, strategy, and mental game.",
+            description:
+              "Professional tennis training with focus on technique, strategy, and mental game.",
             duration: "3 months",
             level: "Intermediate",
             location: "Pune",
-            requirements: ["Age 16-28", "Tennis experience", "Physical fitness"],
-            benefits: ["Professional coaching", "Court practice", "Tournament preparation"],
-            image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+            requirements: [
+              "Age 16-28",
+              "Tennis experience",
+              "Physical fitness",
+            ],
+            benefits: [
+              "Professional coaching",
+              "Court practice",
+              "Tournament preparation",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
           },
           {
             id: 6,
             title: "Track & Field Training",
             organization: "Athletics Development Center",
-            description: "Comprehensive track and field training covering running, jumping, and throwing events.",
+            description:
+              "Comprehensive track and field training covering running, jumping, and throwing events.",
             duration: "5 months",
             level: "All Levels",
             location: "Kolkata",
-            requirements: ["Age 14-25", "Basic fitness", "Commitment to training"],
-            benefits: ["Fitness development", "Competition training", "Scholarship opportunities"],
-            image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+            requirements: [
+              "Age 14-25",
+              "Basic fitness",
+              "Commitment to training",
+            ],
+            benefits: [
+              "Fitness development",
+              "Competition training",
+              "Scholarship opportunities",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
           },
         ]
           .filter((sport) => {
             const matchesSearch =
               sport.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              sport.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              sport.description.toLowerCase().includes(searchQuery.toLowerCase());
+              sport.organization
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              sport.description
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
 
             const matchesFilter =
               filterCategory === "all" ||
-              sport.title.toLowerCase().includes(filterCategory.toLowerCase()) ||
-              sport.organization.toLowerCase().includes(filterCategory.toLowerCase());
+              sport.title
+                .toLowerCase()
+                .includes(filterCategory.toLowerCase()) ||
+              sport.organization
+                .toLowerCase()
+                .includes(filterCategory.toLowerCase());
 
             return matchesSearch && matchesFilter;
           })
@@ -2346,17 +2398,17 @@ const Dashboard = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div>
                   <h4 className="font-semibold text-lg mb-1">{sport.title}</h4>
                   <p className="text-gray-600 text-sm">{sport.organization}</p>
                 </div>
-                
+
                 <p className="text-gray-700 dark:text-gray-300 text-sm">
                   {sport.description}
                 </p>
-                
+
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
@@ -2367,7 +2419,7 @@ const Dashboard = () => {
                     {sport.location}
                   </span>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
@@ -2384,7 +2436,7 @@ const Dashboard = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                       Benefits:
@@ -2399,7 +2451,7 @@ const Dashboard = () => {
                     </ul>
                   </div>
                 </div>
-                
+
                 <div className="flex space-x-2 pt-4">
                   <Button
                     variant="primary"

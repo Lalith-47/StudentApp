@@ -19,6 +19,10 @@ const analyticsRoutes = require("./routes/analytics");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const mentorRoutes = require("./routes/mentor");
+const activityRoutes = require("./routes/activity");
+const facultyRoutes = require("./routes/faculty");
+const portfolioRoutes = require("./routes/portfolio");
+const dashboardRoutes = require("./routes/dashboard");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -84,6 +88,10 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/mentor", mentorRoutes);
+app.use("/api/activities", activityRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

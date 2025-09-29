@@ -1,331 +1,319 @@
-# Career Guidance Platform
+# 🎓 Smart Student Hub
 
-A comprehensive full-stack career guidance platform built with React, Node.js, and Express.js. This project consists of two separate microservices: a frontend React application and a backend API service.
+> **A comprehensive platform for student achievement tracking, digital portfolios, and institutional analytics**
 
-## 🏗️ Project Structure
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)](https://flutter.dev/)
+[![Azure Cosmos DB](https://img.shields.io/badge/Azure%20Cosmos%20DB-MongoDB%20API-purple.svg)](https://azure.microsoft.com/en-us/services/cosmos-db/)
 
-```
-SIH/
-├── frontend/          # React + Vite + Tailwind CSS
-├── backend/           # Node.js + Express.js
-└── README.md
-```
+## 🌟 Overview
+
+Smart Student Hub is a comprehensive platform that transforms how educational institutions track, manage, and showcase student achievements. Built with modern web technologies and integrated with Azure Cosmos DB, it provides a complete solution for student portfolio management, faculty approval workflows, and institutional analytics.
+
+## ✨ Key Features
+
+### 🎯 For Students
+- **Dynamic Dashboard**: Real-time updates on academic performance and activity credits
+- **Activity Tracker**: Upload achievements with proof documents and media
+- **Digital Portfolio**: Auto-generated, shareable portfolios with professional themes
+- **Mobile App**: Full-featured Flutter app for iOS and Android
+- **Achievement Analytics**: Track progress and skill development
+
+### 👨‍🏫 For Faculty
+- **Approval Panel**: Streamlined review and approval workflows
+- **Performance Tracking**: Monitor student engagement and achievements
+- **Quality Control**: Verification and scoring systems
+- **Workload Management**: Efficient assignment and review processes
+
+### 🏫 For Institutions
+- **Analytics Dashboard**: Comprehensive institutional insights
+- **Compliance Reporting**: NAAC, AICTE, and NIRF report generation
+- **Data Consolidation**: Centralized student achievement tracking
+- **Integration Support**: LMS/ERP system connectivity
+
+## 🏗️ Architecture
+
+### Backend (Node.js + Express)
+- **Database**: Azure Cosmos DB with MongoDB API
+- **Authentication**: JWT-based with role-based access control
+- **File Storage**: Local storage with multer for uploads
+- **PDF Generation**: PDFKit for portfolio exports
+- **API**: RESTful APIs with comprehensive documentation
+
+### Frontend (React + Vite)
+- **Framework**: React 18 with modern hooks
+- **Styling**: Tailwind CSS with dark mode support
+- **State Management**: React Query for server state
+- **Routing**: React Router DOM
+- **Internationalization**: i18next support
+
+### Mobile (Flutter)
+- **Cross-platform**: iOS and Android support
+- **State Management**: Riverpod for reactive programming
+- **Offline Support**: Local storage with Hive
+- **Authentication**: Biometric and JWT support
+- **Notifications**: Push notifications with Firebase
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v18 or higher)
+- Node.js 18+
 - npm or yarn
-- MongoDB (optional - runs with dummy data if not connected)
+- Azure Cosmos DB account
+- Flutter SDK (for mobile development)
 
-### Backend Setup
+### Installation
 
-1. Navigate to the backend directory:
-
+1. **Clone the repository**
    ```bash
+   git clone https://github.com/Lalith-47/StudentApp.git
+   cd StudentApp
+   ```
+
+2. **Setup Azure Cosmos DB**
+   ```bash
+   # Run the automated setup script
+   ./setup-cosmos-db.sh
+   ```
+
+3. **Manual Setup**
+   ```bash
+   # Backend setup
    cd backend
-   ```
-
-2. Install dependencies:
-
-   ```bash
    npm install
-   ```
-
-3. Create environment file:
-
-   ```bash
    cp env.example .env
-   ```
-
-4. Update `.env` with your configuration:
-
-   ```env
-   PORT=5000
-   NODE_ENV=development
-   MONGODB_URI=mongodb://localhost:27017/career-guidance
-   FRONTEND_URL=http://localhost:5173
-   ```
-
-5. Start the development server:
-   ```bash
+   # Edit .env with your Cosmos DB connection string
    npm run dev
-   ```
 
-The backend will be available at `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-
-   ```bash
+   # Frontend setup (in another terminal)
    cd frontend
-   ```
-
-2. Install dependencies:
-
-   ```bash
    npm install
-   ```
-
-3. Create environment file:
-
-   ```bash
-   cp env.example .env
-   ```
-
-4. Update `.env` with your configuration:
-
-   ```env
-   VITE_API_URL=http://localhost:5000/api
-   VITE_APP_NAME=Career Guidance Platform
-   ```
-
-5. Start the development server:
-   ```bash
    npm run dev
    ```
 
-The frontend will be available at `http://localhost:5173`
+4. **Mobile App Setup**
+   ```bash
+   cd mobile
+   flutter pub get
+   flutter run
+   ```
 
-## 📁 Project Features
+### Environment Configuration
 
-### Frontend Features
+#### Backend (.env)
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/smart-student-hub
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRE=7d
+FRONTEND_URL=http://localhost:5173
+```
 
-- **Home Page**: Landing page with feature overview and call-to-action
-- **Know-Me**: Interactive assessment with personality analysis
-- **Roadmap**: Detailed career path guides with timelines
-- **Colleges**: College finder with comparison functionality
-- **Success Stories**: Alumni stories and testimonials
-- **Chatbot**: AI-powered career guidance assistant
-- **Dashboard**: Analytics and insights (admin view)
-- **Multi-language Support**: English and Hindi
-- **Offline Support**: PWA with service worker
-- **Responsive Design**: Mobile-first approach
+#### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_APP_NAME=Smart Student Hub
+```
 
-### Backend Features
+## 📊 Database Schema
 
-- **RESTful API**: Well-structured endpoints
-- **Quiz System**: Career assessment with scoring
-- **Roadmap Management**: Course and career path data
-- **College Database**: Comprehensive college information
-- **Story Management**: User-generated content
-- **FAQ System**: Chatbot knowledge base
-- **Analytics**: Usage statistics and insights
-- **CORS Support**: Cross-origin resource sharing
-- **Error Handling**: Comprehensive error management
-- **Logging**: Request and error logging
+### Collections
+- **users**: User accounts and profiles
+- **activities**: Student activities and achievements
+- **portfolios**: Digital portfolios
+- **facultyapprovals**: Faculty review workflows
+- **analytics**: Institutional analytics and reports
 
-## 🛠️ Technology Stack
+### Key Models
+```javascript
+// User Model
+{
+  name: String,
+  email: String (unique),
+  role: ['student', 'faculty', 'admin'],
+  profile: {
+    department: String,
+    year: String,
+    rollNumber: String
+  }
+}
 
-### Frontend
+// Activity Model
+{
+  title: String,
+  description: String,
+  category: String,
+  status: ['draft', 'pending', 'approved', 'rejected'],
+  studentId: ObjectId,
+  attachments: [File],
+  skills: [String],
+  achievements: [String]
+}
+```
 
-- **React 18**: Modern React with hooks
-- **Vite**: Fast build tool and dev server
-- **Tailwind CSS**: Utility-first CSS framework
-- **React Router**: Client-side routing
-- **React Query**: Data fetching and caching
-- **Framer Motion**: Animation library
-- **React i18next**: Internationalization
-- **Recharts**: Data visualization
-- **Lucide React**: Icon library
+## 🔧 API Documentation
 
-### Backend
+### Authentication Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/profile` - Get user profile
 
-- **Node.js**: JavaScript runtime
-- **Express.js**: Web framework
-- **Mongoose**: MongoDB object modeling
-- **CORS**: Cross-origin resource sharing
-- **Helmet**: Security middleware
-- **Morgan**: HTTP request logger
-- **Joi**: Data validation
-- **bcryptjs**: Password hashing
-- **jsonwebtoken**: JWT authentication
+### Activity Endpoints
+- `GET /api/activities` - Get user activities
+- `POST /api/activities` - Create new activity
+- `PUT /api/activities/:id` - Update activity
+- `DELETE /api/activities/:id` - Delete activity
+- `POST /api/activities/:id/attachments` - Upload attachments
 
-## 📊 API Endpoints
+### Portfolio Endpoints
+- `GET /api/portfolio` - Get user portfolio
+- `POST /api/portfolio` - Create/update portfolio
+- `GET /api/portfolio/pdf` - Download PDF portfolio
+- `GET /api/portfolio/share/:id` - Get shareable link
 
-### Quiz
+### Faculty Endpoints
+- `GET /api/faculty/pending` - Get pending approvals
+- `POST /api/faculty/approve/:id` - Approve activity
+- `POST /api/faculty/reject/:id` - Reject activity
 
-- `POST /api/quiz` - Submit quiz results
-- `GET /api/quiz/results` - Get user quiz results
+### Analytics Endpoints
+- `GET /api/analytics/dashboard` - Get analytics dashboard
+- `POST /api/analytics/report` - Generate institutional report
+- `GET /api/analytics/naac` - Generate NAAC compliance report
 
-### Roadmap
+## 📱 Mobile App Features
 
-- `GET /api/roadmap` - Get all roadmaps
-- `GET /api/roadmap/:course` - Get specific roadmap
-- `GET /api/roadmap/search` - Search roadmaps
-- `GET /api/roadmap/categories` - Get categories
+### Core Features
+- **Offline Portfolio Viewing**: Access portfolios without internet
+- **Push Notifications**: Real-time updates for approvals
+- **Camera Integration**: Direct photo capture for activities
+- **Biometric Authentication**: Secure access with fingerprints
+- **Dark Mode**: Automatic theme switching
 
-### Colleges
+### Technical Stack
+- **Framework**: Flutter 3.0+
+- **State Management**: Riverpod
+- **Local Storage**: Hive
+- **HTTP Client**: Dio with Retrofit
+- **Authentication**: Local Auth + JWT
+- **Notifications**: Firebase Messaging
 
-- `GET /api/colleges` - Get all colleges
-- `GET /api/colleges/:id` - Get specific college
-- `GET /api/colleges/search` - Search colleges
-- `POST /api/colleges/compare` - Compare colleges
-- `GET /api/colleges/stats` - Get statistics
+## 🔒 Security Features
 
-### Stories
+- **JWT Authentication**: Secure token-based authentication
+- **Role-based Access Control**: Admin, Faculty, Student roles
+- **File Upload Security**: Type validation and size limits
+- **Data Encryption**: Sensitive data encryption
+- **Audit Logging**: Complete activity tracking
+- **Rate Limiting**: API request throttling
 
-- `GET /api/stories` - Get all stories
-- `GET /api/stories/:id` - Get specific story
-- `GET /api/stories/search` - Search stories
-- `GET /api/stories/featured` - Get featured stories
-- `POST /api/stories/:id/like` - Like a story
-- `POST /api/stories/:id/comments` - Add comment
+## 📈 Analytics & Reporting
 
-### FAQ
+### Student Analytics
+- Activity completion rates
+- Skill development tracking
+- Achievement summaries
+- Portfolio performance metrics
 
-- `GET /api/faq` - Get all FAQs
-- `GET /api/faq/:id` - Get specific FAQ
-- `GET /api/faq/search` - Search FAQs
-- `POST /api/faq/query` - Submit chatbot query
-- `POST /api/faq/:id/helpful` - Mark FAQ as helpful
+### Faculty Analytics
+- Approval workload tracking
+- Review performance metrics
+- Student engagement insights
+- Quality assessment scores
 
-### Analytics
+### Institutional Analytics
+- NAAC compliance reporting
+- AICTE compliance tracking
+- NIRF ranking support
+- Department-wise analytics
+- Student success metrics
 
-- `GET /api/analytics` - Get dashboard data
-- `GET /api/analytics/engagement` - Get engagement metrics
-- `GET /api/analytics/performance` - Get performance data
-- `GET /api/analytics/health` - Get system health
+## 🚀 Deployment
 
-## 🗄️ Database Models
+### Production Setup
+```bash
+# Set production environment
+export NODE_ENV=production
+export MONGODB_URI="your-production-connection-string"
 
-### User
+# Start with PM2
+pm2 start ecosystem.config.js
 
-- Personal information and preferences
-- Quiz results and progress
-- Authentication data
+# Or with Docker
+docker-compose up -d
+```
 
-### QuizResult
+### Azure Deployment
+```bash
+# Deploy to Azure App Service
+az webapp deployment source config-zip \
+  --resource-group myResourceGroup \
+  --name myAppName \
+  --src myApp.zip
+```
 
-- User answers and scores
-- Personality analysis
-- Recommended courses
+## 🧪 Testing
 
-### Roadmap
+### Backend Testing
+```bash
+cd backend
+npm test
+npm run test:coverage
+```
 
-- Course information and timelines
-- Career paths and resources
-- Market demand data
+### Frontend Testing
+```bash
+cd frontend
+npm test
+npm run test:coverage
+```
 
-### College
+### Mobile Testing
+```bash
+cd mobile
+flutter test
+flutter test --coverage
+```
 
-- Institution details and rankings
-- Courses and facilities
-- Placement statistics
+## 📚 Documentation
 
-### Story
-
-- Alumni success stories
-- Career journeys and advice
-- User engagement metrics
-
-### FAQ
-
-- Question and answer pairs
-- Categories and tags
-- Helpfulness ratings
-
-## 🌐 Deployment
-
-### Backend Deployment
-
-1. Set up MongoDB Atlas or local MongoDB
-2. Configure environment variables
-3. Deploy to platforms like Heroku, Railway, or AWS
-4. Set up CORS for frontend domain
-
-### Frontend Deployment
-
-1. Build the production bundle: `npm run build`
-2. Deploy to platforms like Vercel, Netlify, or AWS S3
-3. Configure environment variables
-4. Set up custom domain (optional)
-
-## 🔧 Development
-
-### Code Structure
-
-- **Components**: Reusable UI components
-- **Pages**: Route-level components
-- **Hooks**: Custom React hooks
-- **Utils**: Helper functions and utilities
-- **Services**: API integration
-- **Context**: Global state management
-
-### Best Practices
-
-- Component-based architecture
-- Responsive design principles
-- Accessibility considerations
-- Performance optimization
-- Error boundary implementation
-- Code splitting and lazy loading
-
-## 📱 PWA Features
-
-- **Offline Support**: Service worker caching
-- **Installable**: Add to home screen
-- **Responsive**: Works on all devices
-- **Fast Loading**: Optimized assets
-- **Background Sync**: Data synchronization
-
-## 🌍 Internationalization
-
-- **English**: Default language
-- **Hindi**: Full translation support
-- **Extensible**: Easy to add more languages
-- **RTL Support**: Right-to-left text support
-
-## 🔒 Security
-
-- **CORS**: Cross-origin protection
-- **Helmet**: Security headers
-- **Rate Limiting**: Request throttling
-- **Input Validation**: Data sanitization
-- **Error Handling**: Secure error messages
-
-## 📈 Performance
-
-- **Code Splitting**: Lazy loading
-- **Image Optimization**: WebP support
-- **Caching**: Browser and service worker
-- **Bundle Analysis**: Webpack bundle analyzer
-- **Lighthouse**: Performance monitoring
+- [Architecture Guide](SMART_STUDENT_HUB_ARCHITECTURE.md)
+- [Cosmos DB Setup](COSMOS_DB_SETUP.md)
+- [API Documentation](docs/API.md)
+- [Mobile App Guide](docs/MOBILE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-For support and questions:
+- **Documentation**: [GitHub Wiki](https://github.com/Lalith-47/StudentApp/wiki)
+- **Issues**: [GitHub Issues](https://github.com/Lalith-47/StudentApp/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Lalith-47/StudentApp/discussions)
 
-- Create an issue in the repository
-- Check the documentation
-- Review the API endpoints
-- Test with the provided dummy data
+## 🙏 Acknowledgments
 
-## 🎯 Future Enhancements
-
-- User authentication and profiles
-- Real-time notifications
-- Advanced analytics dashboard
-- Mobile app development
-- AI-powered recommendations
-- Video content integration
-- Social features and communities
-- Payment integration for premium features
+- Azure Cosmos DB for scalable database infrastructure
+- React and Flutter communities for excellent frameworks
+- Open source contributors and maintainers
+- Educational institutions for feedback and requirements
 
 ---
 
-**Note**: This project uses dummy data for demonstration purposes. Connect to MongoDB Atlas for production use by adding your connection string to the environment variables.
+**🎉 Built with ❤️ for the future of education**
+
+[![GitHub stars](https://img.shields.io/github/stars/Lalith-47/StudentApp?style=social)](https://github.com/Lalith-47/StudentApp)
+[![GitHub forks](https://img.shields.io/github/forks/Lalith-47/StudentApp?style=social)](https://github.com/Lalith-47/StudentApp)
+[![GitHub watchers](https://img.shields.io/github/watchers/Lalith-47/StudentApp?style=social)](https://github.com/Lalith-47/StudentApp)
