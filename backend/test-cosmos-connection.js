@@ -16,8 +16,6 @@ const connectionOptions = {
   maxPoolSize: 10, // Limit connection pool size for Cosmos DB
   minPoolSize: 1,
   socketTimeoutMS: 45000,
-  bufferMaxEntries: 0, // Disable mongoose buffering
-  bufferCommands: false, // Disable mongoose buffering
 };
 
 async function testCosmosConnection() {
