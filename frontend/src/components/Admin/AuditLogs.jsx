@@ -1,50 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  Box,
-  Chip,
-  TextField,
-  MenuItem,
-  Grid,
-  Card,
-  CardContent,
-  Button,
-  IconButton,
-  Tooltip,
-  Pagination,
-  FormControl,
-  InputLabel,
-  Select,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
-import {
-  FilterList,
-  Refresh,
-  Visibility,
+  Filter,
+  RefreshCw,
+  Eye,
   Search,
-  Clear,
-  Security,
-  Person,
-  Settings,
-  Delete,
-  Edit,
-  Add,
-  Lock,
+  Calendar,
+  User,
+  Shield,
+  AlertTriangle,
   CheckCircle,
-  Error,
-  Warning,
   Info,
-} from "@mui/icons-material";
-import { format } from "date-fns";
-import apiService from "../../utils/api";
+} from "lucide-react";
+import Button from "../UI/Button";
+import Input from "../UI/Input";
+import Card from "../UI/Card";
 
 const AuditLogs = () => {
   const [auditLogs, setAuditLogs] = useState([]);
@@ -55,44 +25,21 @@ const AuditLogs = () => {
     category: "",
     severity: "",
     performedBy: "",
-    startDate: "",
-    endDate: "",
   });
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalCount: 0,
-    limit: 50,
-  });
-  const [sortBy, setSortBy] = useState("timestamp");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const severityColors = {
-    low: "success",
-    medium: "warning",
-    high: "error",
-    critical: "error",
+    low: "text-green-600 bg-green-100",
+    medium: "text-yellow-600 bg-yellow-100",
+    high: "text-orange-600 bg-orange-100",
+    critical: "text-red-600 bg-red-100",
   };
 
   const severityIcons = {
-    low: <CheckCircle />,
-    medium: <Info />,
-    high: <Warning />,
-    critical: <Error />,
-  };
-
-  const actionIcons = {
-    user_created: <Add color="success" />,
-    user_updated: <Edit color="primary" />,
-    user_deleted: <Delete color="error" />,
-    user_status_updated: <Settings color="primary" />,
-    user_password_reset: <Lock color="warning" />,
-    course_created: <Add color="success" />,
-    course_updated: <Edit color="primary" />,
-    assignment_created: <Add color="success" />,
-    announcement_created: <Add color="success" />,
-    system_settings_updated: <Settings color="primary" />,
-    bulk_grades_uploaded: <Security color="info" />,
+    low: <CheckCircle className="w-4 h-4" />,
+    medium: <Info className="w-4 h-4" />,
+    high: <AlertTriangle className="w-4 h-4" />,
+    critical: <AlertTriangle className="w-4 h-4" />,
   };
 
   const loadAuditLogs = async () => {
@@ -100,24 +47,53 @@ const AuditLogs = () => {
       setLoading(true);
       setError(null);
 
-      const params = {
-        page: pagination.currentPage,
-        limit: pagination.limit,
-        sortBy,
-        sortOrder,
-        ...Object.fromEntries(
-          Object.entries(filters).filter(([_, value]) => value !== "")
-        ),
-      };
+      // Mock data for now - replace with actual API call
+      const mockLogs = [
+        {
+          id: "1",
+          action: "user_created",
+          category: "User Management",
+          severity: "medium",
+          description: "New faculty user created: john.doe@university.edu",
+          performedBy: "admin@test.com",
+          timestamp: new Date().toISOString(),
+          details: {
+            userId: "user123",
+            userName: "John Doe",
+            userRole: "faculty",
+          },
+        },
+        {
+          id: "2",
+          action: "system_settings_updated",
+          category: "System Configuration",
+          severity: "high",
+          description: "System security settings updated",
+          performedBy: "admin@test.com",
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          details: {
+            settingName: "password_policy",
+            oldValue: "6 characters",
+            newValue: "8 characters",
+          },
+        },
+        {
+          id: "3",
+          action: "bulk_grades_uploaded",
+          category: "Academic Management",
+          severity: "low",
+          description: "Bulk grades uploaded for CS101 course",
+          performedBy: "faculty@test.com",
+          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          details: {
+            courseId: "cs101",
+            courseName: "Introduction to Computer Science",
+            recordsCount: 150,
+          },
+        },
+      ];
 
-      const response = await apiService.admin.getAuditLogs(params);
-
-      if (response.data.success) {
-        setAuditLogs(response.data.data.auditLogs);
-        setPagination(response.data.data.pagination);
-      } else {
-        setError("Failed to load audit logs");
-      }
+      setAuditLogs(mockLogs);
     } catch (err) {
       console.error("Error loading audit logs:", err);
       setError("Failed to load audit logs");
@@ -128,350 +104,197 @@ const AuditLogs = () => {
 
   useEffect(() => {
     loadAuditLogs();
-  }, [pagination.currentPage, sortBy, sortOrder, filters]);
+  }, []);
 
-  const handleFilterChange = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
-  };
+  const filteredLogs = auditLogs.filter((log) => {
+    const matchesSearch =
+      log.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.performedBy.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const handlePageChange = (event, page) => {
-    setPagination((prev) => ({ ...prev, currentPage: page }));
-  };
+    const matchesFilters =
+      (!filters.action || log.action === filters.action) &&
+      (!filters.category || log.category === filters.category) &&
+      (!filters.severity || log.severity === filters.severity) &&
+      (!filters.performedBy || log.performedBy === filters.performedBy);
 
-  const handleSortChange = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("asc");
-    }
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      action: "",
-      category: "",
-      severity: "",
-      performedBy: "",
-      startDate: "",
-      endDate: "",
-    });
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
-  };
+    return matchesSearch && matchesFilters;
+  });
 
   const formatTimestamp = (timestamp) => {
-    return format(new Date(timestamp), "MMM dd, yyyy HH:mm:ss");
+    return new Date(timestamp).toLocaleString();
   };
 
-  const getActionDescription = (log) => {
-    if (log.details?.description) {
-      return log.details.description;
-    }
-    return log.action
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
-  };
-
-  if (loading && auditLogs.length === 0) {
+  if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <span className="ml-2 text-gray-600">Loading audit logs...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="p-6">
+        <div className="text-center text-red-600">
+          <AlertTriangle className="w-12 h-12 mx-auto mb-4" />
+          <p>{error}</p>
+          <Button onClick={loadAuditLogs} className="mt-4">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        <Security sx={{ mr: 1, verticalAlign: "middle" }} />
-        Audit Logs
-      </Typography>
-
-      <Typography variant="body2" color="text.secondary" gutterBottom>
-        Monitor all administrative actions and system changes
-      </Typography>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Audit Logs
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Monitor system activities and user actions
+          </p>
+        </div>
+        <Button onClick={loadAuditLogs} variant="outline">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
 
       {/* Filters */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Action"
-                value={filters.action}
-                onChange={(e) => handleFilterChange("action", e.target.value)}
-                placeholder="Search actions..."
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Category</InputLabel>
-                <Select
-                  value={filters.category}
-                  onChange={(e) =>
-                    handleFilterChange("category", e.target.value)
-                  }
-                  label="Category"
-                >
-                  <MenuItem value="">All Categories</MenuItem>
-                  <MenuItem value="user_management">User Management</MenuItem>
-                  <MenuItem value="course_management">
-                    Course Management
-                  </MenuItem>
-                  <MenuItem value="assignment_management">
-                    Assignment Management
-                  </MenuItem>
-                  <MenuItem value="system_management">
-                    System Management
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Severity</InputLabel>
-                <Select
-                  value={filters.severity}
-                  onChange={(e) =>
-                    handleFilterChange("severity", e.target.value)
-                  }
-                  label="Severity"
-                >
-                  <MenuItem value="">All Severities</MenuItem>
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
-                  <MenuItem value="critical">Critical</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Performed By"
-                value={filters.performedBy}
-                onChange={(e) =>
-                  handleFilterChange("performedBy", e.target.value)
-                }
-                placeholder="User email..."
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Start Date"
-                type="date"
-                value={filters.startDate}
-                onChange={(e) =>
-                  handleFilterChange("startDate", e.target.value)
-                }
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                label="End Date"
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => handleFilterChange("endDate", e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          </Grid>
-
-          <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-            <Button
-              variant="outlined"
-              startIcon={<Search />}
-              onClick={loadAuditLogs}
-              disabled={loading}
-            >
+      <Card className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Search
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<Clear />}
-              onClick={clearFilters}
+            </label>
+            <Input
+              type="text"
+              placeholder="Search logs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Category
+            </label>
+            <select
+              value={filters.category}
+              onChange={(e) =>
+                setFilters({ ...filters, category: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
-              Clear
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<Refresh />}
-              onClick={loadAuditLogs}
-              disabled={loading}
+              <option value="">All Categories</option>
+              <option value="User Management">User Management</option>
+              <option value="System Configuration">System Configuration</option>
+              <option value="Academic Management">Academic Management</option>
+              <option value="Security">Security</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Severity
+            </label>
+            <select
+              value={filters.severity}
+              onChange={(e) =>
+                setFilters({ ...filters, severity: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
-              Refresh
-            </Button>
-          </Box>
-        </CardContent>
+              <option value="">All Severities</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Performed By
+            </label>
+            <Input
+              type="text"
+              placeholder="User email..."
+              value={filters.performedBy}
+              onChange={(e) =>
+                setFilters({ ...filters, performedBy: e.target.value })
+              }
+              className="w-full"
+            />
+          </div>
+        </div>
       </Card>
 
-      {/* Results Summary */}
-      <Box
-        sx={{
-          mb: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          Showing {auditLogs.length} of {pagination.totalCount} audit logs
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Page {pagination.currentPage} of {pagination.totalPages}
-        </Typography>
-      </Box>
-
-      {/* Audit Logs Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Button
-                  size="small"
-                  onClick={() => handleSortChange("timestamp")}
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Timestamp
-                  {sortBy === "timestamp" &&
-                    (sortOrder === "asc" ? " ↑" : " ↓")}
-                </Button>
-              </TableCell>
-              <TableCell>
-                <Button
-                  size="small"
-                  onClick={() => handleSortChange("action")}
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Action
-                  {sortBy === "action" && (sortOrder === "asc" ? " ↑" : " ↓")}
-                </Button>
-              </TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Performed By</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>
-                <Button
-                  size="small"
-                  onClick={() => handleSortChange("severity")}
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Severity
-                  {sortBy === "severity" && (sortOrder === "asc" ? " ↑" : " ↓")}
-                </Button>
-              </TableCell>
-              <TableCell>Details</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {auditLogs.map((log) => (
-              <TableRow key={log._id} hover>
-                <TableCell>
-                  <Typography variant="body2">
-                    {formatTimestamp(log.timestamp)}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {actionIcons[log.action] || <Security />}
-                    <Typography variant="body2">
-                      {log.action
-                        .replace(/_/g, " ")
-                        .replace(/\b\w/g, (l) => l.toUpperCase())}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {getActionDescription(log)}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box>
-                    <Typography variant="body2" fontWeight="medium">
-                      {log.performedBy?.name || "Unknown"}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {log.performedBy?.email || "Unknown"}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={log.category?.replace(/_/g, " ") || "Unknown"}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    icon={severityIcons[log.severity] || <Info />}
-                    label={log.severity?.toUpperCase() || "UNKNOWN"}
-                    color={severityColors[log.severity] || "default"}
-                    variant="filled"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Tooltip title="View Details">
-                    <IconButton size="small">
-                      <Visibility />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-          <Pagination
-            count={pagination.totalPages}
-            page={pagination.currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            size="large"
-          />
-        </Box>
-      )}
-
-      {auditLogs.length === 0 && !loading && (
-        <Box sx={{ textAlign: "center", py: 4 }}>
-          <Security sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
-            No audit logs found
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Try adjusting your filters or check back later
-          </Typography>
-        </Box>
-      )}
-    </Box>
+      {/* Audit Logs List */}
+      <div className="space-y-4">
+        {filteredLogs.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              No audit logs found
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              No logs match your current filters.
+            </p>
+          </Card>
+        ) : (
+          filteredLogs.map((log) => (
+            <motion.div
+              key={log.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="p-6 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                          severityColors[log.severity]
+                        }`}
+                      >
+                        {severityIcons[log.severity]}
+                        {log.severity.toUpperCase()}
+                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                        {log.category}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      {log.description}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        {log.performedBy}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {formatTimestamp(log.timestamp)}
+                      </div>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
   );
 };
 

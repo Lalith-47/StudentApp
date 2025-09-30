@@ -65,7 +65,7 @@ import {
   Timer,
   Play,
   Pause,
-  Stop,
+  Square,
 
   // Communication
   Send,

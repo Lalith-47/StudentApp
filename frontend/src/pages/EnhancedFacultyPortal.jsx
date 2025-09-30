@@ -78,7 +78,6 @@ import {
   Folder,
   FolderOpen,
   Cloud,
-  CloudUpload,
 
   // Actions & Controls
   Save,
