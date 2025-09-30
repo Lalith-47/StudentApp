@@ -805,7 +805,7 @@ const ModernAdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 -m-4 sm:-m-6 lg:-m-8">
       {/* Sidebar */}
       <motion.div
         initial={{ x: -300 }}
@@ -824,12 +824,14 @@ const ModernAdminDashboard = () => {
               Yukti Admin
             </span>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <nav className="mt-4 md:mt-6 px-3 flex-1 overflow-y-auto">
@@ -882,48 +884,6 @@ const ModernAdminDashboard = () => {
 
       {/* Main Content */}
       <div className="lg:pl-64">
-        {/* Top Bar */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30"
-        >
-          <div className="flex items-center justify-between h-14 md:h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center min-w-0 flex-1">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mr-2"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white truncate">
-                {sidebarItems.find((item) => item.id === activeTab)?.label ||
-                  "Dashboard"}
-              </h1>
-            </div>
-
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <div className="relative hidden sm:block">
-                <Input
-                  placeholder="Search..."
-                  className="w-48 md:w-64 text-sm"
-                />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={loadDashboardData}
-                className="hover:bg-blue-50 hover:border-blue-300"
-              >
-                <RefreshCw className="w-4 h-4 md:mr-2" />
-                <span className="hidden md:inline">Refresh</span>
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Page Content */}
         <main className="p-4 sm:p-6 lg:p-8">
           <AnimatePresence mode="wait">
