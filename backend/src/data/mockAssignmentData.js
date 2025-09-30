@@ -1,0 +1,149 @@
+// Mock Assignment Data for Testing
+const mockAssignments = [
+  {
+    id: "assign_001",
+    title: "Array Implementation in C++",
+    description: "Implement various array operations including insertion, deletion, and searching algorithms",
+    course: {
+      id: "course_001",
+      name: "Data Structures and Algorithms",
+      code: "CS-301"
+    },
+    instructor: {
+      id: "faculty_001",
+      name: "Dr. Priya Singh"
+    },
+    dueDate: "2024-10-15T23:59:59Z",
+    maxMarks: 100,
+    weightage: 15,
+    instructions: [
+      "Submit only .cpp files",
+      "Include proper comments",
+      "Test with provided test cases",
+      "No plagiarism allowed"
+    ],
+    allowedFileTypes: ["cpp", "txt"],
+    maxFileSize: "10MB",
+    status: "active",
+    createdAt: "2024-10-01T10:00:00Z",
+    submissions: [
+      {
+        id: "sub_001",
+        studentId: "student_001",
+        studentName: "Rahul Sharma",
+        submittedAt: "2024-10-14T15:30:00Z",
+        files: ["assignment1.cpp", "test_results.txt"],
+        grade: 85,
+        feedback: "Good implementation. Consider optimizing the search algorithm.",
+        status: "graded"
+      },
+      {
+        id: "sub_002",
+        studentId: "student_002",
+        studentName: "Priya Patel",
+        submittedAt: "2024-10-14T16:45:00Z",
+        files: ["array_operations.cpp"],
+        grade: 92,
+        feedback: "Excellent work! Clean code and efficient algorithms.",
+        status: "graded"
+      }
+    ]
+  },
+  {
+    id: "assign_002",
+    title: "Database Design Project",
+    description: "Design and implement a database schema for a library management system",
+    course: {
+      id: "course_002",
+      name: "Database Management Systems",
+      code: "CS-302"
+    },
+    instructor: {
+      id: "faculty_002",
+      name: "Prof. Amit Kumar"
+    },
+    dueDate: "2024-10-20T23:59:59Z",
+    maxMarks: 100,
+    weightage: 20,
+    instructions: [
+      "Create ER diagram",
+      "Design normalized database schema",
+      "Implement using MySQL",
+      "Include sample data"
+    ],
+    allowedFileTypes: ["sql", "pdf", "docx"],
+    maxFileSize: "25MB",
+    status: "active",
+    createdAt: "2024-10-05T09:00:00Z",
+    submissions: []
+  },
+  {
+    id: "assign_003",
+    title: "Signal Processing Lab Report",
+    description: "Analyze and process various signals using MATLAB",
+    course: {
+      id: "course_003",
+      name: "Digital Signal Processing",
+      code: "EC-401"
+    },
+    instructor: {
+      id: "faculty_003",
+      name: "Dr. Sunita Reddy"
+    },
+    dueDate: "2024-10-18T23:59:59Z",
+    maxMarks: 100,
+    weightage: 25,
+    instructions: [
+      "Include MATLAB code",
+      "Provide analysis and results",
+      "Add graphs and plots",
+      "Submit as PDF"
+    ],
+    allowedFileTypes: ["pdf", "m"],
+    maxFileSize: "50MB",
+    status: "graded",
+    createdAt: "2024-10-01T11:00:00Z",
+    submissions: [
+      {
+        id: "sub_003",
+        studentId: "student_002",
+        studentName: "Priya Patel",
+        submittedAt: "2024-10-17T14:20:00Z",
+        files: ["signal_analysis.pdf", "matlab_code.m"],
+        grade: 95,
+        feedback: "Outstanding analysis! Very thorough work.",
+        status: "graded"
+      }
+    ]
+  },
+  {
+    id: "assign_004",
+    title: "Thermodynamics Project",
+    description: "Design a heat exchanger system and perform thermal analysis",
+    course: {
+      id: "course_004",
+      name: "Applied Thermodynamics",
+      code: "ME-401"
+    },
+    instructor: {
+      id: "faculty_004",
+      name: "Prof. Ravi Kumar"
+    },
+    dueDate: "2024-10-25T23:59:59Z",
+    maxMarks: 100,
+    weightage: 30,
+    instructions: [
+      "Include design calculations",
+      "Provide CAD drawings",
+      "Perform thermal analysis",
+      "Submit comprehensive report"
+    ],
+    allowedFileTypes: ["pdf", "docx", "dwg"],
+    maxFileSize: "100MB",
+    status: "active",
+    createdAt: "2024-10-08T08:00:00Z",
+    submissions: []
+  }
+];
+
+module.exports = mockAssignments;

@@ -335,7 +335,7 @@ const ModernAdminDashboard = () => {
       dashboardData;
 
     return (
-      <div className="space-y-8">
+      <div className="space-y-6 lg:space-y-8">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -378,7 +378,9 @@ const ModernAdminDashboard = () => {
                   </p>
                   <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
                     <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">{overview.activeUsers} active</span>
+                    <span className="truncate">
+                      {overview.activeUsers} active
+                    </span>
                   </p>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
@@ -405,7 +407,9 @@ const ModernAdminDashboard = () => {
                   </p>
                   <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
                     <Check className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">{overview.activeCourses} active</span>
+                    <span className="truncate">
+                      {overview.activeCourses} active
+                    </span>
                   </p>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
@@ -432,7 +436,9 @@ const ModernAdminDashboard = () => {
                   </p>
                   <p className="text-xs md:text-sm text-orange-600 dark:text-orange-400 flex items-center">
                     <Clock className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">{overview.pendingGrading} pending</span>
+                    <span className="truncate">
+                      {overview.pendingGrading} pending
+                    </span>
                   </p>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
@@ -461,7 +467,9 @@ const ModernAdminDashboard = () => {
                   </p>
                   <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center">
                     <Server className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">Uptime: {Math.floor(overview.systemUptime / 3600)}h</span>
+                    <span className="truncate">
+                      Uptime: {Math.floor(overview.systemUptime / 3600)}h
+                    </span>
                   </p>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
@@ -897,9 +905,9 @@ const ModernAdminDashboard = () => {
 
             <div className="flex items-center space-x-2 md:space-x-4">
               <div className="relative hidden sm:block">
-                <Input 
-                  placeholder="Search..." 
-                  className="w-48 md:w-64 text-sm" 
+                <Input
+                  placeholder="Search..."
+                  className="w-48 md:w-64 text-sm"
                 />
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
@@ -917,7 +925,7 @@ const ModernAdminDashboard = () => {
         </motion.div>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="min-h-screen p-4 sm:p-6 lg:p-8 pt-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

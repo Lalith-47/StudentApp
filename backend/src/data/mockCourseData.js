@@ -1,0 +1,231 @@
+// Mock Course Data for Testing
+const mockCourses = [
+  {
+    id: "course_001",
+    name: "Data Structures and Algorithms",
+    code: "CS-301",
+    department: "Computer Science Engineering",
+    credits: 4,
+    semester: 3,
+    year: 2,
+    instructor: {
+      id: "faculty_001",
+      name: "Dr. Priya Singh",
+      email: "priya.singh@faculty.yukti.com"
+    },
+    description: "Introduction to fundamental data structures and algorithm design techniques",
+    objectives: [
+      "Understand basic data structures",
+      "Learn algorithm analysis",
+      "Implement efficient algorithms",
+      "Solve complex problems"
+    ],
+    syllabus: [
+      "Arrays and Linked Lists",
+      "Stacks and Queues",
+      "Trees and Graphs",
+      "Sorting and Searching",
+      "Dynamic Programming",
+      "Greedy Algorithms"
+    ],
+    schedule: {
+      days: ["Monday", "Wednesday", "Friday"],
+      time: "10:00 AM - 11:00 AM",
+      room: "Lab-101",
+      type: "Lab"
+    },
+    prerequisites: ["Programming Fundamentals", "Mathematics-II"],
+    assessment: {
+      assignments: 40,
+      midterm: 25,
+      final: 30,
+      attendance: 5
+    },
+    resources: [
+      {
+        type: "textbook",
+        title: "Introduction to Algorithms",
+        author: "Thomas H. Cormen",
+        link: "#"
+      },
+      {
+        type: "video",
+        title: "Data Structures Tutorial",
+        platform: "YouTube",
+        link: "#"
+      }
+    ],
+    enrolledStudents: 45,
+    maxStudents: 50,
+    status: "active",
+    startDate: "2024-08-01",
+    endDate: "2024-12-15"
+  },
+  {
+    id: "course_002",
+    name: "Database Management Systems",
+    code: "CS-302",
+    department: "Computer Science Engineering",
+    credits: 3,
+    semester: 3,
+    year: 2,
+    instructor: {
+      id: "faculty_002",
+      name: "Prof. Amit Kumar",
+      email: "amit.kumar@faculty.yukti.com"
+    },
+    description: "Fundamentals of database design, implementation, and management",
+    objectives: [
+      "Design relational databases",
+      "Write SQL queries",
+      "Understand normalization",
+      "Learn database security"
+    ],
+    syllabus: [
+      "Database Concepts",
+      "ER Modeling",
+      "Relational Model",
+      "SQL Programming",
+      "Normalization",
+      "Transaction Management"
+    ],
+    schedule: {
+      days: ["Tuesday", "Thursday"],
+      time: "2:00 PM - 3:30 PM",
+      room: "Room-205",
+      type: "Lecture"
+    },
+    prerequisites: ["Programming Fundamentals"],
+    assessment: {
+      assignments: 30,
+      midterm: 30,
+      final: 35,
+      attendance: 5
+    },
+    resources: [
+      {
+        type: "textbook",
+        title: "Database System Concepts",
+        author: "Abraham Silberschatz",
+        link: "#"
+      }
+    ],
+    enrolledStudents: 48,
+    maxStudents: 50,
+    status: "active",
+    startDate: "2024-08-01",
+    endDate: "2024-12-15"
+  },
+  {
+    id: "course_003",
+    name: "Digital Signal Processing",
+    code: "EC-401",
+    department: "Electronics and Communication Engineering",
+    credits: 4,
+    semester: 5,
+    year: 3,
+    instructor: {
+      id: "faculty_003",
+      name: "Dr. Sunita Reddy",
+      email: "sunita.reddy@faculty.yukti.com"
+    },
+    description: "Analysis and processing of digital signals using various techniques",
+    objectives: [
+      "Understand signal processing theory",
+      "Implement DSP algorithms",
+      "Use MATLAB for signal analysis",
+      "Design digital filters"
+    ],
+    syllabus: [
+      "Discrete-Time Signals",
+      "Z-Transform",
+      "Discrete Fourier Transform",
+      "Digital Filters",
+      "Signal Processing Applications",
+      "MATLAB Implementation"
+    ],
+    schedule: {
+      days: ["Monday", "Wednesday", "Friday"],
+      time: "11:00 AM - 12:00 PM",
+      room: "Lab-203",
+      type: "Lab"
+    },
+    prerequisites: ["Signals and Systems", "Mathematics-III"],
+    assessment: {
+      assignments: 35,
+      midterm: 25,
+      final: 35,
+      attendance: 5
+    },
+    resources: [
+      {
+        type: "textbook",
+        title: "Digital Signal Processing",
+        author: "John G. Proakis",
+        link: "#"
+      }
+    ],
+    enrolledStudents: 35,
+    maxStudents: 40,
+    status: "active",
+    startDate: "2024-08-01",
+    endDate: "2024-12-15"
+  },
+  {
+    id: "course_004",
+    name: "Applied Thermodynamics",
+    code: "ME-401",
+    department: "Mechanical Engineering",
+    credits: 3,
+    semester: 7,
+    year: 4,
+    instructor: {
+      id: "faculty_004",
+      name: "Prof. Ravi Kumar",
+      email: "ravi.kumar@faculty.yukti.com"
+    },
+    description: "Application of thermodynamic principles to engineering systems",
+    objectives: [
+      "Apply thermodynamic laws",
+      "Analyze power cycles",
+      "Design heat exchangers",
+      "Understand refrigeration systems"
+    ],
+    syllabus: [
+      "First and Second Laws",
+      "Power Cycles",
+      "Refrigeration Cycles",
+      "Heat Exchangers",
+      "Thermodynamic Properties",
+      "Real Gas Behavior"
+    ],
+    schedule: {
+      days: ["Tuesday", "Thursday"],
+      time: "9:00 AM - 10:30 AM",
+      room: "Room-301",
+      type: "Lecture"
+    },
+    prerequisites: ["Basic Thermodynamics", "Heat Transfer"],
+    assessment: {
+      assignments: 25,
+      midterm: 30,
+      final: 40,
+      attendance: 5
+    },
+    resources: [
+      {
+        type: "textbook",
+        title: "Thermodynamics: An Engineering Approach",
+        author: "Yunus A. Çengel",
+        link: "#"
+      }
+    ],
+    enrolledStudents: 28,
+    maxStudents: 35,
+    status: "active",
+    startDate: "2024-08-01",
+    endDate: "2024-12-15"
+  }
+];
+
+module.exports = mockCourses;

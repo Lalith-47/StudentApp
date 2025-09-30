@@ -418,11 +418,15 @@ const FacultyAdminManagement = () => {
                     )}
                     <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
                       <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">Joined: {user.createdAtFormatted}</span>
+                      <span className="truncate">
+                        Joined: {user.createdAtFormatted}
+                      </span>
                     </div>
                     <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
                       <Eye className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">Last login: {user.lastLoginFormatted}</span>
+                      <span className="truncate">
+                        Last login: {user.lastLoginFormatted}
+                      </span>
                     </div>
                   </div>
 

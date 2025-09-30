@@ -1,0 +1,296 @@
+// Mock Faculty Data for Testing
+const mockFaculty = [
+  {
+    id: "faculty_001",
+    name: "Dr. Priya Singh",
+    email: "priya.singh@faculty.yukti.com",
+    employeeId: "YUKF2024001",
+    department: "Computer Science Engineering",
+    designation: "Assistant Professor",
+    specialization: "Data Structures, Algorithms",
+    experience: 8,
+    qualification: "Ph.D. in Computer Science",
+    profile: {
+      dateOfBirth: "1985-07-12",
+      phone: "+91 98765 44100",
+      address: "101, Tech Park, Bangalore, Karnataka",
+      joiningDate: "2020-01-15",
+      bloodGroup: "A+",
+      emergencyContact: "+91 98765 44101"
+    },
+    courses: [
+      {
+        id: "course_001",
+        name: "Data Structures and Algorithms",
+        code: "CS-301",
+        credits: 4,
+        semester: 3,
+        enrolledStudents: 45,
+        schedule: "Mon, Wed, Fri - 10:00 AM",
+        room: "Lab-101",
+        status: "active"
+      },
+      {
+        id: "course_002",
+        name: "Advanced Algorithms",
+        code: "CS-401",
+        credits: 3,
+        semester: 5,
+        enrolledStudents: 32,
+        schedule: "Tue, Thu - 2:00 PM",
+        room: "Room-205",
+        status: "active"
+      }
+    ],
+    assignments: [
+      {
+        id: "assign_001",
+        title: "Array Implementation in C++",
+        course: "Data Structures and Algorithms",
+        dueDate: "2024-10-15",
+        totalSubmissions: 45,
+        gradedSubmissions: 42,
+        averageGrade: "A-",
+        status: "grading_complete"
+      },
+      {
+        id: "assign_002",
+        title: "Binary Tree Operations",
+        course: "Data Structures and Algorithms",
+        dueDate: "2024-10-22",
+        totalSubmissions: 0,
+        gradedSubmissions: 0,
+        averageGrade: null,
+        status: "pending"
+      }
+    ],
+    students: [
+      {
+        id: "student_001",
+        name: "Rahul Sharma",
+        rollNumber: "YUK2024001",
+        course: "Computer Science Engineering",
+        semester: 3,
+        attendance: 92,
+        currentGrade: "A-"
+      },
+      {
+        id: "student_002",
+        name: "Priya Patel",
+        rollNumber: "YUK2024002",
+        course: "Electronics and Communication Engineering",
+        semester: 5,
+        attendance: 96,
+        currentGrade: "A+"
+      }
+    ],
+    announcements: [
+      {
+        id: "announce_001",
+        title: "Mid-term Exam Schedule",
+        message: "Mid-term exams will be conducted from Nov 1-15, 2024",
+        priority: "high",
+        date: "2024-10-10",
+        isPublished: true
+      }
+    ],
+    achievements: [
+      {
+        id: "achieve_001",
+        title: "Best Teacher Award",
+        description: "Recognized for excellence in teaching",
+        date: "2024-08-15",
+        category: "Teaching"
+      }
+    ]
+  },
+  {
+    id: "faculty_002",
+    name: "Prof. Amit Kumar",
+    email: "amit.kumar@faculty.yukti.com",
+    employeeId: "YUKF2024002",
+    department: "Computer Science Engineering",
+    designation: "Associate Professor",
+    specialization: "Database Systems, Software Engineering",
+    experience: 12,
+    qualification: "Ph.D. in Computer Science, M.Tech in Software Engineering",
+    profile: {
+      dateOfBirth: "1980-11-25",
+      phone: "+91 98765 44200",
+      address: "202, IT Corridor, Chennai, Tamil Nadu",
+      joiningDate: "2018-06-01",
+      bloodGroup: "B+",
+      emergencyContact: "+91 98765 44201"
+    },
+    courses: [
+      {
+        id: "course_003",
+        name: "Database Management Systems",
+        code: "CS-302",
+        credits: 3,
+        semester: 3,
+        enrolledStudents: 48,
+        schedule: "Tue, Thu - 2:00 PM",
+        room: "Room-205",
+        status: "active"
+      }
+    ],
+    assignments: [
+      {
+        id: "assign_003",
+        title: "Database Design Project",
+        course: "Database Management Systems",
+        dueDate: "2024-10-20",
+        totalSubmissions: 0,
+        gradedSubmissions: 0,
+        averageGrade: null,
+        status: "pending"
+      }
+    ],
+    students: [
+      {
+        id: "student_001",
+        name: "Rahul Sharma",
+        rollNumber: "YUK2024001",
+        course: "Computer Science Engineering",
+        semester: 3,
+        attendance: 92,
+        currentGrade: "A"
+      }
+    ],
+    announcements: [],
+    achievements: [
+      {
+        id: "achieve_002",
+        title: "Research Excellence",
+        description: "Published 15 papers in international journals",
+        date: "2024-07-20",
+        category: "Research"
+      }
+    ]
+  },
+  {
+    id: "faculty_003",
+    name: "Dr. Sunita Reddy",
+    email: "sunita.reddy@faculty.yukti.com",
+    employeeId: "YUKF2024003",
+    department: "Electronics and Communication Engineering",
+    designation: "Assistant Professor",
+    specialization: "Digital Signal Processing, Communication Systems",
+    experience: 6,
+    qualification: "Ph.D. in Electronics Engineering",
+    profile: {
+      dateOfBirth: "1987-04-08",
+      phone: "+91 98765 44300",
+      address: "303, Electronic City, Hyderabad, Telangana",
+      joiningDate: "2021-08-15",
+      bloodGroup: "O+",
+      emergencyContact: "+91 98765 44301"
+    },
+    courses: [
+      {
+        id: "course_004",
+        name: "Digital Signal Processing",
+        code: "EC-401",
+        credits: 4,
+        semester: 5,
+        enrolledStudents: 35,
+        schedule: "Mon, Wed, Fri - 11:00 AM",
+        room: "Lab-203",
+        status: "active"
+      }
+    ],
+    assignments: [
+      {
+        id: "assign_004",
+        title: "Signal Processing Lab Report",
+        course: "Digital Signal Processing",
+        dueDate: "2024-10-18",
+        totalSubmissions: 35,
+        gradedSubmissions: 35,
+        averageGrade: "A",
+        status: "grading_complete"
+      }
+    ],
+    students: [
+      {
+        id: "student_002",
+        name: "Priya Patel",
+        rollNumber: "YUK2024002",
+        course: "Electronics and Communication Engineering",
+        semester: 5,
+        attendance: 96,
+        currentGrade: "A+"
+      }
+    ],
+    announcements: [],
+    achievements: []
+  },
+  {
+    id: "faculty_004",
+    name: "Prof. Ravi Kumar",
+    email: "ravi.kumar@faculty.yukti.com",
+    employeeId: "YUKF2024004",
+    department: "Mechanical Engineering",
+    designation: "Professor",
+    specialization: "Thermodynamics, Heat Transfer",
+    experience: 18,
+    qualification: "Ph.D. in Mechanical Engineering, M.Tech in Thermal Engineering",
+    profile: {
+      dateOfBirth: "1975-09-14",
+      phone: "+91 98765 44400",
+      address: "404, Industrial Area, Pune, Maharashtra",
+      joiningDate: "2015-03-01",
+      bloodGroup: "AB+",
+      emergencyContact: "+91 98765 44401"
+    },
+    courses: [
+      {
+        id: "course_005",
+        name: "Applied Thermodynamics",
+        code: "ME-401",
+        credits: 3,
+        semester: 7,
+        enrolledStudents: 28,
+        schedule: "Tue, Thu - 9:00 AM",
+        room: "Room-301",
+        status: "active"
+      }
+    ],
+    assignments: [
+      {
+        id: "assign_005",
+        title: "Thermodynamics Project",
+        course: "Applied Thermodynamics",
+        dueDate: "2024-10-25",
+        totalSubmissions: 0,
+        gradedSubmissions: 0,
+        averageGrade: null,
+        status: "pending"
+      }
+    ],
+    students: [
+      {
+        id: "student_003",
+        name: "Arjun Singh",
+        rollNumber: "YUK2024003",
+        course: "Mechanical Engineering",
+        semester: 7,
+        attendance: 88,
+        currentGrade: "B+"
+      }
+    ],
+    announcements: [],
+    achievements: [
+      {
+        id: "achieve_003",
+        title: "Distinguished Professor",
+        description: "Recognized for outstanding contribution to mechanical engineering",
+        date: "2024-06-10",
+        category: "Academic"
+      }
+    ]
+  }
+];
+
+module.exports = mockFaculty;

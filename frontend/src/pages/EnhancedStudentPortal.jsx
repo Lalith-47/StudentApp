@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ScholarshipSection from "../components/Student/ScholarshipSection";
 import {
   // Navigation & Layout
   Menu,
@@ -219,6 +220,11 @@ const EnhancedStudentPortal = () => {
         { id: "analytics", label: "Analytics", icon: TrendingUp },
         { id: "report-card", label: "Report Card", icon: FileText },
       ],
+    },
+    {
+      id: "scholarships",
+      label: "Scholarships",
+      icon: Award,
     },
     {
       id: "communication",
@@ -673,6 +679,8 @@ const EnhancedStudentPortal = () => {
       case "submitted-assignments":
       case "graded-assignments":
         return renderAssignments();
+      case "scholarships":
+        return <ScholarshipSection />;
       default:
         return (
           <Card className="p-12 text-center">
