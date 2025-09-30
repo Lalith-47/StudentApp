@@ -6,7 +6,8 @@ const User = require("../models/User");
 const sampleCourses = [
   {
     title: "Introduction to Programming",
-    description: "Learn the fundamentals of programming with Python. This course covers variables, data types, control structures, functions, and object-oriented programming concepts.",
+    description:
+      "Learn the fundamentals of programming with Python. This course covers variables, data types, control structures, functions, and object-oriented programming concepts.",
     instructor: "Dr. Sarah Johnson",
     semester: "1",
     credits: 4,
@@ -15,7 +16,8 @@ const sampleCourses = [
     status: "active",
     prerequisites: "Basic computer literacy",
     objectives: "Students will learn to write, debug, and test Python programs",
-    syllabus: "Variables, Data Types, Control Structures, Functions, OOP, File Handling",
+    syllabus:
+      "Variables, Data Types, Control Structures, Functions, OOP, File Handling",
     startDate: new Date("2024-01-15"),
     endDate: new Date("2024-05-15"),
     schedule: {
@@ -48,7 +50,8 @@ const sampleCourses = [
   },
   {
     title: "Data Structures and Algorithms",
-    description: "Advanced course covering fundamental data structures and algorithms. Learn about arrays, linked lists, stacks, queues, trees, graphs, and sorting algorithms.",
+    description:
+      "Advanced course covering fundamental data structures and algorithms. Learn about arrays, linked lists, stacks, queues, trees, graphs, and sorting algorithms.",
     instructor: "Prof. Michael Chen",
     semester: "3",
     credits: 4,
@@ -56,8 +59,10 @@ const sampleCourses = [
     enrolledStudents: 38,
     status: "active",
     prerequisites: "Introduction to Programming, Discrete Mathematics",
-    objectives: "Master fundamental data structures and algorithmic problem-solving",
-    syllabus: "Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Sorting, Searching",
+    objectives:
+      "Master fundamental data structures and algorithmic problem-solving",
+    syllabus:
+      "Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Sorting, Searching",
     startDate: new Date("2024-01-15"),
     endDate: new Date("2024-05-15"),
     schedule: {
@@ -90,7 +95,8 @@ const sampleCourses = [
   },
   {
     title: "Web Development Fundamentals",
-    description: "Learn modern web development with HTML5, CSS3, and JavaScript. Build responsive websites and understand web standards and best practices.",
+    description:
+      "Learn modern web development with HTML5, CSS3, and JavaScript. Build responsive websites and understand web standards and best practices.",
     instructor: "Dr. Emily Rodriguez",
     semester: "2",
     credits: 3,
@@ -98,7 +104,8 @@ const sampleCourses = [
     enrolledStudents: 32,
     status: "active",
     prerequisites: "Basic computer skills",
-    objectives: "Create responsive, accessible websites using modern web technologies",
+    objectives:
+      "Create responsive, accessible websites using modern web technologies",
     syllabus: "HTML5, CSS3, JavaScript, Responsive Design, Web Standards",
     startDate: new Date("2024-01-15"),
     endDate: new Date("2024-05-15"),
@@ -127,7 +134,8 @@ const sampleCourses = [
   },
   {
     title: "Database Systems",
-    description: "Introduction to database design and management. Learn SQL, database normalization, indexing, and transaction management.",
+    description:
+      "Introduction to database design and management. Learn SQL, database normalization, indexing, and transaction management.",
     instructor: "Prof. David Kim",
     semester: "4",
     credits: 4,
@@ -164,7 +172,8 @@ const sampleCourses = [
   },
   {
     title: "Software Engineering",
-    description: "Learn software development methodologies, project management, testing, and software quality assurance.",
+    description:
+      "Learn software development methodologies, project management, testing, and software quality assurance.",
     instructor: "Dr. Lisa Wang",
     semester: "5",
     credits: 3,
@@ -173,7 +182,8 @@ const sampleCourses = [
     status: "active",
     prerequisites: "Data Structures, Database Systems",
     objectives: "Apply software engineering principles to real-world projects",
-    syllabus: "SDLC, Agile, Testing, Version Control, CI/CD, Project Management",
+    syllabus:
+      "SDLC, Agile, Testing, Version Control, CI/CD, Project Management",
     startDate: new Date("2024-01-15"),
     endDate: new Date("2024-05-15"),
     schedule: {
@@ -204,7 +214,8 @@ const sampleCourses = [
 const sampleAnnouncements = [
   {
     title: "Welcome to the New Academic Year!",
-    content: "We are excited to welcome all students to the new academic year. Please ensure you have completed your course registrations and are familiar with the updated academic calendar. If you have any questions, don't hesitate to contact the administration office.",
+    content:
+      "We are excited to welcome all students to the new academic year. Please ensure you have completed your course registrations and are familiar with the updated academic calendar. If you have any questions, don't hesitate to contact the administration office.",
     priority: "high",
     targetAudience: "all",
     status: "published",
@@ -216,7 +227,8 @@ const sampleAnnouncements = [
   },
   {
     title: "Library Hours Extended",
-    content: "Good news! The library will now be open from 7 AM to 11 PM on weekdays and 9 AM to 9 PM on weekends. This change is effective immediately. We hope this extended access helps with your studies.",
+    content:
+      "Good news! The library will now be open from 7 AM to 11 PM on weekdays and 9 AM to 9 PM on weekends. This change is effective immediately. We hope this extended access helps with your studies.",
     priority: "medium",
     targetAudience: "students",
     status: "published",
@@ -228,7 +240,8 @@ const sampleAnnouncements = [
   },
   {
     title: "Midterm Examination Schedule",
-    content: "The midterm examination schedule has been published. Please check your student portal for the exact dates and times of your exams. Remember to bring your student ID and arrive 15 minutes early. Good luck with your preparations!",
+    content:
+      "The midterm examination schedule has been published. Please check your student portal for the exact dates and times of your exams. Remember to bring your student ID and arrive 15 minutes early. Good luck with your preparations!",
     priority: "high",
     targetAudience: "students",
     status: "published",
@@ -240,7 +253,8 @@ const sampleAnnouncements = [
   },
   {
     title: "Faculty Meeting - Next Friday",
-    content: "There will be a faculty meeting next Friday at 2 PM in the main conference room. Agenda includes discussion of curriculum updates, student performance review, and upcoming events. Please confirm your attendance.",
+    content:
+      "There will be a faculty meeting next Friday at 2 PM in the main conference room. Agenda includes discussion of curriculum updates, student performance review, and upcoming events. Please confirm your attendance.",
     priority: "medium",
     targetAudience: "faculty",
     status: "published",
@@ -252,7 +266,8 @@ const sampleAnnouncements = [
   },
   {
     title: "System Maintenance - This Weekend",
-    content: "Scheduled system maintenance will occur this weekend from Saturday 10 PM to Sunday 6 AM. During this time, the student portal and online services will be temporarily unavailable. We apologize for any inconvenience.",
+    content:
+      "Scheduled system maintenance will occur this weekend from Saturday 10 PM to Sunday 6 AM. During this time, the student portal and online services will be temporarily unavailable. We apologize for any inconvenience.",
     priority: "high",
     targetAudience: "all",
     status: "published",
@@ -264,7 +279,8 @@ const sampleAnnouncements = [
   },
   {
     title: "Research Symposium Registration Open",
-    content: "Registration for the annual research symposium is now open. Students and faculty are encouraged to submit their research abstracts. The deadline for submission is March 15th. Visit the research office for more details.",
+    content:
+      "Registration for the annual research symposium is now open. Students and faculty are encouraged to submit their research abstracts. The deadline for submission is March 15th. Visit the research office for more details.",
     priority: "medium",
     targetAudience: "all",
     status: "scheduled",
@@ -398,7 +414,7 @@ const populateSampleData = async () => {
         createdBy: adminUser._id,
         instructorId: facultyUsers[i % facultyUsers.length]._id,
       };
-      
+
       const course = new Course(courseData);
       await course.save();
       createdCourses.push(course);
@@ -426,8 +442,9 @@ const populateSampleData = async () => {
     }
 
     console.log("Sample data population completed successfully!");
-    console.log(`Created ${createdCourses.length} courses and ${sampleAnnouncements.length} announcements.`);
-
+    console.log(
+      `Created ${createdCourses.length} courses and ${sampleAnnouncements.length} announcements.`
+    );
   } catch (error) {
     console.error("Error populating sample data:", error);
   }
