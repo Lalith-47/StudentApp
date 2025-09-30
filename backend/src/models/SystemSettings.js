@@ -377,18 +377,20 @@ const systemSettingsSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    changeHistory: [{
-      changedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+    changeHistory: [
+      {
+        changedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        changes: mongoose.Schema.Types.Mixed,
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+        reason: String,
       },
-      changes: mongoose.Schema.Types.Mixed,
-      timestamp: {
-        type: Date,
-        default: Date.now,
-      },
-      reason: String,
-    }],
+    ],
   },
   {
     timestamps: true,
@@ -401,7 +403,11 @@ const systemSettingsSchema = new mongoose.Schema(
 systemSettingsSchema.index({}, { unique: true });
 
 // Methods
-systemSettingsSchema.methods.addChangeHistory = function (userId, changes, reason) {
+systemSettingsSchema.methods.addChangeHistory = function (
+  userId,
+  changes,
+  reason
+) {
   this.changeHistory.push({
     changedBy: userId,
     changes,
@@ -420,38 +426,50 @@ systemSettingsSchema.methods.addChangeHistory = function (userId, changes, reaso
 
 systemSettingsSchema.methods.resetToDefaults = function (userId) {
   const defaults = this.constructor.schema.obj;
-  
-  Object.keys(defaults).forEach(key => {
-    if (typeof defaults[key] === 'object' && defaults[key] !== null && !Array.isArray(defaults[key])) {
+
+  Object.keys(defaults).forEach((key) => {
+    if (
+      typeof defaults[key] === "object" &&
+      defaults[key] !== null &&
+      !Array.isArray(defaults[key])
+    ) {
       this[key] = { ...defaults[key] };
     } else if (defaults[key].default !== undefined) {
       this[key] = defaults[key].default;
     }
   });
 
-  this.addChangeHistory(userId, { action: "reset_to_defaults" }, "Settings reset to default values");
+  this.addChangeHistory(
+    userId,
+    { action: "reset_to_defaults" },
+    "Settings reset to default values"
+  );
   return this.save();
 };
 
 // Static methods
 systemSettingsSchema.statics.getSettings = async function () {
   let settings = await this.findOne();
-  
+
   if (!settings) {
     settings = new this();
     await settings.save();
   }
-  
+
   return settings;
 };
 
 systemSettingsSchema.statics.updateSettings = async function (updates, userId) {
   const settings = await this.getSettings();
-  
+
   // Deep merge updates
   const deepMerge = (target, source) => {
     for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      if (
+        source[key] &&
+        typeof source[key] === "object" &&
+        !Array.isArray(source[key])
+      ) {
         if (!target[key]) target[key] = {};
         deepMerge(target[key], source[key]);
       } else {
@@ -462,27 +480,31 @@ systemSettingsSchema.statics.updateSettings = async function (updates, userId) {
 
   const oldSettings = JSON.parse(JSON.stringify(settings.toObject()));
   deepMerge(settings, updates);
-  
+
   settings.lastModifiedBy = userId;
   await settings.save();
-  
+
   // Log changes
   const changes = this.getChanges(oldSettings, settings.toObject());
   if (Object.keys(changes).length > 0) {
     await settings.addChangeHistory(userId, changes, "Settings updated");
   }
-  
+
   return settings;
 };
 
 systemSettingsSchema.statics.getChanges = function (oldSettings, newSettings) {
   const changes = {};
-  
-  const compare = (old, new_, path = '') => {
+
+  const compare = (old, new_, path = "") => {
     for (const key in new_) {
       const currentPath = path ? `${path}.${key}` : key;
-      
-      if (typeof new_[key] === 'object' && new_[key] !== null && !Array.isArray(new_[key])) {
+
+      if (
+        typeof new_[key] === "object" &&
+        new_[key] !== null &&
+        !Array.isArray(new_[key])
+      ) {
         compare(old[key] || {}, new_[key], currentPath);
       } else if (JSON.stringify(old[key]) !== JSON.stringify(new_[key])) {
         changes[currentPath] = {
@@ -492,7 +514,7 @@ systemSettingsSchema.statics.getChanges = function (oldSettings, newSettings) {
       }
     }
   };
-  
+
   compare(oldSettings, newSettings);
   return changes;
 };
