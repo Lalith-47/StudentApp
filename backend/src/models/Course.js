@@ -70,10 +70,20 @@ const courseSchema = new mongoose.Schema(
       required: [true, "End date is required"],
     },
     schedule: {
-      days: [{
-        type: String,
-        enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      }],
+      days: [
+        {
+          type: String,
+          enum: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ],
+        },
+      ],
       time: {
         start: String,
         end: String,
@@ -94,15 +104,17 @@ const courseSchema = new mongoose.Schema(
         count: { type: Number, default: 0 },
       },
     },
-    resources: [{
-      title: String,
-      type: {
-        type: String,
-        enum: ["document", "video", "link", "book"],
+    resources: [
+      {
+        title: String,
+        type: {
+          type: String,
+          enum: ["document", "video", "link", "book"],
+        },
+        url: String,
+        description: String,
       },
-      url: String,
-      description: String,
-    }],
+    ],
     tags: [String],
     difficulty: {
       type: String,
@@ -181,7 +193,9 @@ courseSchema.methods.isFull = function () {
 // Instance method to check if enrollment is open
 courseSchema.methods.isEnrollmentOpen = function () {
   const now = new Date();
-  return this.status === "active" && now >= this.startDate && now <= this.endDate;
+  return (
+    this.status === "active" && now >= this.startDate && now <= this.endDate
+  );
 };
 
 module.exports = mongoose.model("Course", courseSchema);
