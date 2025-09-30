@@ -169,11 +169,10 @@ const updateAnnouncement = async (req, res) => {
       updateData.publishedAt = new Date();
     }
 
-    const announcement = await Announcement.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    )
+    const announcement = await Announcement.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    })
       .populate("author", "name email")
       .populate("lastModifiedBy", "name email")
       .populate("targetUsers", "name email");
