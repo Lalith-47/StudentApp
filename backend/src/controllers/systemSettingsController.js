@@ -60,13 +60,16 @@ const updateSystemSettings = async (req, res) => {
     ];
 
     const filteredUpdates = {};
-    Object.keys(updates).forEach(key => {
+    Object.keys(updates).forEach((key) => {
       if (allowedUpdates.includes(key)) {
         filteredUpdates[key] = updates[key];
       }
     });
 
-    const settings = await SystemSettings.updateSettings(filteredUpdates, userId);
+    const settings = await SystemSettings.updateSettings(
+      filteredUpdates,
+      userId
+    );
 
     // Remove sensitive information from response
     const safeSettings = JSON.parse(JSON.stringify(settings));
@@ -192,7 +195,9 @@ const getSystemHealth = async (req, res) => {
           total: systemMemory.total,
           free: systemMemory.free,
           used: systemMemory.used,
-          usagePercentage: Math.round((systemMemory.used / systemMemory.total) * 100),
+          usagePercentage: Math.round(
+            (systemMemory.used / systemMemory.total) * 100
+          ),
         },
       },
       cpu: {
@@ -232,15 +237,17 @@ const getSystemLogs = async (req, res) => {
     // In a real application, you'd use a proper logging library like Winston
     // This is a simplified implementation
     const logFile = path.join(process.cwd(), "logs", "app.log");
-    
+
     let logs = [];
     if (fs.existsSync(logFile)) {
       const logContent = fs.readFileSync(logFile, "utf8");
-      const logLines = logContent.split("\n").filter(line => line.trim());
-      
+      const logLines = logContent.split("\n").filter((line) => line.trim());
+
       // Simple filtering by level
       if (level) {
-        logs = logLines.filter(line => line.includes(`[${level.toUpperCase()}]`));
+        logs = logLines.filter((line) =>
+          line.includes(`[${level.toUpperCase()}]`)
+        );
       } else {
         logs = logLines;
       }
@@ -274,7 +281,7 @@ const clearSystemLogs = async (req, res) => {
     const path = require("path");
 
     const logFile = path.join(process.cwd(), "logs", "app.log");
-    
+
     if (fs.existsSync(logFile)) {
       fs.writeFileSync(logFile, "");
     }
@@ -305,8 +312,8 @@ const getBackupStatus = async (req, res) => {
     if (fs.existsSync(backupDir)) {
       const files = fs.readdirSync(backupDir);
       backups = files
-        .filter(file => file.endsWith(".json"))
-        .map(file => {
+        .filter((file) => file.endsWith(".json"))
+        .map((file) => {
           const filePath = path.join(backupDir, file);
           const stats = fs.statSync(filePath);
           return {
@@ -436,7 +443,7 @@ const testEmailConfiguration = async (req, res) => {
 const getChangeHistory = async (req, res) => {
   try {
     const { limit = 50 } = req.query;
-    
+
     const settings = await SystemSettings.getSettings();
     const history = settings.changeHistory
       .sort((a, b) => b.timestamp - a.timestamp)
