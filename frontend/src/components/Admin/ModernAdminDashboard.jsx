@@ -335,12 +335,12 @@ const ModernAdminDashboard = () => {
       dashboardData;
 
     return (
-      <div className="space-y-3 lg:space-y-4">
+      <div className="space-y-1 lg:space-y-2">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-4 md:p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-6xl mx-auto"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-2 md:p-3 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-6xl mx-auto"
         >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
             <div className="flex-1">
@@ -360,14 +360,14 @@ const ModernAdminDashboard = () => {
         </motion.div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="h-full"
           >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 h-full group cursor-pointer">
+            <Card className="p-2 md:p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 h-full group cursor-pointer">
               <div className="flex items-center justify-between h-full">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs md:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
@@ -396,7 +396,7 @@ const ModernAdminDashboard = () => {
             transition={{ delay: 0.2 }}
             className="h-full"
           >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 h-full group cursor-pointer">
+            <Card className="p-2 md:p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 h-full group cursor-pointer">
               <div className="flex items-center justify-between h-full">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs md:text-sm font-medium text-green-600 dark:text-green-400 mb-1">
@@ -425,7 +425,7 @@ const ModernAdminDashboard = () => {
             transition={{ delay: 0.3 }}
             className="h-full"
           >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 h-full group cursor-pointer">
+            <Card className="p-2 md:p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 h-full group cursor-pointer">
               <div className="flex items-center justify-between h-full">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs md:text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">
@@ -454,7 +454,7 @@ const ModernAdminDashboard = () => {
             transition={{ delay: 0.4 }}
             className="h-full"
           >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 h-full group cursor-pointer">
+            <Card className="p-2 md:p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 h-full group cursor-pointer">
               <div className="flex items-center justify-between h-full">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs md:text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">
@@ -805,7 +805,7 @@ const ModernAdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 -m-1 sm:-m-2 lg:-m-3">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Backdrop */}
       {sidebarOpen && (
         <div
@@ -902,9 +902,8 @@ const ModernAdminDashboard = () => {
           </button>
         </div>
 
-
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <main className="p-2 sm:p-3 lg:p-4 max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
