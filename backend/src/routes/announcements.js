@@ -40,7 +40,12 @@ router.use(authenticateToken);
 router.get("/", validatePagination, cacheMiddleware.users, getAnnouncements);
 
 // Get announcement by ID
-router.get("/:id", validateObjectId, cacheMiddleware.users, getAnnouncementById);
+router.get(
+  "/:id",
+  validateObjectId,
+  cacheMiddleware.users,
+  getAnnouncementById
+);
 
 // Get unread announcements for user
 router.get("/user/unread", getUnreadAnnouncements);
@@ -54,13 +59,25 @@ router.post("/:id/read", validateObjectId, markAsRead);
 // ==================== ADMIN/FACULTY ROUTES ====================
 
 // Get scheduled announcements (Admin and Faculty only)
-router.get("/admin/scheduled", requireRole(["admin", "faculty"]), getScheduledAnnouncements);
+router.get(
+  "/admin/scheduled",
+  requireRole(["admin", "faculty"]),
+  getScheduledAnnouncements
+);
 
 // Get announcement statistics (Admin only)
-router.get("/admin/statistics", requireRole(["admin"]), getAnnouncementStatistics);
+router.get(
+  "/admin/statistics",
+  requireRole(["admin"]),
+  getAnnouncementStatistics
+);
 
 // Process scheduled announcements (Admin only)
-router.post("/admin/process-scheduled", requireRole(["admin"]), processScheduledAnnouncements);
+router.post(
+  "/admin/process-scheduled",
+  requireRole(["admin"]),
+  processScheduledAnnouncements
+);
 
 // ==================== ANNOUNCEMENT MANAGEMENT ROUTES ====================
 
