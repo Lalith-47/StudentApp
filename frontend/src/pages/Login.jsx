@@ -10,6 +10,7 @@ import {
   ArrowRight,
   GraduationCap,
   Users,
+  Shield,
 } from "lucide-react";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
@@ -380,6 +381,24 @@ const Login = () => {
               </button>
             </div>
           </form>
+
+          {/* Admin Login Section */}
+          {import.meta.env.VITE_ENABLE_ADMIN !== 'false' && (
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  Administrator Access
+                </p>
+                <button
+                  onClick={() => navigate("/admin/login")}
+                  className="inline-flex items-center px-4 py-2 border border-red-300 dark:border-red-600 text-sm font-medium rounded-lg text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 touch-target min-h-[44px]"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin Login
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Back to Home */}
           <div className="mt-4 sm:mt-6 text-center">

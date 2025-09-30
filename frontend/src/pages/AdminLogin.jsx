@@ -59,7 +59,10 @@ const AdminLogin = () => {
 
     try {
       console.log("Attempting admin login with:", formData);
-      const response = await apiService.login(formData);
+      const response = await apiService.login({
+        ...formData,
+        role: "admin"
+      });
       console.log("Admin login response:", response.data);
 
       if (response.data.success) {
