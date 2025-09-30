@@ -41,10 +41,18 @@ router.get("/", validatePagination, cacheMiddleware.users, getCourses);
 router.get("/:id", validateObjectId, cacheMiddleware.users, getCourseById);
 
 // Get courses by instructor
-router.get("/instructor/:instructorId", validateObjectId, getCoursesByInstructor);
+router.get(
+  "/instructor/:instructorId",
+  validateObjectId,
+  getCoursesByInstructor
+);
 
 // Get course statistics
-router.get("/stats/overview", requireRole(["admin", "faculty"]), getCourseStatistics);
+router.get(
+  "/stats/overview",
+  requireRole(["admin", "faculty"]),
+  getCourseStatistics
+);
 
 // ==================== COURSE MANAGEMENT ROUTES ====================
 
@@ -66,12 +74,7 @@ router.put(
 );
 
 // Delete course (Admin only)
-router.delete(
-  "/:id",
-  requireRole(["admin"]),
-  validateObjectId,
-  deleteCourse
-);
+router.delete("/:id", requireRole(["admin"]), validateObjectId, deleteCourse);
 
 // ==================== ENROLLMENT ROUTES ====================
 
