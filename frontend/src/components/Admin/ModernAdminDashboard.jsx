@@ -340,7 +340,7 @@ const ModernAdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-1 md:p-2 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-6xl mx-auto"
+          className={`bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-1 md:p-2 text-white shadow-lg hover:shadow-xl transition-all duration-300 ${sidebarOpen ? 'max-w-6xl mx-auto' : 'w-full'}`}
         >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
             <div className="flex-1">
@@ -360,7 +360,7 @@ const ModernAdminDashboard = () => {
         </motion.div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-1 max-w-6xl mx-auto">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-1 transition-all duration-300 ${sidebarOpen ? 'max-w-6xl mx-auto' : 'w-full'}`}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -481,7 +481,7 @@ const ModernAdminDashboard = () => {
         </div>
 
         {/* Charts and Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1 lg:gap-1 mt-1 max-w-6xl mx-auto">
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-1 lg:gap-1 mt-1 transition-all duration-300 ${sidebarOpen ? 'max-w-6xl mx-auto' : 'w-full'}`}>
           {/* User Distribution Chart */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -821,7 +821,7 @@ const ModernAdminDashboard = () => {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 lg:static lg:inset-0`}
+        } lg:${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:static lg:inset-0`}
       >
         <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center space-x-3 min-w-0">
@@ -891,7 +891,7 @@ const ModernAdminDashboard = () => {
       </motion.div>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'}`}>
         {/* Mobile Menu Button */}
         <div className="lg:hidden fixed top-4 left-4 z-40">
           <button
@@ -902,8 +902,18 @@ const ModernAdminDashboard = () => {
           </button>
         </div>
 
+        {/* Desktop Toggle Button */}
+        <div className="hidden lg:block fixed top-4 left-4 z-40">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
         {/* Page Content */}
-        <main className="p-0 sm:p-1 lg:p-1 max-w-7xl mx-auto">
+        <main className={`p-0 sm:p-1 lg:p-1 transition-all duration-300 ${sidebarOpen ? 'max-w-7xl mx-auto' : 'w-full px-4'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
