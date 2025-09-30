@@ -821,7 +821,7 @@ const ModernAdminDashboard = () => {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
+        } lg:translate-x-0 lg:static lg:inset-0`}
       >
         <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center space-x-3 min-w-0">
@@ -891,7 +891,7 @@ const ModernAdminDashboard = () => {
       </motion.div>
 
       {/* Main Content */}
-      <div className="">
+      <div className="lg:pl-64">
         {/* Mobile Menu Button */}
         <div className="lg:hidden fixed top-4 left-4 z-40">
           <button
@@ -902,15 +902,6 @@ const ModernAdminDashboard = () => {
           </button>
         </div>
 
-        {/* Desktop Menu Button */}
-        <div className="hidden lg:block fixed top-4 left-4 z-40">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
 
         {/* Page Content */}
         <main className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
