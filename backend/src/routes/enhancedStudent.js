@@ -8,11 +8,7 @@ const {
   validateFileUpload,
   validateRateLimit,
 } = require("../middleware/validation");
-const {
-  cacheAnalytics,
-  cacheCourses,
-  cacheAssignments,
-} = require("../middleware/cache");
+const { cacheMiddleware } = require("../middleware/cache");
 const {
   upload,
   getStudentDashboard,
@@ -33,10 +29,15 @@ router.use(authenticateToken);
 router.use(validateRateLimit);
 
 // Dashboard
-router.get("/dashboard", cacheAnalytics, getStudentDashboard);
+router.get("/dashboard", cacheMiddleware.analytics, getStudentDashboard);
 
 // Course Management
-router.get("/courses", validatePagination, cacheCourses, getEnrolledCourses);
+router.get(
+  "/courses",
+  validatePagination,
+  cacheMiddleware.courses,
+  getEnrolledCourses
+);
 router.get(
   "/courses/:courseId",
   validateObjectId("courseId"),
@@ -68,10 +69,9 @@ router.put(
 router.get(
   "/analytics/performance",
   validateDateRange,
-  cacheAnalytics,
+  cacheMiddleware.analytics,
   getPerformanceAnalytics
 );
 router.get("/analytics/report-card", validateDateRange, generateReportCard);
 
 module.exports = router;
-

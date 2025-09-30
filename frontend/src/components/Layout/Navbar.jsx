@@ -108,9 +108,9 @@ const Navbar = () => {
               className="flex items-center space-x-2 text-xl font-bold text-primary-600 dark:text-primary-400"
             >
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AM</span>
+                <span className="text-white font-bold text-sm">Y</span>
               </div>
-              <span className="hidden sm:block">AdhyayanMarg</span>
+              <span className="hidden sm:block">Yukti</span>
             </Link>
           </div>
 

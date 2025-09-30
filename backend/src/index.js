@@ -12,10 +12,15 @@ const {
   authRateLimit,
   securityHeaders,
   corsOptions,
+  compressionMiddleware,
   preventNoSQLInjection,
   requestSizeLimit,
   securityLogger,
 } = require("./middleware/security");
+
+// Import performance middleware
+const { cacheMiddleware } = require("./middleware/cache");
+const { paginationMiddleware } = require("./middleware/pagination");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -46,6 +51,7 @@ const logger = require("./middleware/logger");
 // Enhanced Security middleware
 app.use(securityHeaders);
 app.use(cors(corsOptions));
+app.use(compressionMiddleware);
 app.use(requestSizeLimit);
 app.use(preventNoSQLInjection);
 app.use(securityLogger);

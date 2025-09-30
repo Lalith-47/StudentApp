@@ -31,12 +31,26 @@ import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
 import Grid from "../components/UI/Grid";
 import ResponsiveContainer from "../components/Layout/ResponsiveContainer";
+import LazySection from "../components/UI/LazySection";
+import PerformanceOptimizer from "../components/UI/PerformanceOptimizer";
+import QuickScrollNav from "../components/Navigation/QuickScrollNav";
+import CareerGuidanceSection from "../components/Sections/CareerGuidanceSection";
+import SmartHubSection from "../components/Sections/SmartHubSection";
+import AdditionalFeaturesSection from "../components/Sections/AdditionalFeaturesSection";
+import ErrorBoundary from "../components/UI/ErrorBoundary";
 import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Define sections for quick navigation
+  const sections = [
+    { id: "career-guidance", label: "Career Guidance" },
+    { id: "smart-hub", label: "Smart Hub" },
+    { id: "additional-features", label: "More Features" },
+  ];
 
   const features = [
     {
@@ -111,259 +125,191 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <ResponsiveContainer className="py-16 sm:py-20 lg:py-24">
-          <div className="text-center">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        {/* Performance Optimizer */}
+        <PerformanceOptimizer />
+
+        {/* Quick Scroll Navigation */}
+        <ErrorBoundary>
+          <QuickScrollNav sections={sections} />
+        </ErrorBoundary>
+
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <ResponsiveContainer className="py-16 sm:py-20 lg:py-24">
+            <div className="text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                  Welcome to
+                  <span className="block text-primary-600 dark:text-primary-400">
+                    Yukti
+                  </span>
+                </h1>
+                <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                  Your comprehensive career guidance platform from Bengaluru,
+                  India. Discover your perfect career path with AI-powered
+                  guidance, explore top colleges, find scholarships, and connect
+                  with faculty who can help you succeed.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/quiz")}
+                    className="text-lg px-8 py-4"
+                  >
+                    Start Your Journey
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => navigate("/dashboard")}
+                    className="text-lg px-8 py-4"
+                  >
+                    Explore Dashboard
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          </ResponsiveContainer>
+        </section>
+
+        {/* Career Guidance Section */}
+        <ErrorBoundary>
+          <LazySection>
+            <CareerGuidanceSection />
+          </LazySection>
+        </ErrorBoundary>
+
+        {/* Smart Hub Section */}
+        <ErrorBoundary>
+          <LazySection>
+            <SmartHubSection />
+          </LazySection>
+        </ErrorBoundary>
+
+        {/* Additional Features Section */}
+        <ErrorBoundary>
+          <LazySection>
+            <AdditionalFeaturesSection />
+          </LazySection>
+        </ErrorBoundary>
+
+        {/* Legacy Features Section (Simplified) */}
+        <section className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800">
+          <ResponsiveContainer>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-                Your Career Journey
-                <span className="block text-primary-600 dark:text-primary-400">
-                  Starts Here
-                </span>
-              </h1>
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Discover your perfect career path with AI-powered guidance,
-                explore top colleges, find scholarships, and connect with
-                mentors who can help you succeed.
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Quick Access Features
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Essential tools and resources for your educational journey
+              </p>
+            </motion.div>
+
+            <Grid cols={{ sm: 1, md: 2, lg: 4 }} gap="lg">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={`feature-${index}-${feature.title}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <Card className="p-6 text-center h-full flex flex-col hover:shadow-lg transition-all duration-300">
+                    <div
+                      className={`w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center ${feature.color}`}
+                    >
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed flex-grow">
+                      {feature.description}
+                    </p>
+                    <div className="mt-4 pt-4">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(feature.link)}
+                        className="w-full"
+                      >
+                        Explore
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </Grid>
+          </ResponsiveContainer>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 sm:py-20 bg-primary-600 dark:bg-primary-700">
+          <ResponsiveContainer>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                Ready to Start Your Career Journey?
+              </h2>
+              <p className="text-lg text-primary-100 mb-8 max-w-2xl mx-auto">
+                Join thousands of students who have already discovered their
+                perfect career path with our platform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   size="lg"
+                  variant="secondary"
                   onClick={() => navigate("/quiz")}
                   className="text-lg px-8 py-4"
                 >
-                  Start Your Journey
+                  Take Career Quiz
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => navigate("/dashboard")}
-                  className="text-lg px-8 py-4"
-                >
-                  Explore Dashboard
-                </Button>
+                {isAuthenticated ? (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate("/dashboard")}
+                    className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
+                  >
+                    Go to Dashboard
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate("/login")}
+                    className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
+                  >
+                    Get Started
+                  </Button>
+                )}
               </div>
             </motion.div>
-          </div>
-        </ResponsiveContainer>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 sm:py-20">
-        <ResponsiveContainer>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything You Need for Career Success
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Our comprehensive platform provides all the tools and resources
-              you need to make informed career decisions.
-            </p>
-          </motion.div>
-
-          <Grid cols={{ sm: 1, md: 2, lg: 4 }} gap="lg">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card
-                  hover
-                  className="p-6 text-center h-full"
-                  onClick={() => navigate(feature.link)}
-                >
-                  <div
-                    className={`w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center ${feature.color}`}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
-          </Grid>
-        </ResponsiveContainer>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800">
-        <ResponsiveContainer>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Trusted by Thousands
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Join the community of successful students and professionals
-            </p>
-          </motion.div>
-
-          <Grid cols={{ sm: 2, lg: 4 }} gap="lg">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <div className="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg">
-                  <div className="w-12 h-12 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
-                    <stat.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                    {stat.value}
-                  </div>
-                  <div className="text-gray-600 dark:text-gray-300">
-                    {stat.label}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </Grid>
-        </ResponsiveContainer>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 sm:py-20">
-        <ResponsiveContainer>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              What Our Students Say
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Real stories from students who transformed their careers
-            </p>
-          </motion.div>
-
-          <Grid cols={{ sm: 1, lg: 3 }} gap="lg">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="p-6 h-full">
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover mr-4"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {testimonial.role}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 text-yellow-500 fill-current"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    "{testimonial.content}"
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
-          </Grid>
-        </ResponsiveContainer>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 sm:py-20 bg-primary-600 dark:bg-primary-700">
-        <ResponsiveContainer>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Ready to Start Your Career Journey?
-            </h2>
-            <p className="text-lg text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have already discovered their
-              perfect career path with our platform.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => navigate("/quiz")}
-                className="text-lg px-8 py-4"
-              >
-                Take Career Quiz
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              {isAuthenticated ? (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate("/dashboard")}
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
-                >
-                  Go to Dashboard
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate("/login")}
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
-                >
-                  Get Started
-                </Button>
-              )}
-            </div>
-          </motion.div>
-        </ResponsiveContainer>
-      </section>
-    </div>
+          </ResponsiveContainer>
+        </section>
+      </div>
+    </ErrorBoundary>
   );
 };
 

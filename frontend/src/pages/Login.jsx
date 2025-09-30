@@ -29,7 +29,7 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/dashboard";
 
   const [mode, setMode] = useState("login"); // "login" or "register"
-  const [userRole, setUserRole] = useState("student"); // "student" or "mentor"
+  const [userRole, setUserRole] = useState("student"); // "student", "faculty", or "admin"
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -94,6 +94,15 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Block registration for Faculty and Admin roles
+    if (mode === "register" && userRole !== "student") {
+      setErrors({
+        general:
+          "Only students can create accounts. Faculty and Admin accounts are managed by administrators.",
+      });
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -126,7 +135,17 @@ const Login = () => {
         login(response.data.user);
 
         // Redirect based on role
-        const redirectPath = userRole === "mentor" ? "/mentor" : "/dashboard";
+        let redirectPath;
+        switch (userRole) {
+          case "faculty":
+            redirectPath = "/faculty";
+            break;
+          case "admin":
+            redirectPath = "/admin";
+            break;
+          default:
+            redirectPath = "/dashboard";
+        }
         navigate(redirectPath, { replace: true });
       } else {
         setErrors({
@@ -156,6 +175,15 @@ const Login = () => {
   };
 
   const switchMode = () => {
+    // Only allow registration mode for students
+    if (userRole !== "student" && mode === "login") {
+      setErrors({
+        general:
+          "Only students can create accounts. Faculty and Admin accounts are managed by administrators.",
+      });
+      return;
+    }
+
     setMode(mode === "login" ? "register" : "login");
     setFormData({
       name: "",
@@ -180,8 +208,11 @@ const Login = () => {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-1 flex">
               <button
                 type="button"
-                onClick={() => setUserRole("student")}
-                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                onClick={() => {
+                  setUserRole("student");
+                  // Allow both login and register for students
+                }}
+                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                   userRole === "student"
                     ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
@@ -192,41 +223,83 @@ const Login = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setUserRole("mentor")}
-                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  userRole === "mentor"
+                onClick={() => {
+                  setUserRole("faculty");
+                  setMode("login"); // Force login mode for faculty
+                  setErrors({});
+                }}
+                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  userRole === "faculty"
                     ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                 }`}
               >
                 <Users className="w-4 h-4 mr-2" />
-                Mentor
+                Faculty
               </button>
+              {import.meta.env.VITE_ENABLE_ADMIN !== "false" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserRole("admin");
+                    setMode("login"); // Force login mode for admin
+                    setErrors({});
+                  }}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    userRole === "admin"
+                      ? "bg-white dark:bg-gray-700 text-red-600 dark:text-red-400 shadow-sm"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  }`}
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin
+                </button>
+              )}
             </div>
           </div>
 
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <div
+              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 ${
+                userRole === "admin"
+                  ? "bg-red-600"
+                  : userRole === "faculty"
+                  ? "bg-purple-600"
+                  : "bg-primary-600"
+              }`}
+            >
               {userRole === "student" ? (
                 <GraduationCap className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-              ) : (
+              ) : userRole === "faculty" ? (
                 <Users className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+              ) : (
+                <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               )}
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
               {mode === "login"
-                ? `${userRole === "student" ? "Student" : "Mentor"} ${t(
-                    "auth.signIn"
-                  )}`
-                : `${userRole === "student" ? "Student" : "Mentor"} ${t(
-                    "auth.createAccount"
-                  )}`}
+                ? `${
+                    userRole === "student"
+                      ? "Student"
+                      : userRole === "faculty"
+                      ? "Faculty"
+                      : "Admin"
+                  } ${t("auth.signIn")}`
+                : `${
+                    userRole === "student"
+                      ? "Student"
+                      : userRole === "faculty"
+                      ? "Faculty"
+                      : "Admin"
+                  } ${t("auth.createAccount")}`}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed px-2">
               {userRole === "student"
                 ? "Access your personalized career guidance dashboard"
-                : "Manage and guide your students' career journeys"}
+                : userRole === "faculty"
+                ? "Manage and guide your students' career journeys"
+                : "Access administrative controls and system management"}
             </p>
           </div>
 
@@ -367,50 +440,38 @@ const Login = () => {
               )}
             </Button>
 
-            {/* Switch Mode */}
-            <div className="text-center">
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
-                {mode === "login" ? t("auth.noAccount") : t("auth.haveAccount")}
-              </p>
-              <button
-                type="button"
-                onClick={switchMode}
-                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium mt-1 touch-target min-h-[44px] px-2 py-1"
-              >
-                {mode === "login" ? t("auth.createAccount") : t("auth.signIn")}
-              </button>
-            </div>
-          </form>
-
-          {/* Admin Login Section */}
-          {import.meta.env.VITE_ENABLE_ADMIN !== "false" && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
-            >
+            {/* Switch Mode - Only show for Students */}
+            {userRole === "student" && (
               <div className="text-center">
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-sm text-gray-500 dark:text-gray-400 mb-3"
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                  {mode === "login"
+                    ? t("auth.noAccount")
+                    : t("auth.haveAccount")}
+                </p>
+                <button
+                  type="button"
+                  onClick={switchMode}
+                  className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium mt-1 touch-target min-h-[44px] px-2 py-1"
                 >
-                  Administrator Access
-                </motion.p>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/admin/login")}
-                  className="inline-flex items-center px-4 py-2 border border-red-300 dark:border-red-600 text-sm font-medium rounded-lg text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 touch-target min-h-[44px] shadow-sm hover:shadow-md"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Admin Login
-                </motion.button>
+                  {mode === "login"
+                    ? t("auth.createAccount")
+                    : t("auth.signIn")}
+                </button>
               </div>
-            </motion.div>
-          )}
+            )}
+
+            {/* Information for Faculty/Admin */}
+            {userRole !== "student" && (
+              <div className="text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Faculty and Admin accounts are managed by administrators.
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Contact your administrator if you need account access.
+                </p>
+              </div>
+            )}
+          </form>
 
           {/* Back to Home */}
           <div className="mt-4 sm:mt-6 text-center">

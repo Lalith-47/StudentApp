@@ -52,30 +52,11 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions =
-    /\.(jpeg|jpg|png|gif|pdf|doc|docx|txt|ppt|pptx|xls|xlsx|mp4|avi|mov|zip|py|js|java|cpp|c)$/i;
+  // Restrict to PDF and DOCX only for assignments
+  const allowedExtensions = /\.(pdf|docx)$/i;
   const allowedMimeTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
     "application/pdf",
-    "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "text/plain",
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "video/mp4",
-    "video/avi",
-    "video/quicktime",
-    "application/zip",
-    "text/x-python",
-    "application/javascript",
-    "text/x-java-source",
-    "text/x-c++src",
-    "text/x-csrc",
   ];
 
   if (
@@ -86,7 +67,7 @@ const fileFilter = (req, file, cb) => {
   } else {
     cb(
       new FileValidationError(
-        `Invalid file type: ${file.originalname}. Only images, documents, presentations, spreadsheets, videos, zip files, and code files are allowed.`
+        `Invalid file type: ${file.originalname}. Only PDF and DOCX files are allowed for assignment submissions.`
       )
     );
   }
@@ -766,11 +747,9 @@ const generateReportCard = asyncHandler(async (req, res) => {
 
     doc.fontSize(20).text("Report Card", { align: "center" });
     doc.fontSize(14).text(`Student: ${student.name}`, { align: "center" });
-    doc
-      .fontSize(12)
-      .text(`Generated: ${new Date().toLocaleDateString()}`, {
-        align: "center",
-      });
+    doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, {
+      align: "center",
+    });
     doc.moveDown();
 
     enrollments.forEach((enrollment) => {
@@ -818,4 +797,3 @@ module.exports = {
   getPerformanceAnalytics,
   generateReportCard,
 };
-

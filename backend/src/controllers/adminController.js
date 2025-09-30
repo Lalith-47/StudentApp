@@ -1,6 +1,9 @@
 const User = require("../models/User");
+const AuditLog = require("../models/AuditLog");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { createPaginatedResponse } = require("../middleware/pagination");
+const { cacheInvalidation } = require("../middleware/cache");
 
 // Get admin dashboard statistics
 const getDashboardStats = async (req, res) => {
@@ -355,63 +358,38 @@ const getUsers = async (req, res) => {
       });
     }
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || "";
-    const role = req.query.role || "";
-    const status = req.query.status || "";
-
-    // Build filter object
-    const filter = {};
-
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    if (role) {
-      filter.role = role;
-    }
-
-    if (status === "active") {
-      filter.isActive = true;
-    } else if (status === "inactive") {
-      filter.isActive = false;
-    }
+    // Use pagination from middleware
+    const { pagination } = req;
+    const { filters, sort, skip, limit } = pagination;
 
     // Get total count
-    const totalUsers = await User.countDocuments(filter);
+    const totalUsers = await User.countDocuments(filters);
 
     // Get users with pagination
-    const users = await User.find(filter)
+    const users = await User.find(filters)
       .select("name email role isActive lastLogin createdAt")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
+      .sort(sort)
+      .skip(skip)
       .limit(limit);
 
-    res.json({
-      success: true,
-      data: {
-        users: users.map((user) => ({
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          isActive: user.isActive,
-          lastLogin: user.lastLogin,
-          createdAt: user.createdAt,
-        })),
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(totalUsers / limit),
-          totalUsers,
-          hasNext: page < Math.ceil(totalUsers / limit),
-          hasPrev: page > 1,
-        },
-      },
-    });
+    // Transform users data
+    const transformedUsers = users.map((user) => ({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+    }));
+
+    // Create paginated response
+    const response = createPaginatedResponse(
+      transformedUsers,
+      totalUsers,
+      pagination
+    );
+    res.json(response);
   } catch (error) {
     console.error("Get users error:", error);
     res.status(500).json({
@@ -824,6 +802,9 @@ const createUser = async (req, res) => {
 
     await user.save();
 
+    // Invalidate relevant caches
+    cacheInvalidation.invalidateUser(user._id, user.role);
+
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -845,6 +826,98 @@ const createUser = async (req, res) => {
   }
 };
 
+// Get audit logs with filtering and pagination
+const getAuditLogs = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 50,
+      action,
+      category,
+      severity,
+      performedBy,
+      startDate,
+      endDate,
+      sortBy = "timestamp",
+      sortOrder = "desc",
+    } = req.query;
+
+    // Build filter object
+    const filter = {};
+
+    if (action) {
+      filter.action = { $regex: action, $options: "i" };
+    }
+
+    if (category) {
+      filter.category = { $regex: category, $options: "i" };
+    }
+
+    if (severity) {
+      filter.severity = severity;
+    }
+
+    if (performedBy) {
+      filter.performedBy = performedBy;
+    }
+
+    if (startDate || endDate) {
+      filter.timestamp = {};
+      if (startDate) {
+        filter.timestamp.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        filter.timestamp.$lte = new Date(endDate);
+      }
+    }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Execute query with pagination
+    const [auditLogs, totalCount] = await Promise.all([
+      AuditLog.find(filter)
+        .populate("performedBy", "name email")
+        .populate("targetResource.id")
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean(),
+      AuditLog.countDocuments(filter),
+    ]);
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / parseInt(limit));
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    res.json({
+      success: true,
+      data: {
+        auditLogs,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages,
+          totalCount,
+          hasNextPage,
+          hasPrevPage,
+          limit: parseInt(limit),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching audit logs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getUsers,
@@ -853,4 +926,5 @@ module.exports = {
   resetUserPassword,
   deleteUser,
   getQuizData,
+  getAuditLogs,
 };

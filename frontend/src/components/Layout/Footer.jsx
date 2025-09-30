@@ -77,21 +77,21 @@ const Footer = () => {
                 className="flex items-center space-x-2 text-2xl font-bold mb-4"
               >
                 <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">AM</span>
+                  <span className="text-white font-bold">Y</span>
                 </div>
-                <span>AdhyayanMarg</span>
+                <span>Yukti</span>
               </Link>
               <p className="text-gray-300 mb-6 leading-relaxed">
                 Empowering students with AI-powered career guidance, college
-                discovery, and scholarship opportunities. Your journey to
-                success starts here.
+                discovery, and scholarship opportunities. Your comprehensive
+                career guidance platform from Bengaluru, India.
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-gray-300">
                   <Mail className="w-4 h-4 text-primary-400" />
-                  <span>support@adhyayanmarg.com</span>
+                  <span>support@yukti.com</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-300">
                   <Phone className="w-4 h-4 text-primary-400" />
@@ -99,7 +99,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-gray-300">
                   <MapPin className="w-4 h-4 text-primary-400" />
-                  <span>Mumbai, India</span>
+                  <span>Bengaluru, India</span>
                 </div>
               </div>
             </motion.div>
@@ -250,7 +250,7 @@ const Footer = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="text-center lg:text-left">
               <p className="text-gray-400 text-sm">
-                © 2024 AdhyayanMarg. All rights reserved.
+                © 2024 Yukti. All rights reserved.
               </p>
               <p className="text-gray-500 text-xs mt-1">
                 Made with <Heart className="w-3 h-3 inline text-red-500" /> in

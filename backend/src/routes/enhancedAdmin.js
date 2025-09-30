@@ -11,12 +11,7 @@ const {
   validateDateRange,
   validateRateLimit,
 } = require("../middleware/validation");
-const {
-  cacheAnalytics,
-  cacheUsers,
-  cacheCourses,
-  cacheAnnouncements,
-} = require("../middleware/cache");
+const { cacheMiddleware } = require("../middleware/cache");
 const {
   getEnhancedAdminDashboard,
   getUsers,
@@ -45,12 +40,12 @@ router.use(validateRateLimit);
 // ==================== DASHBOARD & ANALYTICS ====================
 
 // Enhanced Admin Dashboard
-router.get("/dashboard", cacheAnalytics, getEnhancedAdminDashboard);
+router.get("/dashboard", cacheMiddleware.analytics, getEnhancedAdminDashboard);
 
 // ==================== USER MANAGEMENT ====================
 
 // Get all users with advanced filtering and pagination
-router.get("/users", cacheUsers, getUsers);
+router.get("/users", cacheMiddleware.users, getUsers);
 
 // Create new user (Admin only)
 router.post("/users", validateUser, createUser);
@@ -74,7 +69,7 @@ router.delete("/users/:userId", validateObjectId, deleteUser);
 // ==================== COURSE MANAGEMENT ====================
 
 // Get all courses with advanced filtering
-router.get("/courses", cacheCourses, getCourses);
+router.get("/courses", cacheMiddleware.courses, getCourses);
 
 // Update course status (archive/restore/suspend)
 router.patch("/courses/:courseId/status", validateObjectId, updateCourseStatus);
@@ -92,7 +87,7 @@ router.post(
 router.post("/announcements", validateAnnouncement, createSystemAnnouncement);
 
 // Get system announcements
-router.get("/announcements", cacheAnnouncements, getSystemAnnouncements);
+router.get("/announcements", cacheMiddleware.settings, getSystemAnnouncements);
 
 // ==================== SYSTEM SETTINGS ====================
 

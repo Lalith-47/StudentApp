@@ -500,7 +500,7 @@ const validateUser = [
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long"),
   body("role")
-    .isIn(["student", "faculty", "admin", "mentor", "counselor"])
+    .isIn(["student", "faculty", "admin", "counselor"])
     .withMessage("Invalid role specified"),
   body("profile")
     .optional()

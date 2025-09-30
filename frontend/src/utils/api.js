@@ -72,7 +72,7 @@ const apiService = {
 
   // Roadmap endpoints
   roadmap: {
-    getAll: () => api.get("/roadmap"),
+    getAll: (params = {}) => api.get("/roadmap", { params }),
     getById: (id) => api.get(`/roadmap/${id}`),
     search: (query) => api.get(`/roadmap/search?q=${query}`),
     getByCategory: (category) => api.get(`/roadmap/category/${category}`),
@@ -106,6 +106,8 @@ const apiService = {
     create: (data) => api.post("/faq", data),
     update: (id, data) => api.put(`/faq/${id}`, data),
     delete: (id) => api.delete(`/faq/${id}`),
+    submitQuery: (queryData) => api.post("/faq/query", queryData),
+    getAIProviders: () => api.get("/faq/ai-providers"),
   },
 
   // Analytics endpoints
@@ -300,6 +302,16 @@ const apiService = {
         data: { adminPassword },
       }),
 
+    // New Admin User Management (Faculty/Admin only)
+    createFacultyOrAdmin: (userData) =>
+      api.post("/auth/admin/create-user", userData),
+    getFacultyAndAdminUsers: (params) =>
+      api.get("/auth/admin/users", { params }),
+    updateFacultyOrAdminUser: (userId, userData) =>
+      api.put(`/auth/admin/users/${userId}`, userData),
+    deleteFacultyOrAdminUser: (userId) =>
+      api.delete(`/auth/admin/users/${userId}`),
+
     // Course Management
     getCourses: (params) => api.get("/admin-enhanced/courses", { params }),
     updateCourseStatus: (courseId, status) =>
@@ -351,6 +363,7 @@ const apiService = {
       api.get("/admin/quiz-data", {
         params: forceRefresh ? { refresh: true } : {},
       }),
+    getAuditLogs: (params = {}) => api.get("/admin/audit-logs", { params }),
   },
 
   // File upload

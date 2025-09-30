@@ -12,6 +12,7 @@ const fs = require("fs").promises;
 const QRCode = require("qrcode");
 const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
+const csv = require("csv-parser");
 const {
   asyncHandler,
   AppError,
@@ -51,7 +52,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const allowedExtensions =
-    /\.(jpeg|jpg|png|gif|pdf|doc|docx|txt|ppt|pptx|xls|xlsx|mp4|avi|mov|zip)$/i;
+    /\.(jpeg|jpg|png|gif|pdf|doc|docx|txt|ppt|pptx|xls|xlsx|mp4|avi|mov|zip|csv)$/i;
   const allowedMimeTypes = [
     "image/jpeg",
     "image/jpg",
@@ -69,6 +70,8 @@ const fileFilter = (req, file, cb) => {
     "video/avi",
     "video/quicktime",
     "application/zip",
+    "text/csv",
+    "application/csv",
   ];
 
   if (
@@ -178,7 +181,53 @@ const getFacultyCourses = asyncHandler(async (req, res) => {
   });
 });
 
-// Bulk grade upload with enhanced error handling
+// Parse CSV file for grades
+const parseCSVGrades = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const grades = [];
+    const errors = [];
+    let rowNumber = 0;
+
+    const fs = require("fs");
+    fs.createReadStream(filePath)
+      .pipe(csv({ headers: true }))
+      .on("data", (row) => {
+        rowNumber++;
+        try {
+          const { studentId, score, feedback = "" } = row;
+
+          // Validate student ID
+          if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
+            errors.push(`Row ${rowNumber + 1}: Invalid student ID`);
+            return;
+          }
+
+          // Validate score
+          const scoreNum = parseFloat(score);
+          if (isNaN(scoreNum)) {
+            errors.push(`Row ${rowNumber + 1}: Invalid score`);
+            return;
+          }
+
+          grades.push({
+            studentId: studentId.trim(),
+            score: scoreNum,
+            feedback: feedback.trim(),
+          });
+        } catch (error) {
+          errors.push(`Row ${rowNumber + 1}: ${error.message}`);
+        }
+      })
+      .on("end", () => {
+        resolve({ grades, errors });
+      })
+      .on("error", (error) => {
+        reject(error);
+      });
+  });
+};
+
+// Bulk grade upload with enhanced error handling - supports both CSV and Excel
 const uploadGrades = upload.single("grades");
 
 const handleBulkGradeUpload = asyncHandler(async (req, res) => {

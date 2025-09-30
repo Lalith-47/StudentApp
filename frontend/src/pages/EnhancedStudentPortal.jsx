@@ -247,9 +247,27 @@ const EnhancedStudentPortal = () => {
         setCourses(response.data.data.enrollments || []);
         setAssignments(response.data.data.assignments || []);
         setAnnouncements(response.data.data.announcements || []);
+      } else {
+        console.error("Dashboard load failed:", response.data.message);
+        // Set empty arrays to show proper empty states
+        setCourses([]);
+        setAssignments([]);
+        setAnnouncements([]);
       }
     } catch (error) {
       console.error("Error loading dashboard:", error);
+      // Show user-friendly error message
+      if (error.response?.status === 401) {
+        console.error("Authentication failed. Please log in again.");
+      } else if (error.response?.status >= 500) {
+        console.error("Server error. Please try again later.");
+      } else {
+        console.error("Network error. Please check your connection.");
+      }
+      // Set empty arrays to show proper empty states
+      setCourses([]);
+      setAssignments([]);
+      setAnnouncements([]);
     } finally {
       setLoading(false);
     }
@@ -564,58 +582,81 @@ const EnhancedStudentPortal = () => {
 
       {/* Assignment List */}
       <div className="space-y-4">
-        {assignments.map((assignment) => (
-          <Card key={assignment._id} className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {assignment.title}
-                  </h3>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      assignment.type === "assignment"
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                        : assignment.type === "quiz"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        : "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                    }`}
-                  >
-                    {assignment.type}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  {assignment.courseId?.title} • Due{" "}
-                  {new Date(assignment.dueDate).toLocaleDateString()}
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {Math.ceil(
-                      (new Date(assignment.dueDate) - new Date()) /
-                        (1000 * 60 * 60 * 24)
-                    )}{" "}
-                    days left
-                  </span>
-                  <span className="flex items-center">
-                    <Target className="w-4 h-4 mr-1" />
-                    {assignment.rubric?.totalPoints || 0} points
-                  </span>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <Button size="sm" variant="outline">
-                  <Eye className="w-4 h-4 mr-1" />
-                  View
-                </Button>
-                <Button size="sm">
-                  <Edit className="w-4 h-4 mr-1" />
-                  Submit
-                </Button>
-              </div>
+        {assignments.length === 0 ? (
+          <Card className="p-8 text-center">
+            <div className="flex flex-col items-center justify-center">
+              <BookOpen className="w-16 h-16 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No Assignments Found
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                You don't have any assignments yet. Check back later or contact
+                your instructor.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => loadDashboardData()}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Refresh
+              </Button>
             </div>
           </Card>
-        ))}
+        ) : (
+          assignments.map((assignment) => (
+            <Card key={assignment._id} className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {assignment.title}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        assignment.type === "assignment"
+                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                          : assignment.type === "quiz"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          : "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                      }`}
+                    >
+                      {assignment.type}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {assignment.courseId?.title} • Due{" "}
+                    {new Date(assignment.dueDate).toLocaleDateString()}
+                  </p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {Math.ceil(
+                        (new Date(assignment.dueDate) - new Date()) /
+                          (1000 * 60 * 60 * 24)
+                      )}{" "}
+                      days left
+                    </span>
+                    <span className="flex items-center">
+                      <Target className="w-4 h-4 mr-1" />
+                      {assignment.rubric?.totalPoints || 0} points
+                    </span>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="outline">
+                    <Eye className="w-4 h-4 mr-1" />
+                    View
+                  </Button>
+                  <Button size="sm">
+                    <Edit className="w-4 h-4 mr-1" />
+                    Submit
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

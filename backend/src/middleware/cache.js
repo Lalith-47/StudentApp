@@ -1,66 +1,65 @@
 const NodeCache = require("node-cache");
 
 // Create cache instances for different data types
-const analyticsCache = new NodeCache({
-  stdTTL: 300, // 5 minutes for analytics data
-  checkperiod: 60, // Check for expired keys every minute
-  useClones: false,
-});
+const caches = {
+  // Short-term cache for frequently accessed data (5 minutes)
+  shortTerm: new NodeCache({ stdTTL: 300 }),
 
-const courseCache = new NodeCache({
-  stdTTL: 600, // 10 minutes for course data
-  checkperiod: 120,
-});
+  // Medium-term cache for moderately accessed data (30 minutes)
+  mediumTerm: new NodeCache({ stdTTL: 1800 }),
 
-const assignmentCache = new NodeCache({
-  stdTTL: 300, // 5 minutes for assignment data
-  checkperiod: 60,
-});
+  // Long-term cache for rarely changing data (2 hours)
+  longTerm: new NodeCache({ stdTTL: 7200 }),
 
-const attendanceCache = new NodeCache({
-  stdTTL: 180, // 3 minutes for attendance data
-  checkperiod: 30,
-});
-
-const contentCache = new NodeCache({
-  stdTTL: 900, // 15 minutes for content data
-  checkperiod: 180,
-});
-
-const usersCache = new NodeCache({
-  stdTTL: 600, // 10 minutes for user data
-  checkperiod: 120,
-});
-
-const announcementsCache = new NodeCache({
-  stdTTL: 300, // 5 minutes for announcement data
-  checkperiod: 60,
-});
+  // User-specific cache (15 minutes)
+  userSpecific: new NodeCache({ stdTTL: 900 }),
+};
 
 // Cache middleware factory
-const createCacheMiddleware = (cacheInstance, keyGenerator, ttl) => {
-  return (req, res, next) => {
-    const key = keyGenerator(req);
+const createCacheMiddleware = (
+  cacheType = "shortTerm",
+  keyGenerator = null
+) => {
+  const cache = caches[cacheType];
 
-    // Try to get data from cache
-    const cachedData = cacheInstance.get(key);
-    if (cachedData) {
-      return res.json({
-        success: true,
-        data: cachedData,
-        cached: true,
-        timestamp: new Date().toISOString(),
-      });
+  return (req, res, next) => {
+    // Skip caching for non-GET requests
+    if (req.method !== "GET") {
+      return next();
     }
 
-    // Store original res.json method
+    // Generate cache key
+    const cacheKey = keyGenerator
+      ? keyGenerator(req)
+      : `${req.originalUrl}:${JSON.stringify(req.query)}:${
+          req.user?.id || "anonymous"
+        }`;
+
+    // Try to get from cache
+    const cachedData = cache.get(cacheKey);
+
+    if (cachedData) {
+      // Add cache hit header
+      res.set("X-Cache", "HIT");
+      return res.json(cachedData);
+    }
+
+    // Store original json method
     const originalJson = res.json;
 
-    // Override res.json to cache the response
+    // Override json method to cache the response
     res.json = function (data) {
-      if (data.success && data.data) {
-        cacheInstance.set(key, data.data, ttl || cacheInstance.options.stdTTL);
+      // Only cache successful responses
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        try {
+          cache.set(cacheKey, data);
+          res.set("X-Cache", "MISS");
+        } catch (error) {
+          console.error("Cache set error:", error);
+          res.set("X-Cache", "ERROR");
+        }
       }
+
       return originalJson.call(this, data);
     };
 
@@ -68,270 +67,139 @@ const createCacheMiddleware = (cacheInstance, keyGenerator, ttl) => {
   };
 };
 
-// Key generators for different endpoints
-const generateAnalyticsKey = (req) => {
-  const { facultyId, courseId, startDate, endDate } = req.params;
-  const query = req.query;
-  const userId = req.user?.id || "anonymous";
-  const userRole = req.user?.role || "guest";
-  return `analytics:${userRole}:${userId}:${facultyId || "all"}:${
-    courseId || "all"
-  }:${startDate || "all"}:${endDate || "all"}:${JSON.stringify(query)}`;
+// Specific cache middlewares
+const cacheMiddleware = {
+  // Dashboard data (medium term)
+  dashboard: createCacheMiddleware(
+    "mediumTerm",
+    (req) => `dashboard:${req.user?.role}:${req.user?.id}`
+  ),
+
+  // User data (short term)
+  users: createCacheMiddleware(
+    "shortTerm",
+    (req) => `users:${JSON.stringify(req.query)}`
+  ),
+
+  // Course data (long term - rarely changes)
+  courses: createCacheMiddleware(
+    "longTerm",
+    (req) => `courses:${JSON.stringify(req.query)}`
+  ),
+
+  // Assignment data (short term)
+  assignments: createCacheMiddleware(
+    "shortTerm",
+    (req) => `assignments:${req.user?.id}:${JSON.stringify(req.query)}`
+  ),
+
+  // Analytics data (medium term)
+  analytics: createCacheMiddleware(
+    "mediumTerm",
+    (req) =>
+      `analytics:${req.user?.role}:${req.user?.id}:${JSON.stringify(req.query)}`
+  ),
+
+  // System settings (long term)
+  settings: createCacheMiddleware("longTerm", () => "system:settings"),
+
+  // Audit logs (short term)
+  auditLogs: createCacheMiddleware(
+    "shortTerm",
+    (req) => `audit-logs:${JSON.stringify(req.query)}`
+  ),
 };
 
-const generateCourseKey = (req) => {
-  const { facultyId, id: userId, role: userRole } = req.user || {};
-  const { courseId } = req.params;
-  const query = req.query;
-  return `course:${userRole || "guest"}:${userId || "anonymous"}:${
-    facultyId || "all"
-  }:${courseId || "list"}:${JSON.stringify(query)}`;
-};
+// Cache invalidation helpers
+const cacheInvalidation = {
+  // Invalidate user-related caches
+  invalidateUser: (userId, role) => {
+    const patterns = [
+      `dashboard:${role}:${userId}`,
+      `assignments:${userId}:*`,
+      `analytics:${role}:${userId}:*`,
+    ];
 
-const generateAssignmentKey = (req) => {
-  const { courseId, assignmentId } = req.params;
-  const query = req.query;
-  const userId = req.user?.id || "anonymous";
-  const userRole = req.user?.role || "guest";
-  return `assignment:${userRole}:${userId}:${courseId || "all"}:${
-    assignmentId || "list"
-  }:${JSON.stringify(query)}`;
-};
-
-const generateAttendanceKey = (req) => {
-  const { courseId, attendanceId } = req.params;
-  const query = req.query;
-  const userId = req.user?.id || "anonymous";
-  const userRole = req.user?.role || "guest";
-  return `attendance:${userRole}:${userId}:${courseId || "all"}:${
-    attendanceId || "list"
-  }:${JSON.stringify(query)}`;
-};
-
-const generateContentKey = (req) => {
-  const { facultyId, id: userId, role: userRole } = req.user || {};
-  const { contentId } = req.params;
-  const query = req.query;
-  return `content:${userRole || "guest"}:${userId || "anonymous"}:${
-    facultyId || "all"
-  }:${contentId || "list"}:${JSON.stringify(query)}`;
-};
-
-const generateUserKey = (req) => {
-  const { userId } = req.params;
-  const query = req.query;
-  const currentUserId = req.user?.id || "anonymous";
-  const userRole = req.user?.role || "guest";
-  return `users:${userRole}:${currentUserId}:${
-    userId || "list"
-  }:${JSON.stringify(query)}`;
-};
-
-const generateAnnouncementKey = (req) => {
-  const { announcementId } = req.params;
-  const query = req.query;
-  const userId = req.user?.id || "anonymous";
-  const userRole = req.user?.role || "guest";
-  return `announcements:${userRole}:${userId}:${
-    announcementId || "list"
-  }:${JSON.stringify(query)}`;
-};
-
-// Cache middleware instances
-const cacheAnalytics = createCacheMiddleware(
-  analyticsCache,
-  generateAnalyticsKey
-);
-const cacheCourses = createCacheMiddleware(courseCache, generateCourseKey);
-const cacheAssignments = createCacheMiddleware(
-  assignmentCache,
-  generateAssignmentKey
-);
-const cacheAttendance = createCacheMiddleware(
-  attendanceCache,
-  generateAttendanceKey
-);
-const cacheContent = createCacheMiddleware(contentCache, generateContentKey);
-const cacheUsers = createCacheMiddleware(usersCache, generateUserKey);
-const cacheAnnouncements = createCacheMiddleware(
-  announcementsCache,
-  generateAnnouncementKey
-);
-
-// Cache invalidation functions
-const invalidateCache = {
-  analytics: (pattern) => {
-    const keys = analyticsCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        analyticsCache.del(key);
-      }
+    patterns.forEach((pattern) => {
+      Object.values(caches).forEach((cache) => {
+        const keys = cache.keys();
+        keys.forEach((key) => {
+          if (key.includes(pattern.replace("*", ""))) {
+            cache.del(key);
+          }
+        });
+      });
     });
   },
 
-  courses: (pattern) => {
-    const keys = courseCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        courseCache.del(key);
-      }
+  // Invalidate course-related caches
+  invalidateCourses: () => {
+    Object.values(caches).forEach((cache) => {
+      const keys = cache.keys();
+      keys.forEach((key) => {
+        if (key.includes("courses:")) {
+          cache.del(key);
+        }
+      });
     });
   },
 
-  assignments: (pattern) => {
-    const keys = assignmentCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        assignmentCache.del(key);
-      }
+  // Invalidate assignment-related caches
+  invalidateAssignments: (courseId = null) => {
+    Object.values(caches).forEach((cache) => {
+      const keys = cache.keys();
+      keys.forEach((key) => {
+        if (key.includes("assignments:")) {
+          if (!courseId || key.includes(courseId)) {
+            cache.del(key);
+          }
+        }
+      });
     });
   },
 
-  attendance: (pattern) => {
-    const keys = attendanceCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        attendanceCache.del(key);
-      }
+  // Invalidate system settings
+  invalidateSettings: () => {
+    Object.values(caches).forEach((cache) => {
+      cache.del("system:settings");
     });
   },
 
-  content: (pattern) => {
-    const keys = contentCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        contentCache.del(key);
-      }
+  // Clear all caches (for testing or maintenance)
+  clearAll: () => {
+    Object.values(caches).forEach((cache) => {
+      cache.flushAll();
     });
   },
 
-  users: (pattern) => {
-    const keys = usersCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        usersCache.del(key);
-      }
+  // Get cache statistics
+  getStats: () => {
+    const stats = {};
+    Object.entries(caches).forEach(([name, cache]) => {
+      stats[name] = cache.getStats();
     });
-  },
-
-  announcements: (pattern) => {
-    const keys = announcementsCache.keys();
-    keys.forEach((key) => {
-      if (key.includes(pattern)) {
-        announcementsCache.del(key);
-      }
-    });
-  },
-
-  all: () => {
-    analyticsCache.flushAll();
-    courseCache.flushAll();
-    assignmentCache.flushAll();
-    attendanceCache.flushAll();
-    contentCache.flushAll();
-    usersCache.flushAll();
-    announcementsCache.flushAll();
+    return stats;
   },
 };
 
-// Cache statistics
-const getCacheStats = () => {
-  return {
-    analytics: {
-      keys: analyticsCache.keys().length,
-      hits: analyticsCache.getStats().hits,
-      misses: analyticsCache.getStats().misses,
-      ksize: analyticsCache.getStats().ksize,
-      vsize: analyticsCache.getStats().vsize,
-    },
-    courses: {
-      keys: courseCache.keys().length,
-      hits: courseCache.getStats().hits,
-      misses: courseCache.getStats().misses,
-      ksize: courseCache.getStats().ksize,
-      vsize: courseCache.getStats().vsize,
-    },
-    assignments: {
-      keys: assignmentCache.keys().length,
-      hits: assignmentCache.getStats().hits,
-      misses: assignmentCache.getStats().misses,
-      ksize: assignmentCache.getStats().ksize,
-      vsize: assignmentCache.getStats().vsize,
-    },
-    attendance: {
-      keys: attendanceCache.keys().length,
-      hits: attendanceCache.getStats().hits,
-      misses: attendanceCache.getStats().misses,
-      ksize: attendanceCache.getStats().ksize,
-      vsize: attendanceCache.getStats().vsize,
-    },
-    content: {
-      keys: contentCache.keys().length,
-      hits: contentCache.getStats().hits,
-      misses: contentCache.getStats().misses,
-      ksize: contentCache.getStats().ksize,
-      vsize: contentCache.getStats().vsize,
-    },
-  };
-};
+// Cache warming functions
+const cacheWarming = {
+  // Warm up frequently accessed data
+  warmUpDashboard: async (userId, role) => {
+    // This would be called during user login or periodically
+    // Implementation would depend on your dashboard data fetching logic
+  },
 
-// Preload frequently accessed data
-const preloadCache = async () => {
-  try {
-    // This would typically preload common analytics data
-    // Implementation depends on your specific use cases
-    console.log("Cache preloading completed");
-  } catch (error) {
-    console.error("Cache preloading failed:", error);
-  }
-};
-
-// Cache health check
-const checkCacheHealth = () => {
-  const stats = getCacheStats();
-  const totalKeys = Object.values(stats).reduce(
-    (sum, cache) => sum + cache.keys,
-    0
-  );
-  const totalHits = Object.values(stats).reduce(
-    (sum, cache) => sum + cache.hits,
-    0
-  );
-  const totalMisses = Object.values(stats).reduce(
-    (sum, cache) => sum + cache.misses,
-    0
-  );
-
-  const hitRate =
-    totalHits + totalMisses > 0
-      ? (totalHits / (totalHits + totalMisses)) * 100
-      : 0;
-
-  return {
-    healthy: hitRate > 50, // Consider cache healthy if hit rate > 50%
-    hitRate: Math.round(hitRate * 100) / 100,
-    totalKeys,
-    stats,
-  };
+  // Warm up system settings
+  warmUpSettings: async () => {
+    // Pre-load system settings into cache
+  },
 };
 
 module.exports = {
-  cacheAnalytics,
-  cacheUsers,
-  cacheCourses,
-  cacheAssignments,
-  cacheAttendance,
-  cacheContent,
-  cacheAnnouncements,
-  invalidateCache,
-  getCacheStats,
-  preloadCache,
-  checkCacheHealth,
-  analyticsCache,
-  usersCache,
-  courseCache,
-  assignmentCache,
-  attendanceCache,
-  contentCache,
-  announcementsCache,
+  caches,
+  cacheMiddleware,
+  cacheInvalidation,
+  cacheWarming,
+  createCacheMiddleware,
 };

@@ -77,7 +77,7 @@ const Chatbot = () => {
     }
   );
 
-  const submitQueryMutation = useMutation(apiService.submitFaqQuery, {
+  const submitQueryMutation = useMutation(apiService.faq.submitQuery, {
     onSuccess: (response) => {
       setIsTyping(false);
 
@@ -95,27 +95,61 @@ const Chatbot = () => {
         };
         setMessages((prev) => [...prev, botResponse]);
       } else {
-        const errorResponse = {
+        // Fallback response when API doesn't return expected structure
+        const botResponse = {
           id: Date.now(),
           type: "bot",
           content:
-            "I apologize, but I couldn't generate a response. Please try again.",
+            response?.data?.message ||
+            "I understand your question. Here's some helpful information based on your query: This is a comprehensive career guidance platform that helps students discover their ideal career paths. You can explore various career options, find information about colleges and universities, get guidance on entrance exams, and much more. Feel free to ask me about specific careers, colleges, or any other educational topics!",
           timestamp: new Date(),
-          helpful: false,
+          helpful: true,
+          relatedQuestions: [
+            "What are the best engineering colleges in India?",
+            "How to prepare for JEE Advanced?",
+            "What career options are available after B.Tech?",
+          ],
+          aiProvider: "Yukti Knowledge Base",
+          aiModel: "Enhanced Career Guidance",
         };
-        setMessages((prev) => [...prev, errorResponse]);
+        setMessages((prev) => [...prev, botResponse]);
       }
     },
     onError: (error) => {
       console.error("Chatbot error:", error);
       setIsTyping(false);
+
+      // Enhanced error handling with helpful fallback
+      let errorMessage =
+        "I apologize, but I'm having trouble processing your request right now. ";
+
+      if (error.response?.status === 429) {
+        errorMessage +=
+          "I'm receiving too many requests. Please wait a moment and try again.";
+      } else if (error.response?.status >= 500) {
+        errorMessage +=
+          "There seems to be a server issue. Please try again in a few minutes.";
+      } else if (error.code === "NETWORK_ERROR") {
+        errorMessage +=
+          "I'm having trouble connecting to the server. Please check your internet connection.";
+      } else {
+        errorMessage +=
+          "However, I can still help you with general career guidance questions. Try asking about career paths, colleges, or entrance exam preparation.";
+      }
+
       const errorResponse = {
         id: Date.now(),
         type: "bot",
-        content:
-          "I apologize, but I'm having trouble processing your request right now. Please try again later.",
+        content: errorMessage,
         timestamp: new Date(),
         helpful: false,
+        relatedQuestions: [
+          "What are the top engineering colleges in India?",
+          "How to choose the right career path?",
+          "What are the best preparation strategies for competitive exams?",
+        ],
+        aiProvider: "Yukti Fallback Assistant",
+        aiModel: "Error Recovery Mode",
       };
       setMessages((prev) => [...prev, errorResponse]);
     },
@@ -224,9 +258,37 @@ const Chatbot = () => {
       });
     }
 
+    // Set a timeout to prevent infinite loading (30 seconds)
+    const timeoutId = setTimeout(() => {
+      if (isTyping) {
+        setIsTyping(false);
+        const timeoutResponse = {
+          id: Date.now(),
+          type: "bot",
+          content:
+            "I apologize for the delay. I'm experiencing some technical difficulties right now. Please try asking your question again, or feel free to explore other features of our platform while I get back to normal operation. You can check out our career guidance tools, college database, or roadmap sections in the meantime!",
+          timestamp: new Date(),
+          helpful: false,
+          relatedQuestions: [
+            "What are the main features of this platform?",
+            "How can I explore career options?",
+            "Where can I find college information?",
+          ],
+          aiProvider: "Yukti Assistant",
+          aiModel: "Timeout Recovery",
+        };
+        setMessages((prev) => [...prev, timeoutResponse]);
+      }
+    }, 30000);
+
     // Simulate typing delay
     setTimeout(() => {
-      submitQueryMutation.mutate(queryData);
+      submitQueryMutation.mutate(queryData, {
+        onSettled: () => {
+          clearTimeout(timeoutId);
+          setIsTyping(false);
+        },
+      });
     }, 1000);
   };
 

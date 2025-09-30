@@ -16,8 +16,8 @@ const Home = React.lazy(() => import("./pages/Home"));
 const Login = React.lazy(() => import("./pages/Login"));
 const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const Quiz = React.lazy(() => import("./pages/Quiz"));
-const Roadmap = React.lazy(() => import("./pages/Roadmap"));
-const Colleges = React.lazy(() => import("./pages/Colleges"));
+const Roadmap = React.lazy(() => import("./pages/OptimizedRoadmap"));
+const Colleges = React.lazy(() => import("./pages/OptimizedColleges"));
 const Chatbot = React.lazy(() => import("./pages/Chatbot"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const MentorPortal = React.lazy(() => import("./pages/MentorPortal"));
@@ -45,7 +45,6 @@ function App() {
             <Suspense fallback={<LoadingSpinner />}>
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="quiz" element={<Quiz />} />
@@ -63,7 +62,7 @@ function App() {
                   <Route
                     path="mentor"
                     element={
-                      <RoleProtectedRoute allowedRoles={["mentor"]}>
+                      <RoleProtectedRoute allowedRoles={["faculty"]}>
                         <MentorPortal />
                       </RoleProtectedRoute>
                     }

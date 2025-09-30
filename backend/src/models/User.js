@@ -26,8 +26,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["student", "mentor", "admin", "counselor", "faculty"],
+    enum: ["student", "faculty", "admin", "counselor"],
     default: "student",
+  },
+  department: {
+    type: String,
+    trim: true,
+    maxlength: [100, "Department cannot be more than 100 characters"],
   },
   mentorId: {
     type: mongoose.Schema.Types.ObjectId,

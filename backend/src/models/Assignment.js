@@ -99,7 +99,7 @@ const assignmentSchema = new mongoose.Schema({
     allowedFileTypes: [
       {
         type: String,
-        enum: ["pdf", "doc", "docx", "txt", "jpg", "jpeg", "png", "zip"],
+        enum: ["pdf", "docx"],
       },
     ],
     maxFileSize: {
@@ -433,4 +433,3 @@ assignmentSchema.statics.getAssignmentAnalytics = function (assignmentId) {
 };
 
 module.exports = mongoose.model("Assignment", assignmentSchema);
-

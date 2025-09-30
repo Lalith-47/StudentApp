@@ -1,6 +1,7 @@
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const cors = require("cors");
+const compression = require("compression");
 const { body, validationResult } = require("express-validator");
 
 // Rate limiting configurations
@@ -73,6 +74,20 @@ const securityHeaders = helmet({
     maxAge: 31536000,
     includeSubDomains: true,
     preload: true,
+  },
+});
+
+// Compression middleware
+const compressionMiddleware = compression({
+  level: 6, // Compression level (1-9)
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    // Don't compress if client doesn't support it
+    if (req.headers["x-no-compression"]) {
+      return false;
+    }
+    // Use compression filter function
+    return compression.filter(req, res);
   },
 });
 
@@ -329,6 +344,7 @@ module.exports = {
   // Security middleware
   securityHeaders,
   corsOptions,
+  compressionMiddleware,
 
   // Validation
   validateAndSanitize,
