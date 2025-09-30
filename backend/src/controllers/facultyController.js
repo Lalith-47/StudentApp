@@ -422,7 +422,7 @@ const getFacultyWorkload = async (req, res) => {
     const workload = await FacultyApproval.aggregate([
       {
         $match: {
-          facultyId: mongoose.Types.ObjectId(facultyId),
+          facultyId: new mongoose.Types.ObjectId(facultyId),
           "reviewDetails.submittedAt": { $gte: startDate, $lte: endDate },
         },
       },
@@ -447,7 +447,7 @@ const getFacultyWorkload = async (req, res) => {
     const categoryWorkload = await FacultyApproval.aggregate([
       {
         $match: {
-          facultyId: mongoose.Types.ObjectId(facultyId),
+          facultyId: new mongoose.Types.ObjectId(facultyId),
           "reviewDetails.submittedAt": { $gte: startDate, $lte: endDate },
         },
       },
@@ -568,7 +568,7 @@ const getFacultyPerformance = async (req, res) => {
     const performance = await FacultyApproval.aggregate([
       {
         $match: {
-          facultyId: mongoose.Types.ObjectId(targetFacultyId),
+          facultyId: new mongoose.Types.ObjectId(targetFacultyId),
           "reviewDetails.submittedAt": { $gte: startDate, $lte: endDate },
         },
       },
@@ -591,7 +591,7 @@ const getFacultyPerformance = async (req, res) => {
     const dailyPerformance = await FacultyApproval.aggregate([
       {
         $match: {
-          facultyId: mongoose.Types.ObjectId(targetFacultyId),
+          facultyId: new mongoose.Types.ObjectId(targetFacultyId),
           "reviewDetails.submittedAt": { $gte: startDate, $lte: endDate },
         },
       },

@@ -1,114 +1,32 @@
 const { body, param, query, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
+const xss = require("xss");
 
-// Custom validation functions
-const isValidObjectId = (value) => {
-  return mongoose.Types.ObjectId.isValid(value);
-};
-
-const isValidDate = (value) => {
-  const date = new Date(value);
-  return date instanceof Date && !isNaN(date);
-};
-
-const isValidFutureDate = (value) => {
-  const date = new Date(value);
-  return date > new Date();
-};
-
-const isValidPastDate = (value) => {
-  const date = new Date(value);
-  return date < new Date();
-};
-
-const isValidDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return true;
-  return new Date(startDate) <= new Date(endDate);
-};
-
-const isValidFileType = (allowedTypes) => {
-  return (value) => {
-    if (!value) return true;
-    const fileExtension = value.split(".").pop().toLowerCase();
-    return allowedTypes.includes(fileExtension);
-  };
-};
-
-const isValidJSON = (value) => {
-  if (!value) return true;
-  try {
-    JSON.parse(value);
-    return true;
-  } catch {
-    return false;
+// XSS Protection middleware
+const sanitizeInput = (req, res, next) => {
+  // Sanitize string fields in body
+  if (req.body) {
+    Object.keys(req.body).forEach((key) => {
+      if (typeof req.body[key] === "string") {
+        req.body[key] = xss(req.body[key]);
+      }
+    });
   }
-};
 
-const isValidArray = (value) => {
-  if (!value) return true;
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed);
-  } catch {
-    return false;
+  // Sanitize string fields in query
+  if (req.query) {
+    Object.keys(req.query).forEach((key) => {
+      if (typeof req.query[key] === "string") {
+        req.query[key] = xss(req.query[key]);
+      }
+    });
   }
+
+  next();
 };
 
-const isValidEmail = (value) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(value);
-};
-
-const isValidPassword = (value) => {
-  // At least 6 characters, contains at least one letter and one number
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/;
-  return passwordRegex.test(value);
-};
-
-const isValidRole = (value) => {
-  const allowedRoles = ["student", "faculty", "admin", "mentor", "counselor"];
-  return allowedRoles.includes(value);
-};
-
-const isValidActivityCategory = (value) => {
-  const allowedCategories = [
-    "academic",
-    "extracurricular",
-    "volunteering",
-    "internship",
-    "leadership",
-    "certification",
-    "seminar",
-    "conference",
-    "workshop",
-    "competition",
-    "research",
-    "project",
-    "sports",
-    "cultural",
-    "other",
-  ];
-  return allowedCategories.includes(value);
-};
-
-const isValidActivityStatus = (value) => {
-  const allowedStatuses = [
-    "draft",
-    "pending",
-    "approved",
-    "rejected",
-    "under_review",
-  ];
-  return allowedStatuses.includes(value);
-};
-
-const isValidPortfolioStatus = (value) => {
-  const allowedStatuses = ["draft", "published", "archived"];
-  return allowedStatuses.includes(value);
-};
-
-// Validation middleware
-const handleValidationErrors = (req, res, next) => {
+// Custom validation middleware
+const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -124,233 +42,320 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Activity validation rules
-const validateActivity = [
+// Course validation rules
+const validateCourse = [
   body("title")
-    .notEmpty()
-    .withMessage("Title is required")
+    .trim()
     .isLength({ min: 3, max: 200 })
-    .withMessage("Title must be between 3 and 200 characters")
-    .trim(),
+    .withMessage("Course title must be between 3 and 200 characters"),
+
+  body("code")
+    .trim()
+    .matches(/^[A-Z]{2,4}[0-9]{3,4}$/)
+    .withMessage(
+      "Course code must be in format: ABC123 (2-4 letters, 3-4 numbers)"
+    ),
 
   body("description")
-    .notEmpty()
-    .withMessage("Description is required")
-    .isLength({ min: 10, max: 1000 })
-    .withMessage("Description must be between 10 and 1000 characters")
-    .trim(),
+    .trim()
+    .isLength({ min: 10, max: 2000 })
+    .withMessage("Description must be between 10 and 2000 characters"),
 
-  body("category")
-    .notEmpty()
-    .withMessage("Category is required")
-    .custom(isValidActivityCategory)
-    .withMessage("Invalid activity category"),
+  body("credits")
+    .isInt({ min: 1, max: 10 })
+    .withMessage("Credits must be between 1 and 10"),
 
-  body("startDate")
-    .notEmpty()
-    .withMessage("Start date is required")
-    .custom(isValidDate)
-    .withMessage("Invalid start date format")
-    .custom((value) => !isValidFutureDate(value))
-    .withMessage("Start date cannot be in the future"),
+  body("department")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Department must be between 2 and 100 characters"),
 
-  body("endDate")
+  body("semester")
+    .isIn(["Fall", "Spring", "Summer", "Winter"])
+    .withMessage("Semester must be one of: Fall, Spring, Summer, Winter"),
+
+  body("academicYear")
+    .matches(/^\d{4}-\d{4}$/)
+    .withMessage("Academic year must be in format: YYYY-YYYY"),
+
+  body("schedule.startTime")
     .optional()
-    .custom(isValidDate)
-    .withMessage("Invalid end date format")
-    .custom((value, { req }) => {
-      if (value && req.body.startDate) {
-        return isValidDateRange(req.body.startDate, value);
-      }
-      return true;
-    })
-    .withMessage("End date cannot be before start date"),
+    .matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    .withMessage("Start time must be in HH:MM format"),
+
+  body("schedule.endTime")
+    .optional()
+    .matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    .withMessage("End time must be in HH:MM format"),
+
+  body("schedule.days")
+    .optional()
+    .isArray()
+    .withMessage("Schedule days must be an array"),
+
+  body("schedule.days.*")
+    .optional()
+    .isIn([
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ])
+    .withMessage("Invalid day of week"),
+
+  validateRequest,
+];
+
+// Assignment validation rules
+const validateAssignment = [
+  body("title")
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Assignment title must be between 3 and 200 characters"),
+
+  body("description")
+    .trim()
+    .isLength({ min: 10, max: 5000 })
+    .withMessage("Description must be between 10 and 5000 characters"),
+
+  body("courseId").isMongoId().withMessage("Invalid course ID"),
+
+  body("type")
+    .isIn(["assignment", "quiz", "exam", "project", "homework", "lab"])
+    .withMessage("Invalid assignment type"),
+
+  body("dueDate")
+    .isISO8601()
+    .withMessage("Due date must be a valid ISO 8601 date"),
+
+  body("availableFrom")
+    .optional()
+    .isISO8601()
+    .withMessage("Available from must be a valid ISO 8601 date"),
+
+  body("timeLimit")
+    .optional()
+    .isInt({ min: 1, max: 480 })
+    .withMessage("Time limit must be between 1 and 480 minutes"),
+
+  body("attempts")
+    .optional()
+    .isInt({ min: 1, max: 10 })
+    .withMessage("Attempts must be between 1 and 10"),
+
+  body("settings.latePenalty")
+    .optional()
+    .isFloat({ min: 0, max: 100 })
+    .withMessage("Late penalty must be between 0 and 100"),
+
+  body("settings.maxFileSize")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Max file size must be between 1 and 100 MB"),
+
+  body("rubric.totalPoints")
+    .isInt({ min: 1 })
+    .withMessage("Total points must be at least 1"),
+
+  body("rubric.criteria")
+    .isArray({ min: 1 })
+    .withMessage("At least one rubric criteria is required"),
+
+  body("rubric.criteria.*.name")
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Criteria name must be between 1 and 100 characters"),
+
+  body("rubric.criteria.*.points")
+    .isInt({ min: 0 })
+    .withMessage("Criteria points must be non-negative"),
+
+  validateRequest,
+];
+
+// Attendance validation rules
+const validateAttendanceSession = [
+  body("courseId").isMongoId().withMessage("Invalid course ID"),
+
+  body("date").isISO8601().withMessage("Date must be a valid ISO 8601 date"),
+
+  body("classNumber")
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Class number must be between 1 and 100"),
+
+  body("topic")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage("Topic must be between 1 and 200 characters"),
 
   body("location")
     .optional()
-    .isLength({ max: 100 })
-    .withMessage("Location cannot exceed 100 characters")
-    .trim(),
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Location must be between 1 and 100 characters"),
 
-  body("organizer")
+  body("duration")
     .optional()
-    .isLength({ max: 100 })
-    .withMessage("Organizer cannot exceed 100 characters")
-    .trim(),
+    .isInt({ min: 30, max: 180 })
+    .withMessage("Duration must be between 30 and 180 minutes"),
 
-  body("skills")
-    .optional()
-    .custom(isValidJSON)
-    .withMessage("Skills must be valid JSON")
-    .custom((value) => {
-      if (!value) return true;
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) && parsed.length <= 10;
-      } catch {
-        return false;
-      }
-    })
-    .withMessage("Skills must be an array with maximum 10 items"),
-
-  body("achievements")
-    .optional()
-    .custom(isValidJSON)
-    .withMessage("Achievements must be valid JSON")
-    .custom((value) => {
-      if (!value) return true;
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) && parsed.length <= 10;
-      } catch {
-        return false;
-      }
-    })
-    .withMessage("Achievements must be an array with maximum 10 items"),
-
-  body("tags")
-    .optional()
-    .custom(isValidJSON)
-    .withMessage("Tags must be valid JSON")
-    .custom((value) => {
-      if (!value) return true;
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) && parsed.length <= 5;
-      } catch {
-        return false;
-      }
-    })
-    .withMessage("Tags must be an array with maximum 5 items"),
-
-  body("isPublic")
-    .optional()
-    .isBoolean()
-    .withMessage("isPublic must be a boolean value"),
-
-  body("isHighlighted")
-    .optional()
-    .isBoolean()
-    .withMessage("isHighlighted must be a boolean value"),
-
-  handleValidationErrors,
+  validateRequest,
 ];
 
-// User validation rules
-const validateUser = [
-  body("name")
-    .notEmpty()
-    .withMessage("Name is required")
-    .isLength({ min: 2, max: 50 })
-    .withMessage("Name must be between 2 and 50 characters")
-    .trim(),
-
-  body("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .custom(isValidEmail)
-    .withMessage("Invalid email format")
-    .normalizeEmail(),
-
-  body("password")
-    .notEmpty()
-    .withMessage("Password is required")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters")
-    .custom(isValidPassword)
-    .withMessage("Password must contain at least one letter and one number"),
-
-  body("role").optional().custom(isValidRole).withMessage("Invalid user role"),
-
-  handleValidationErrors,
-];
-
-// Login validation rules
-const validateLogin = [
-  body("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .custom(isValidEmail)
-    .withMessage("Invalid email format")
-    .normalizeEmail(),
-
-  body("password").notEmpty().withMessage("Password is required"),
-
-  body("role").optional().custom(isValidRole).withMessage("Invalid user role"),
-
-  handleValidationErrors,
-];
-
-// Portfolio validation rules
-const validatePortfolio = [
-  body("personalInfo.fullName")
-    .optional()
-    .isLength({ min: 2, max: 100 })
-    .withMessage("Full name must be between 2 and 100 characters")
-    .trim(),
-
-  body("personalInfo.email")
-    .optional()
-    .custom(isValidEmail)
-    .withMessage("Invalid email format")
-    .normalizeEmail(),
-
-  body("personalInfo.bio")
-    .optional()
-    .isLength({ max: 500 })
-    .withMessage("Bio cannot exceed 500 characters")
-    .trim(),
-
-  body("academicInfo.currentInstitution.name")
-    .optional()
-    .isLength({ max: 100 })
-    .withMessage("Institution name cannot exceed 100 characters")
-    .trim(),
-
-  body("academicInfo.currentInstitution.course")
-    .optional()
-    .isLength({ max: 100 })
-    .withMessage("Course name cannot exceed 100 characters")
-    .trim(),
-
-  body("career.objective")
-    .optional()
-    .isLength({ max: 1000 })
-    .withMessage("Career objective cannot exceed 1000 characters")
-    .trim(),
-
-  body("status")
-    .optional()
-    .custom(isValidPortfolioStatus)
-    .withMessage("Invalid portfolio status"),
-
-  handleValidationErrors,
-];
-
-// Faculty approval validation rules
-const validateFacultyApproval = [
-  body("status")
-    .notEmpty()
-    .withMessage("Status is required")
-    .custom(isValidActivityStatus)
-    .withMessage("Invalid approval status"),
+// Grade validation rules
+const validateGrade = [
+  body("score").isFloat({ min: 0 }).withMessage("Score must be non-negative"),
 
   body("feedback")
     .optional()
-    .isLength({ max: 500 })
-    .withMessage("Feedback cannot exceed 500 characters")
-    .trim(),
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Feedback must not exceed 1000 characters"),
 
-  body("approvedCredits")
-    .optional()
-    .isInt({ min: 0, max: 100 })
-    .withMessage("Approved credits must be between 0 and 100"),
-
-  handleValidationErrors,
+  validateRequest,
 ];
 
-// Query parameter validation
-const validateQueryParams = [
+// Announcement validation rules
+const validateAnnouncement = [
+  body("title")
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Title must be between 3 and 200 characters"),
+
+  body("content")
+    .trim()
+    .isLength({ min: 10, max: 5000 })
+    .withMessage("Content must be between 10 and 5000 characters"),
+
+  body("courseId").optional().isMongoId().withMessage("Invalid course ID"),
+
+  body("targetAudience")
+    .isIn([
+      "all",
+      "students",
+      "faculty",
+      "specific-course",
+      "specific-students",
+    ])
+    .withMessage("Invalid target audience"),
+
+  body("priority")
+    .optional()
+    .isIn(["low", "normal", "high", "urgent"])
+    .withMessage("Invalid priority level"),
+
+  body("type")
+    .optional()
+    .isIn(["general", "assignment", "exam", "course", "system", "emergency"])
+    .withMessage("Invalid announcement type"),
+
+  body("schedule.publishAt")
+    .optional()
+    .isISO8601()
+    .withMessage("Publish date must be a valid ISO 8601 date"),
+
+  body("schedule.expiresAt")
+    .optional()
+    .isISO8601()
+    .withMessage("Expiration date must be a valid ISO 8601 date"),
+
+  validateRequest,
+];
+
+// Content validation rules
+const validateContent = [
+  body("title")
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Title must be between 3 and 200 characters"),
+
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 2000 })
+    .withMessage("Description must be between 1 and 2000 characters"),
+
+  body("type")
+    .isIn([
+      "document",
+      "presentation",
+      "video",
+      "audio",
+      "image",
+      "link",
+      "folder",
+    ])
+    .withMessage("Invalid content type"),
+
+  body("category")
+    .isIn([
+      "lecture",
+      "assignment",
+      "reference",
+      "multimedia",
+      "resource",
+      "other",
+    ])
+    .withMessage("Invalid content category"),
+
+  body("courseId").optional().isMongoId().withMessage("Invalid course ID"),
+
+  body("access.isPublic")
+    .optional()
+    .isBoolean()
+    .withMessage("isPublic must be a boolean"),
+
+  body("access.requiresLogin")
+    .optional()
+    .isBoolean()
+    .withMessage("requiresLogin must be a boolean"),
+
+  body("access.expirationDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Expiration date must be a valid ISO 8601 date"),
+
+  validateRequest,
+];
+
+// Bulk message validation rules
+const validateBulkMessage = [
+  body("recipients")
+    .isArray({ min: 1, max: 1000 })
+    .withMessage("Recipients must be an array with 1-1000 items"),
+
+  body("recipients.*").isMongoId().withMessage("Invalid recipient ID"),
+
+  body("subject")
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Subject must be between 3 and 200 characters"),
+
+  body("message")
+    .trim()
+    .isLength({ min: 10, max: 2000 })
+    .withMessage("Message must be between 10 and 2000 characters"),
+
+  body("priority")
+    .optional()
+    .isIn(["low", "normal", "high", "urgent"])
+    .withMessage("Invalid priority level"),
+
+  validateRequest,
+];
+
+// Parameter validation
+const validateObjectId = (paramName) => [
+  param(paramName).isMongoId().withMessage(`Invalid ${paramName}`),
+  validateRequest,
+];
+
+// Query validation
+const validatePagination = [
   query("page")
     .optional()
     .isInt({ min: 1 })
@@ -361,87 +366,198 @@ const validateQueryParams = [
     .isInt({ min: 1, max: 100 })
     .withMessage("Limit must be between 1 and 100"),
 
+  validateRequest,
+];
+
+// Date range validation
+const validateDateRange = [
+  query("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid ISO 8601 date"),
+
+  query("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid ISO 8601 date"),
+
+  validateRequest,
+];
+
+// File validation middleware
+const validateFileUpload = (allowedTypes, maxSize = 10 * 1024 * 1024) => {
+  return (req, res, next) => {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No files uploaded",
+      });
+    }
+
+    for (const file of req.files) {
+      // Check file size
+      if (file.size > maxSize) {
+        return res.status(400).json({
+          success: false,
+          message: `File ${file.originalname} exceeds maximum size of ${
+            maxSize / (1024 * 1024)
+          }MB`,
+        });
+      }
+
+      // Check file type
+      const fileExtension = file.originalname.split(".").pop().toLowerCase();
+      if (!allowedTypes.includes(fileExtension)) {
+        return res.status(400).json({
+          success: false,
+          message: `File type .${fileExtension} is not allowed. Allowed types: ${allowedTypes.join(
+            ", "
+          )}`,
+        });
+      }
+
+      // Check MIME type
+      const allowedMimeTypes = {
+        pdf: "application/pdf",
+        doc: "application/msword",
+        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ppt: "application/vnd.ms-powerpoint",
+        pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        xls: "application/vnd.ms-excel",
+        xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        gif: "image/gif",
+        mp4: "video/mp4",
+        avi: "video/x-msvideo",
+        mov: "video/quicktime",
+        zip: "application/zip",
+        txt: "text/plain",
+      };
+
+      if (
+        allowedMimeTypes[fileExtension] &&
+        file.mimetype !== allowedMimeTypes[fileExtension]
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: `File ${file.originalname} has invalid MIME type`,
+        });
+      }
+    }
+
+    next();
+  };
+};
+
+// Query parameters validation
+const validateQueryParams = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be between 1 and 100"),
   query("sortBy")
     .optional()
-    .isIn(["createdAt", "updatedAt", "title", "startDate", "endDate"])
+    .isIn(["createdAt", "updatedAt", "title", "status"])
     .withMessage("Invalid sort field"),
-
   query("sortOrder")
     .optional()
     .isIn(["asc", "desc"])
-    .withMessage("Sort order must be asc or desc"),
-
-  handleValidationErrors,
+    .withMessage("Sort order must be 'asc' or 'desc'"),
+  query("status")
+    .optional()
+    .isIn(["pending", "approved", "rejected"])
+    .withMessage("Invalid status filter"),
+  query("type")
+    .optional()
+    .isIn([
+      "workshop",
+      "certification",
+      "volunteering",
+      "competition",
+      "internship",
+    ])
+    .withMessage("Invalid activity type"),
+  validateRequest,
 ];
 
-// ObjectId parameter validation
-const validateObjectId = [
-  param("id")
-    .notEmpty()
-    .withMessage("ID is required")
-    .custom(isValidObjectId)
-    .withMessage("Invalid ID format"),
-
-  handleValidationErrors,
+// User validation
+const validateUser = [
+  body("name")
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Name must be between 2 and 50 characters"),
+  body("email")
+    .isEmail()
+    .normalizeEmail()
+    .withMessage("Please provide a valid email address"),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long"),
+  body("role")
+    .isIn(["student", "faculty", "admin", "mentor", "counselor"])
+    .withMessage("Invalid role specified"),
+  body("profile")
+    .optional()
+    .isObject()
+    .withMessage("Profile must be an object"),
+  body("isActive")
+    .optional()
+    .isBoolean()
+    .withMessage("isActive must be a boolean value"),
+  validateRequest,
 ];
 
-// File upload validation
-const validateFileUpload = (req, res, next) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({
+// Rate limiting validation
+const validateRateLimit = (req, res, next) => {
+  // This would typically integrate with a rate limiting library like express-rate-limit
+  // For now, we'll implement basic rate limiting logic
+  const key = `rate_limit_${req.user?.id || req.ip}`;
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000; // 15 minutes
+  const maxRequests = 100;
+
+  // This is a simplified implementation - in production, use Redis or similar
+  if (!req.rateLimitStore) {
+    req.rateLimitStore = new Map();
+  }
+
+  const userRequests = req.rateLimitStore.get(key) || [];
+  const recentRequests = userRequests.filter((time) => now - time < windowMs);
+
+  if (recentRequests.length >= maxRequests) {
+    return res.status(429).json({
       success: false,
-      message: "No files uploaded",
+      message: "Too many requests. Please try again later.",
+      retryAfter: Math.ceil(windowMs / 1000),
     });
   }
 
-  // Check file count
-  if (req.files.length > 5) {
-    return res.status(400).json({
-      success: false,
-      message: "Maximum 5 files allowed per upload",
-    });
-  }
-
-  // Check total file size
-  const totalSize = req.files.reduce((sum, file) => sum + file.size, 0);
-  if (totalSize > 50 * 1024 * 1024) {
-    // 50MB
-    return res.status(400).json({
-      success: false,
-      message: "Total file size cannot exceed 50MB",
-    });
-  }
-
-  // Check individual file sizes
-  for (const file of req.files) {
-    if (file.size > 10 * 1024 * 1024) {
-      // 10MB per file
-      return res.status(400).json({
-        success: false,
-        message: "Individual file size cannot exceed 10MB",
-      });
-    }
-  }
-
+  recentRequests.push(now);
+  req.rateLimitStore.set(key, recentRequests);
   next();
 };
 
 module.exports = {
-  validateActivity,
+  sanitizeInput,
+  validateRequest,
   validateUser,
-  validateLogin,
-  validatePortfolio,
-  validateFacultyApproval,
-  validateQueryParams,
+  validateCourse,
+  validateAssignment,
+  validateAttendanceSession,
+  validateGrade,
+  validateAnnouncement,
+  validateContent,
+  validateBulkMessage,
   validateObjectId,
+  validatePagination,
+  validateDateRange,
   validateFileUpload,
-  handleValidationErrors,
-  isValidObjectId,
-  isValidDate,
-  isValidEmail,
-  isValidPassword,
-  isValidRole,
-  isValidActivityCategory,
-  isValidActivityStatus,
-  isValidPortfolioStatus,
+  validateQueryParams,
+  validateRateLimit,
 };

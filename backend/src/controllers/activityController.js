@@ -628,7 +628,7 @@ const getActivityStats = async (req, res) => {
     const studentId = req.user.id;
 
     const stats = await Activity.aggregate([
-      { $match: { studentId: mongoose.Types.ObjectId(studentId) } },
+      { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
       {
         $group: {
           _id: null,
@@ -658,7 +658,7 @@ const getActivityStats = async (req, res) => {
     ]);
 
     const categoryStats = await Activity.aggregate([
-      { $match: { studentId: mongoose.Types.ObjectId(studentId) } },
+      { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
       {
         $group: {
           _id: "$category",

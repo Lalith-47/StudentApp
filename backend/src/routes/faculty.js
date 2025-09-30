@@ -12,6 +12,12 @@ const {
   assignApproval,
   getFacultyPerformance,
 } = require("../controllers/facultyController");
+
+const {
+  generateDepartmentReport,
+  generateNAACReport,
+  generateAICTEReport,
+} = require("../controllers/facultyReportingController");
 const { authenticateToken } = require("../middleware/auth");
 
 // Apply authentication middleware to all routes
@@ -23,12 +29,16 @@ router.get("/workload", getFacultyWorkload);
 router.get("/performance", getFacultyPerformance);
 
 // Approval management routes
-router.get("/approvals", getPendingApprovals);
-router.get("/approvals/:approvalId", getApproval);
-router.post("/approvals/:approvalId/assign", assignApproval);
-router.post("/approvals/:approvalId/start-review", startReview);
-router.post("/approvals/:approvalId/approve", approveActivity);
-router.post("/approvals/:approvalId/reject", rejectActivity);
-router.post("/approvals/:approvalId/request-changes", requestChanges);
+router.get("/pending", getPendingApprovals);
+router.get("/approval/:approvalId", getApproval);
+router.post("/approve/:approvalId", approveActivity);
+router.post("/reject/:approvalId", rejectActivity);
+router.post("/request-changes/:approvalId", requestChanges);
+router.post("/assign/:approvalId", assignApproval);
+
+// Reporting routes
+router.get("/export/department", generateDepartmentReport);
+router.get("/export/naac", generateNAACReport);
+router.get("/export/aicte", generateAICTEReport);
 
 module.exports = router;

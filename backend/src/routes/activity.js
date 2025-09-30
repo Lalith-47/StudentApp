@@ -14,7 +14,6 @@ const {
 } = require("../controllers/activityController");
 const { authenticateToken } = require("../middleware/auth");
 const {
-  validateActivity,
   validateQueryParams,
   validateObjectId,
   validateFileUpload,
@@ -24,7 +23,7 @@ const {
 router.use(authenticateToken);
 
 // Activity CRUD routes
-router.post("/", validateActivity, createActivity);
+router.post("/", createActivity);
 router.get("/", validateQueryParams, getStudentActivities);
 router.get("/search", validateQueryParams, searchActivities);
 router.get("/stats", getActivityStats);

@@ -11,7 +11,7 @@ const getStudentDashboard = async (req, res) => {
 
     // Get student's activities summary
     const activityStats = await Activity.aggregate([
-      { $match: { studentId: mongoose.Types.ObjectId(studentId) } },
+      { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
       {
         $group: {
           _id: null,
@@ -78,7 +78,7 @@ const getStudentDashboard = async (req, res) => {
 
     // Get activity categories breakdown
     const categoryBreakdown = await Activity.aggregate([
-      { $match: { studentId: mongoose.Types.ObjectId(studentId) } },
+      { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
       {
         $group: {
           _id: "$category",
@@ -92,7 +92,7 @@ const getStudentDashboard = async (req, res) => {
 
     // Get monthly activity trends
     const monthlyTrends = await Activity.aggregate([
-      { $match: { studentId: mongoose.Types.ObjectId(studentId) } },
+      { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
       {
         $group: {
           _id: {
@@ -117,7 +117,7 @@ const getStudentDashboard = async (req, res) => {
     const skills = await Activity.aggregate([
       {
         $match: {
-          studentId: mongoose.Types.ObjectId(studentId),
+          studentId: new mongoose.Types.ObjectId(studentId),
           status: "approved",
         },
       },
@@ -211,7 +211,7 @@ const getFacultyDashboard = async (req, res) => {
 
     // Get faculty workload
     const workload = await FacultyApproval.aggregate([
-      { $match: { facultyId: mongoose.Types.ObjectId(facultyId) } },
+      { $match: { facultyId: new mongoose.Types.ObjectId(facultyId) } },
       {
         $group: {
           _id: "$status",
@@ -241,7 +241,7 @@ const getFacultyDashboard = async (req, res) => {
     const performance = await FacultyApproval.aggregate([
       {
         $match: {
-          facultyId: mongoose.Types.ObjectId(facultyId),
+          facultyId: new mongoose.Types.ObjectId(facultyId),
           "reviewDetails.submittedAt": {
             $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           },
@@ -265,7 +265,7 @@ const getFacultyDashboard = async (req, res) => {
 
     // Get category workload
     const categoryWorkload = await FacultyApproval.aggregate([
-      { $match: { facultyId: mongoose.Types.ObjectId(facultyId) } },
+      { $match: { facultyId: new mongoose.Types.ObjectId(facultyId) } },
       {
         $group: {
           _id: "$category",

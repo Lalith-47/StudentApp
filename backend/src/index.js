@@ -21,11 +21,15 @@ const adminRoutes = require("./routes/admin");
 const mentorRoutes = require("./routes/mentor");
 const activityRoutes = require("./routes/activity");
 const facultyRoutes = require("./routes/faculty");
+const enhancedFacultyRoutes = require("./routes/enhancedFaculty");
+const enhancedStudentRoutes = require("./routes/enhancedStudent");
+const enhancedAdminRoutes = require("./routes/enhancedAdmin");
 const portfolioRoutes = require("./routes/portfolio");
 const dashboardRoutes = require("./routes/dashboard");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
+const { enhancedErrorHandler } = require("./middleware/enhancedErrorHandler");
 const logger = require("./middleware/logger");
 
 // Security middleware
@@ -90,6 +94,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/mentor", mentorRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/faculty", facultyRoutes);
+app.use("/api/faculty-enhanced", enhancedFacultyRoutes);
+app.use("/api/student-enhanced", enhancedStudentRoutes);
+app.use("/api/admin-enhanced", enhancedAdminRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
@@ -103,7 +110,7 @@ app.use("*", (req, res) => {
 });
 
 // Error handling middleware
-app.use(errorHandler);
+app.use(enhancedErrorHandler);
 
 // Enhanced database connection with persistent connection and auto-reconnection
 const dbManager = require("./config/database");

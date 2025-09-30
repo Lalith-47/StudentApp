@@ -21,6 +21,16 @@ const Colleges = React.lazy(() => import("./pages/Colleges"));
 const Chatbot = React.lazy(() => import("./pages/Chatbot"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const MentorPortal = React.lazy(() => import("./pages/MentorPortal"));
+const FacultyPortal = React.lazy(() => import("./pages/FacultyPortal"));
+const EnhancedFacultyPortal = React.lazy(() =>
+  import("./pages/EnhancedFacultyPortal")
+);
+const EnhancedStudentPortal = React.lazy(() =>
+  import("./pages/EnhancedStudentPortal")
+);
+const EnhancedAdminPortal = React.lazy(() =>
+  import("./pages/EnhancedAdminPortal")
+);
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
@@ -46,7 +56,7 @@ function App() {
                     path="dashboard"
                     element={
                       <RoleProtectedRoute allowedRoles={["student"]}>
-                        <Dashboard />
+                        <EnhancedStudentPortal />
                       </RoleProtectedRoute>
                     }
                   />
@@ -59,11 +69,27 @@ function App() {
                     }
                   />
                   <Route
+                    path="faculty"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["faculty", "admin"]}>
+                        <EnhancedFacultyPortal />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="student"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["student", "admin"]}>
+                        <EnhancedStudentPortal />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="admin"
                     element={
-                      <AdminProtectedRoute>
-                        <AdminDashboard />
-                      </AdminProtectedRoute>
+                      <RoleProtectedRoute allowedRoles={["admin"]}>
+                        <EnhancedAdminPortal />
+                      </RoleProtectedRoute>
                     }
                   />
                   <Route path="*" element={<NotFound />} />

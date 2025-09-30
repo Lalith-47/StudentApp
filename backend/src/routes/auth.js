@@ -73,11 +73,11 @@ router.post(
       }
 
       // Validate role
-      const validRoles = ["student", "mentor"];
+      const validRoles = ["student", "mentor", "faculty", "admin"];
       if (!validRoles.includes(role)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid role. Must be 'student' or 'mentor'",
+          message: "Invalid role. Must be 'student', 'mentor', 'faculty', or 'admin'",
         });
       }
 
