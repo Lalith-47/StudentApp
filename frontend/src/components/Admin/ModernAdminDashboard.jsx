@@ -342,7 +342,7 @@ const ModernAdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-2 md:p-3 text-white shadow-lg"
         >
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold mb-1 leading-tight">
                 Welcome back, {user?.name || "Admin"}!

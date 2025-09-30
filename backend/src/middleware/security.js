@@ -28,14 +28,14 @@ const createRateLimit = (windowMs, max, message) => {
 // General API rate limiting
 const generalRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
-  100, // 100 requests per window
+  500, // 500 requests per window (increased for development)
   "Too many requests from this IP, please try again later."
 );
 
 // Authentication rate limiting (stricter)
 const authRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
-  5, // 5 login attempts per window
+  50, // 50 login attempts per window (increased for development)
   "Too many authentication attempts, please try again later."
 );
 
