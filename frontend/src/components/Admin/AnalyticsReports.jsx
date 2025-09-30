@@ -46,7 +46,7 @@ const AnalyticsReports = () => {
         endDate: dateRange.endDate,
         metrics: selectedMetrics.join(","),
       };
-      
+
       const response = await apiService.analytics.getDashboard(params);
       setAnalyticsData(response.data);
     } catch (error) {
@@ -139,32 +139,37 @@ const AnalyticsReports = () => {
   // Export functions
   const exportToCSV = () => {
     if (!analyticsData) return;
-    
+
     const csvData = generateCSVData(analyticsData);
-    downloadCSV(csvData, `analytics-report-${new Date().toISOString().split('T')[0]}.csv`);
+    downloadCSV(
+      csvData,
+      `analytics-report-${new Date().toISOString().split("T")[0]}.csv`
+    );
   };
 
   const exportToPDF = () => {
     // This would typically use a PDF generation library
     console.log("PDF export functionality would be implemented here");
-    alert("PDF export functionality would be implemented with a library like jsPDF");
+    alert(
+      "PDF export functionality would be implemented with a library like jsPDF"
+    );
   };
 
   const generateCSVData = (data) => {
     let csv = "Metric,Value\n";
-    
+
     // Overview data
     Object.entries(data.overview).forEach(([key, value]) => {
       csv += `${key},${value}\n`;
     });
-    
+
     return csv;
   };
 
   const downloadCSV = (csvContent, filename) => {
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = filename;
     link.click();
@@ -176,7 +181,9 @@ const AnalyticsReports = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading analytics...</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Loading analytics...
+          </p>
         </div>
       </div>
     );
@@ -432,26 +439,31 @@ const AnalyticsReports = () => {
               <BarChart3 className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-4">
-              {analyticsData.courseAnalytics.enrollmentStats.map((course, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {course.course}
-                    </p>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{
-                          width: `${(course.enrollments / 150) * 100}%`,
-                        }}
-                      />
+              {analyticsData.courseAnalytics.enrollmentStats.map(
+                (course, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {course.course}
+                      </p>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${(course.enrollments / 150) * 100}%`,
+                          }}
+                        />
+                      </div>
                     </div>
+                    <span className="ml-4 text-sm font-medium text-gray-900 dark:text-white">
+                      {course.enrollments}
+                    </span>
                   </div>
-                  <span className="ml-4 text-sm font-medium text-gray-900 dark:text-white">
-                    {course.enrollments}
-                  </span>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </Card>
         </motion.div>
@@ -473,27 +485,35 @@ const AnalyticsReports = () => {
               <PieChart className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-4">
-              {Object.entries(analyticsData.systemUsage.deviceStats).map(([device, percentage]) => (
-                <div key={device} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
-                    {device}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          device === "desktop" ? "bg-blue-500" :
-                          device === "mobile" ? "bg-green-500" : "bg-purple-500"
-                        }`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {percentage}%
+              {Object.entries(analyticsData.systemUsage.deviceStats).map(
+                ([device, percentage]) => (
+                  <div
+                    key={device}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                      {device}
                     </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            device === "desktop"
+                              ? "bg-blue-500"
+                              : device === "mobile"
+                              ? "bg-green-500"
+                              : "bg-purple-500"
+                          }`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {percentage}%
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </Card>
         </motion.div>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
 import apiService from "../../utils/api";
+
+// Icons
 import {
-  // Navigation & Layout
+  // Navigation
   Menu,
   X,
   Home,
@@ -11,900 +13,532 @@ import {
   BookOpen,
   Bell,
   Settings,
+  BarChart3,
   Shield,
   LogOut,
   Search,
   RefreshCw,
+  ChevronDown,
+  ChevronRight,
+  Sun,
+  Moon,
 
-  // Dashboard & Analytics
-  BarChart3,
+  // Dashboard
+  UserPlus,
+  GraduationCap,
   TrendingUp,
   Activity,
   Eye,
   Database,
   Server,
   PieChart,
-
-  // User Management
-  UserPlus,
-  UserCheck,
-  UserX,
-  Key,
-  Edit,
-  Trash2,
-
-  // Course Management
-  Archive,
-  UserCog,
-  GraduationCap,
-
-  // System Features
-  Send,
-  AlertTriangle,
-  Globe,
-  Palette,
-
-  // Status & Feedback
-  Check,
-  X as XIcon,
-  AlertCircle,
-  Info,
-  Loader2,
   Calendar,
   Clock,
   DollarSign,
   Award,
   Target,
+  FileText,
+  Download,
+  Upload,
+  Edit,
+  Trash2,
+  Plus,
+  Filter,
+  MoreVertical,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  Loader2,
 } from "lucide-react";
+
+// Components
 import Button from "../UI/Button";
 import Input from "../UI/Input";
 import Card from "../UI/Card";
-import FacultyAdminManagement from "./FacultyAdminManagement";
-import AuditLogs from "./AuditLogs";
+
+// Admin Components
+import UserManagement from "./UserManagement";
 import CourseManagement from "./CourseManagement";
-import SystemAnnouncements from "./SystemAnnouncements";
-import AnalyticsReports from "./AnalyticsReports";
+import AnnouncementManagement from "./AnnouncementManagement";
+import AnalyticsDashboard from "./AnalyticsDashboard";
 import SystemSettings from "./SystemSettings";
 
 const ModernAdminDashboard = () => {
   const { user, logout } = useAuth();
+
+  // State Management
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [activeModule, setActiveModule] = useState("dashboard");
+  const [activeSubModule, setActiveSubModule] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   // Dashboard Data
-  const [dashboardData, setDashboardData] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-
-  // Modals and Forms
-  const [showCreateUser, setShowCreateUser] = useState(false);
-  const [showSystemAnnouncement, setShowSystemAnnouncement] = useState(false);
-  const [showSystemSettings, setShowSystemSettings] = useState(false);
-
-  // Selected Items
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-
-  // Filters and Search
-  const [filters, setFilters] = useState({
-    userRole: "",
-    userStatus: "",
-    courseStatus: "",
-    announcementPriority: "",
+  const [dashboardData, setDashboardData] = useState({
+    totalUsers: 156,
+    activeUsers: 142,
+    totalCourses: 12,
+    activeCourses: 10,
+    totalAnnouncements: 15,
+    pendingReports: 3,
+    systemHealth: "healthy",
+    recentActivity: [],
   });
-  const [searchQuery, setSearchQuery] = useState("");
 
-  // Sidebar items with modern structure
-  const sidebarItems = [
+  // Navigation Structure
+  const navigationItems = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: Home,
+      path: "/admin/dashboard",
       children: [],
     },
     {
       id: "users",
       label: "User Management",
       icon: Users,
+      path: "/admin/users",
       children: [
         { id: "all-users", label: "All Users", icon: Users },
         { id: "create-user", label: "Create User", icon: UserPlus },
-        { id: "faculty-admin", label: "Faculty & Admin", icon: Shield },
-        { id: "audit-logs", label: "Audit Logs", icon: Activity },
+        { id: "user-roles", label: "User Roles", icon: Shield },
+        { id: "user-activity", label: "User Activity", icon: Activity },
       ],
     },
     {
       id: "courses",
       label: "Course Management",
       icon: BookOpen,
+      path: "/admin/courses",
       children: [
         { id: "all-courses", label: "All Courses", icon: BookOpen },
-        {
-          id: "course-assignments",
-          label: "Faculty Assignments",
-          icon: UserCog,
-        },
-        { id: "course-archive", label: "Archive Management", icon: Archive },
+        { id: "create-course", label: "Create Course", icon: Plus },
+        { id: "course-categories", label: "Categories", icon: FileText },
+        { id: "course-analytics", label: "Course Analytics", icon: BarChart3 },
       ],
     },
     {
       id: "announcements",
-      label: "System Announcements",
+      label: "Announcements",
       icon: Bell,
+      path: "/admin/announcements",
       children: [
-        { id: "create-announcement", label: "Create Announcement", icon: Send },
-        {
-          id: "manage-announcements",
-          label: "Manage Announcements",
-          icon: Bell,
-        },
+        { id: "all-announcements", label: "All Announcements", icon: Bell },
+        { id: "create-announcement", label: "Create Announcement", icon: Plus },
+        { id: "scheduled", label: "Scheduled", icon: Calendar },
+        { id: "templates", label: "Templates", icon: FileText },
       ],
     },
     {
       id: "analytics",
       label: "Analytics & Reports",
       icon: BarChart3,
+      path: "/admin/analytics",
       children: [
-        { id: "system-analytics", label: "System Analytics", icon: TrendingUp },
+        { id: "dashboard-analytics", label: "Dashboard", icon: BarChart3 },
         { id: "user-analytics", label: "User Analytics", icon: Users },
         { id: "course-analytics", label: "Course Analytics", icon: BookOpen },
+        { id: "system-reports", label: "System Reports", icon: FileText },
+        { id: "export-reports", label: "Export Reports", icon: Download },
       ],
     },
     {
       id: "settings",
       label: "System Settings",
       icon: Settings,
+      path: "/admin/settings",
       children: [
-        { id: "general-settings", label: "General Settings", icon: Globe },
-        { id: "security-settings", label: "Security Settings", icon: Shield },
-        { id: "branding-settings", label: "Branding", icon: Palette },
+        { id: "general-settings", label: "General", icon: Settings },
+        { id: "theme-settings", label: "Theme", icon: Sun },
+        { id: "notification-settings", label: "Notifications", icon: Bell },
+        { id: "security-settings", label: "Security", icon: Shield },
+        { id: "integration-settings", label: "Integrations", icon: Database },
       ],
     },
   ];
 
-  // Load dashboard data
+  // Dark Mode Toggle
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("admin-theme");
+    if (savedTheme) {
+      setDarkMode(savedTheme === "dark");
+    } else {
+      setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("admin-theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("admin-theme", "light");
+    }
+  }, [darkMode]);
+
+  // Load Dashboard Data
   useEffect(() => {
     loadDashboardData();
   }, []);
 
-  // Load users when users tab is active
-  useEffect(() => {
-    if (activeTab === "all-users") {
-      loadUsers();
-    }
-  }, [activeTab, filters, searchQuery]);
-
-  // Load courses when courses tab is active
-  useEffect(() => {
-    if (activeTab === "all-courses") {
-      loadCourses();
-    }
-  }, [activeTab, filters, searchQuery]);
-
   const loadDashboardData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await apiService.adminEnhanced.getDashboard();
-      setDashboardData(response.data.data);
+      // Ensure we have the expected data structure
+      if (response?.data?.data) {
+        setDashboardData((prev) => ({
+          ...prev,
+          ...response.data.data,
+          totalUsers: response.data.data.totalUsers || prev.totalUsers,
+          activeUsers: response.data.data.activeUsers || prev.activeUsers,
+          totalCourses: response.data.data.totalCourses || prev.totalCourses,
+          activeCourses: response.data.data.activeCourses || prev.activeCourses,
+          totalAnnouncements:
+            response.data.data.totalAnnouncements || prev.totalAnnouncements,
+          pendingReports:
+            response.data.data.pendingReports || prev.pendingReports,
+        }));
+      }
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
-      // Set dummy data for development
-      setDashboardData({
-        overview: {
-          totalUsers: 1247,
-          activeUsers: 1189,
-          totalCourses: 45,
-          activeCourses: 42,
-          totalAssignments: 234,
-          pendingGrading: 18,
-          databaseStatus: "connected",
-          systemUptime: 86400,
-        },
-        userStatistics: {
-          students: 1156,
-          faculty: 78,
-          admins: 13,
-        },
-        courseStatistics: {
-          active: 42,
-          archived: 3,
-          suspended: 0,
-        },
-        recentActivities: [
-          {
-            description: "New student registration: John Doe",
-            timestamp: new Date().toISOString(),
-          },
-          {
-            description: "Course created: Advanced Mathematics",
-            timestamp: new Date(Date.now() - 3600000).toISOString(),
-          },
-          {
-            description: "Faculty assignment updated",
-            timestamp: new Date(Date.now() - 7200000).toISOString(),
-          },
-        ],
-      });
+      // Keep dummy data for development
     } finally {
       setLoading(false);
     }
   };
 
-  const loadUsers = async () => {
+  // Handle Navigation
+  const handleNavigation = (moduleId, subModuleId = "") => {
+    setActiveModule(moduleId);
+    setActiveSubModule(subModuleId);
+    setSidebarOpen(false); // Close sidebar on mobile after navigation
+  };
+
+  // Handle Logout
+  const handleLogout = async () => {
     try {
-      setLoading(true);
-      const params = {
-        page: 1,
-        limit: 50,
-        search: searchQuery,
-        role: filters.userRole,
-        status: filters.userStatus,
-      };
-      const response = await apiService.adminEnhanced.getUsers(params);
-      setUsers(response.data.data.users || []);
+      await logout();
     } catch (error) {
-      console.error("Failed to load users:", error);
-      // Set dummy data for development
-      setUsers([
-        {
-          id: 1,
-          name: "Dr. Sarah Johnson",
-          email: "sarah.johnson@yukti.com",
-          role: "faculty",
-          isActive: true,
-          lastLoginFormatted: "2 hours ago",
-          createdAtFormatted: "Jan 15, 2024",
-        },
-        {
-          id: 2,
-          name: "John Doe",
-          email: "john.doe@student.yukti.com",
-          role: "student",
-          isActive: true,
-          lastLoginFormatted: "1 day ago",
-          createdAtFormatted: "Feb 20, 2024",
-        },
-        {
-          id: 3,
-          name: "Admin User",
-          email: "admin@yukti.com",
-          role: "admin",
-          isActive: true,
-          lastLoginFormatted: "30 minutes ago",
-          createdAtFormatted: "Dec 1, 2023",
-        },
-      ]);
-    } finally {
-      setLoading(false);
+      console.error("Logout failed:", error);
     }
   };
 
-  const loadCourses = async () => {
-    try {
-      setLoading(true);
-      const params = {
-        page: 1,
-        limit: 50,
-        search: searchQuery,
-        status: filters.courseStatus,
-      };
-      const response = await apiService.adminEnhanced.getCourses(params);
-      setCourses(response.data.data.courses || []);
-    } catch (error) {
-      console.error("Failed to load courses:", error);
-      // Set dummy data for development
-      setCourses([
-        {
-          id: 1,
-          title: "Advanced Mathematics",
-          code: "MATH-401",
-          department: "Mathematics",
-          facultyName: "Dr. Sarah Johnson",
-          status: "active",
-          enrollmentCount: 45,
-          credits: 4,
-        },
-        {
-          id: 2,
-          title: "Computer Science Fundamentals",
-          code: "CS-101",
-          department: "Computer Science",
-          facultyName: "Dr. Michael Chen",
-          status: "active",
-          enrollmentCount: 78,
-          credits: 3,
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  const renderDashboard = () => {
-    if (!dashboardData) {
-      return (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      );
-    }
-
-    const { overview, userStatistics, courseStatistics, recentActivities } =
-      dashboardData;
-
-    return (
-      <div className="space-y-6">
-        {/* Welcome Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-4 md:p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold mb-1 leading-tight">
-                Welcome back, {user?.name || "Admin"}!
-              </h1>
-              <p className="text-blue-100 text-base md:text-lg leading-relaxed">
-                Here's what's happening with your platform today.
-              </p>
-            </div>
-            <div className="hidden md:block flex-shrink-0">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Shield className="w-8 h-8 md:w-10 md:h-10 text-white" />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 h-full group cursor-pointer">
-              <div className="flex items-center justify-between h-full">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
-                    Total Users
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    {overview.totalUsers}
-                  </p>
-                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
-                    <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">
-                      {overview.activeUsers} active
-                    </span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
-                  <Users className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 h-full group cursor-pointer">
-              <div className="flex items-center justify-between h-full">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-green-600 dark:text-green-400 mb-1">
-                    Total Courses
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    {overview.totalCourses}
-                  </p>
-                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
-                    <Check className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">
-                      {overview.activeCourses} active
-                    </span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
-                  <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 h-full group cursor-pointer">
-              <div className="flex items-center justify-between h-full">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">
-                    Assignments
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    {overview.totalAssignments}
-                  </p>
-                  <p className="text-xs md:text-sm text-orange-600 dark:text-orange-400 flex items-center">
-                    <Clock className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">
-                      {overview.pendingGrading} pending
-                    </span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
-                  <Activity className="w-5 h-5 md:w-6 md:h-6 text-orange-600 dark:text-orange-400" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 h-full group cursor-pointer">
-              <div className="flex items-center justify-between h-full">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">
-                    System Health
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                    {overview.databaseStatus === "connected"
-                      ? "100%"
-                      : "Offline"}
-                  </p>
-                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                    <Server className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">
-                      Uptime: {Math.floor(overview.systemUptime / 3600)}h
-                    </span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
-                  <Server className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Charts and Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-6">
-          {/* User Distribution Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 h-full hover:shadow-lg transition-shadow duration-300">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
-                  User Distribution
-                </h3>
-                <PieChart className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-              </div>
-              <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center min-w-0 flex-1">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      Students
-                    </span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
-                    {userStatistics?.students || 1156}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center min-w-0 flex-1">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      Faculty
-                    </span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
-                    {userStatistics?.faculty || 78}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center min-w-0 flex-1">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      Admins
-                    </span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
-                    {userStatistics?.admins || 13}
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Recent Activities */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="h-full"
-          >
-            <Card className="p-4 md:p-6 h-full hover:shadow-lg transition-shadow duration-300">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
-                  Recent Activities
-                </h3>
-                <Activity className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-              </div>
-              <div className="space-y-3 md:space-y-4 max-h-80 overflow-y-auto">
-                {recentActivities.slice(0, 5).map((activity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  >
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white leading-relaxed">
-                        {activity.description}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {new Date(activity.timestamp).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderUsers = () => {
-    return (
-      <div className="space-y-6">
-        {/* Users Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  // Render Dashboard Homepage
+  const renderDashboardHomepage = () => (
+    <div className="space-y-6">
+      {/* Welcome Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              User Management
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Manage all system users
+            <h1 className="text-2xl font-bold mb-2">
+              Welcome back, {user?.name || "Admin"}! 👋
+            </h1>
+            <p className="text-blue-100">
+              Here's what's happening with your platform today.
             </p>
           </div>
-          <div className="flex space-x-3">
-            <Button
-              onClick={() => setShowCreateUser(true)}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Create User</span>
-            </Button>
+          <div className="hidden md:block">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              <Shield className="w-8 h-8" />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Filters */}
-        <Card className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search users..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Users
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {(dashboardData.totalUsers || 0).toLocaleString()}
+              </p>
+              <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+                <TrendingUp className="w-4 h-4 mr-1" />
+                +12% from last month
+              </p>
             </div>
-            <select
-              value={filters.userRole}
-              onChange={(e) =>
-                setFilters({ ...filters, userRole: e.target.value })
-              }
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Roles</option>
-              <option value="student">Student</option>
-              <option value="faculty">Faculty</option>
-              <option value="admin">Admin</option>
-              <option value="mentor">Mentor</option>
-              <option value="counselor">Counselor</option>
-            </select>
-            <select
-              value={filters.userStatus}
-              onChange={(e) =>
-                setFilters({ ...filters, userStatus: e.target.value })
-              }
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <Button
-              variant="outline"
-              onClick={loadUsers}
-              className="flex items-center space-x-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh</span>
-            </Button>
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
           </div>
         </Card>
 
-        {/* Users Table */}
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Last Login
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                {users.map((user) => (
-                  <tr
-                    key={user.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                          <span className="text-white font-medium text-sm">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.name}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {user.email}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                          user.role === "admin"
-                            ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                            : user.role === "faculty"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : user.role === "student"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
-                        }`}
-                      >
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                          user.isActive
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                        }`}
-                      >
-                        {user.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {user.lastLoginFormatted || "Never"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {user.createdAtFormatted}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedUser(user)}
-                          className="hover:bg-blue-50 hover:border-blue-300"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            /* Handle password reset */
-                          }}
-                          className="hover:bg-green-50 hover:border-green-300"
-                        >
-                          <Key className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            /* Handle status toggle */
-                          }}
-                          className={`${
-                            user.isActive
-                              ? "hover:bg-red-50 hover:border-red-300"
-                              : "hover:bg-green-50 hover:border-green-300"
-                          }`}
-                        >
-                          {user.isActive ? (
-                            <UserX className="w-4 h-4" />
-                          ) : (
-                            <UserCheck className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Active Courses
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {dashboardData.activeCourses}
+              </p>
+              <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+                <TrendingUp className="w-4 h-4 mr-1" />
+                +3 new this week
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Announcements
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {dashboardData.totalAnnouncements}
+              </p>
+              <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center mt-1">
+                <Bell className="w-4 h-4 mr-1" />2 scheduled
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
+              <Bell className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                System Health
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                99.9%
+              </p>
+              <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+                <CheckCircle className="w-4 h-4 mr-1" />
+                All systems operational
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+              <Server className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            </div>
           </div>
         </Card>
       </div>
-    );
-  };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return renderDashboard();
-      case "all-users":
-        return renderUsers();
-      case "faculty-admin":
-        return <FacultyAdminManagement />;
-      case "audit-logs":
-        return <AuditLogs />;
-      case "all-courses":
-        return <CourseManagement />;
-      case "course-assignments":
-        return <CourseManagement />;
-      case "course-archive":
-        return <CourseManagement />;
-      case "create-announcement":
-        return <SystemAnnouncements />;
-      case "manage-announcements":
-        return <SystemAnnouncements />;
-      case "system-analytics":
-        return <AnalyticsReports />;
-      case "user-analytics":
-        return <AnalyticsReports />;
-      case "course-analytics":
-        return <AnalyticsReports />;
-      case "system-settings":
-        return <SystemSettings />;
-      case "theme-settings":
-        return <SystemSettings />;
-      case "notification-settings":
-        return <SystemSettings />;
-      case "security-settings":
-        return <SystemSettings />;
-      case "integration-settings":
-        return <SystemSettings />;
-      default:
-        return (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <Activity className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                {sidebarItems.find((item) => item.id === activeTab)?.label ||
-                  "Dashboard"}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Select a section from the sidebar to get started.
-              </p>
-            </div>
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Recent Activity
+          </h3>
+          <div className="space-y-4">
+            {[
+              {
+                action: "New user registered",
+                user: "John Doe",
+                time: "2 minutes ago",
+              },
+              {
+                action: "Course created",
+                user: "Dr. Smith",
+                time: "1 hour ago",
+              },
+              {
+                action: "Announcement published",
+                user: "Admin",
+                time: "3 hours ago",
+              },
+              {
+                action: "System backup completed",
+                user: "System",
+                time: "6 hours ago",
+              },
+            ].map((activity, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              >
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {activity.action}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {activity.user} • {activity.time}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        );
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              onClick={() => handleNavigation("users", "create-user")}
+              className="flex items-center justify-center p-4 h-auto"
+            >
+              <UserPlus className="w-5 h-5 mr-2" />
+              Add User
+            </Button>
+            <Button
+              onClick={() => handleNavigation("courses", "create-course")}
+              variant="outline"
+              className="flex items-center justify-center p-4 h-auto"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create Course
+            </Button>
+            <Button
+              onClick={() =>
+                handleNavigation("announcements", "create-announcement")
+              }
+              variant="outline"
+              className="flex items-center justify-center p-4 h-auto"
+            >
+              <Bell className="w-5 h-5 mr-2" />
+              New Announcement
+            </Button>
+            <Button
+              onClick={() => handleNavigation("analytics", "system-reports")}
+              variant="outline"
+              className="flex items-center justify-center p-4 h-auto"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Export Reports
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+
+  // Render Content Based on Active Module
+  const renderContent = () => {
+    switch (activeModule) {
+      case "dashboard":
+        return renderDashboardHomepage();
+      case "users":
+        return <UserManagement activeSubModule={activeSubModule} />;
+      case "courses":
+        return <CourseManagement activeSubModule={activeSubModule} />;
+      case "announcements":
+        return <AnnouncementManagement activeSubModule={activeSubModule} />;
+      case "analytics":
+        return <AnalyticsDashboard activeSubModule={activeSubModule} />;
+      case "settings":
+        return <SystemSettings activeSubModule={activeSubModule} />;
+      default:
+        return renderDashboardHomepage();
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Backdrop */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
       <motion.div
         initial={{ x: -300 }}
-        animate={{ x: 0 }}
+        animate={{ x: sidebarOpen ? 0 : -300 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800 shadow-xl ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:static lg:inset-0`}
+        }`}
       >
-        <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <div className="flex items-center space-x-3 min-w-0">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
               Yukti Admin
             </span>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <nav className="mt-4 md:mt-6 px-3 flex-1 overflow-y-auto">
-          <div className="space-y-1 md:space-y-2">
-            {sidebarItems.map((item) => (
-              <div key={item.id}>
-                <button
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center px-3 md:px-4 py-2.5 md:py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:scale-105 ${
-                    activeTab === item.id
-                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg transform scale-105"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 hover:shadow-md"
-                  }`}
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-6 space-y-2">
+          {navigationItems.map((item) => (
+            <div key={item.id}>
+              <button
+                onClick={() => handleNavigation(item.id)}
+                className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  activeModule === item.id
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                <div className="flex items-center">
+                  <item.icon className="w-5 h-5 mr-3" />
+                  {item.label}
+                </div>
+                {item.children.length > 0 && (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+
+              {/* Sub-navigation */}
+              {item.children.length > 0 && activeModule === item.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="ml-8 mt-2 space-y-1"
                 >
-                  <item.icon className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 flex-shrink-0" />
-                  <span className="truncate">{item.label}</span>
-                </button>
-              </div>
-            ))}
-          </div>
+                  {item.children.map((child) => (
+                    <button
+                      key={child.id}
+                      onClick={() => handleNavigation(item.id, child.id)}
+                      className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
+                        activeSubModule === child.id
+                          ? "bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                          : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <child.icon className="w-4 h-4 mr-3" />
+                      {child.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </div>
+          ))}
         </nav>
 
-        <div className="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <div className="flex items-center space-x-3 mb-3 md:mb-4">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-medium text-xs md:text-sm">
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-medium text-sm">
                 {user?.name?.charAt(0).toUpperCase()}
               </span>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-white truncate">
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {user?.name}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {user?.email}
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {user?.role}
               </p>
             </div>
           </div>
@@ -914,8 +548,8 @@ const ModernAdminDashboard = () => {
             size="sm"
             className="w-full hover:bg-red-50 hover:border-red-300 hover:text-red-600"
           >
-            <LogOut className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-            <span className="text-xs md:text-sm">Logout</span>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
           </Button>
         </div>
       </motion.div>
@@ -923,42 +557,174 @@ const ModernAdminDashboard = () => {
       {/* Main Content */}
       <div
         className={`transition-all duration-300 ${
-          sidebarOpen ? "lg:pl-64" : "lg:pl-0"
+          sidebarOpen ? "lg:ml-72" : "lg:ml-0"
         }`}
       >
-        {/* Mobile Menu Button */}
-        <div className="lg:hidden fixed top-4 left-4 z-40">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+        {/* Top Navigation Bar */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+            {/* Left Section */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
 
-        {/* Desktop Toggle Button */}
-        <div className="hidden lg:block fixed top-4 left-4 z-40">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            {sidebarOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+              {/* Search */}
+              <div className="relative hidden md:block">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64"
+                />
+              </div>
+            </div>
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-4">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                {darkMode ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+
+              {/* Refresh */}
+              <button
+                onClick={loadDashboardData}
+                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Refresh Data"
+              >
+                <RefreshCw className="w-5 h-5" />
+              </button>
+
+              {/* Notifications */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+                >
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                    3
+                  </span>
+                </button>
+
+                {/* Notifications Dropdown */}
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                  >
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Notifications
+                      </h3>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto">
+                      {[
+                        {
+                          title: "New user registered",
+                          message: "John Doe joined the platform",
+                          time: "2 min ago",
+                        },
+                        {
+                          title: "Course completed",
+                          message: "Advanced Mathematics by Dr. Smith",
+                          time: "1 hour ago",
+                        },
+                        {
+                          title: "System maintenance",
+                          message: "Scheduled maintenance tonight at 2 AM",
+                          time: "3 hours ago",
+                        },
+                      ].map((notification, index) => (
+                        <div
+                          key={index}
+                          className="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                            {notification.title}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                            {notification.time}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Profile Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-sm">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </button>
+
+                {/* Profile Dropdown */}
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                  >
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user?.name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {user?.email}
+                      </p>
+                    </div>
+                    <div className="p-2">
+                      <button className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        Profile Settings
+                      </button>
+                      <button className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        Preferences
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Page Content */}
-        <main
-          className={`p-2 sm:p-4 lg:p-6 transition-all duration-300 ${
-            sidebarOpen ? "ml-0" : "ml-0"
-          }`}
-        >
+        <main className="p-6">
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeTab}
+              key={activeModule}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -976,13 +742,10 @@ const ModernAdminDashboard = () => {
         </main>
       </div>
 
-      {/* Sidebar Overlay */}
+      {/* Backdrop */}
       {sidebarOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

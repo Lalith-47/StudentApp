@@ -112,7 +112,7 @@ const apiService = {
 
   // Analytics endpoints
   analytics: {
-    getDashboard: () => api.get("/analytics/dashboard"),
+    getDashboard: (params = {}) => api.get("/analytics/dashboard", { params }),
     getReports: (params = {}) => api.get("/analytics/reports", { params }),
     generateReport: (data) => api.post("/analytics/reports", data),
     getNAACReport: () => api.get("/analytics/naac"),
@@ -143,10 +143,12 @@ const apiService = {
     create: (data) => api.post("/courses", data),
     update: (id, data) => api.put(`/courses/${id}`, data),
     delete: (id) => api.delete(`/courses/${id}`),
-    getByInstructor: (instructorId) => api.get(`/courses/instructor/${instructorId}`),
+    getByInstructor: (instructorId) =>
+      api.get(`/courses/instructor/${instructorId}`),
     getActive: () => api.get("/courses/active"),
     enroll: (courseId, data) => api.post(`/courses/${courseId}/enroll`, data),
-    unenroll: (courseId, userId) => api.delete(`/courses/${courseId}/enroll/${userId}`),
+    unenroll: (courseId, userId) =>
+      api.delete(`/courses/${courseId}/enroll/${userId}`),
   },
 
   // Announcement endpoints
@@ -156,7 +158,8 @@ const apiService = {
     create: (data) => api.post("/announcements", data),
     update: (id, data) => api.put(`/announcements/${id}`, data),
     delete: (id) => api.delete(`/announcements/${id}`),
-    getPublished: (targetAudience) => api.get(`/announcements/published?audience=${targetAudience}`),
+    getPublished: (targetAudience) =>
+      api.get(`/announcements/published?audience=${targetAudience}`),
     getScheduled: () => api.get("/announcements/scheduled"),
     markAsRead: (id) => api.post(`/announcements/${id}/read`),
     getUnread: () => api.get("/announcements/unread"),
@@ -165,7 +168,8 @@ const apiService = {
   // Admin endpoints
   admin: {
     getSystemSettings: () => api.get("/admin/system-settings"),
-    updateSystemSettings: (settings) => api.put("/admin/system-settings", settings),
+    updateSystemSettings: (settings) =>
+      api.put("/admin/system-settings", settings),
     resetSystemSettings: () => api.post("/admin/system-settings/reset"),
     getBackupStatus: () => api.get("/admin/backup/status"),
     createBackup: () => api.post("/admin/backup/create"),

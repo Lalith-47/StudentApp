@@ -17,7 +17,6 @@ import {
   Info,
   RefreshCw,
   Download,
-  Schedule,
   Pin,
 } from "lucide-react";
 import Button from "../UI/Button";
@@ -37,6 +36,9 @@ const SystemAnnouncements = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
+  // Form validation state
+  const [formErrors, setFormErrors] = useState({});
+
   // Form state
   const [formData, setFormData] = useState({
     title: "",
@@ -49,6 +51,26 @@ const SystemAnnouncements = () => {
     isPinned: false,
     isVisible: true,
   });
+
+  // Form validation
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.title.trim()) {
+      errors.title = "Title is required";
+    }
+
+    if (!formData.content.trim()) {
+      errors.content = "Content is required";
+    }
+
+    if (formData.isScheduled && !formData.scheduledDate) {
+      errors.scheduledDate = "Scheduled date is required when scheduling";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   // Fetch announcements
   const fetchAnnouncements = async () => {
@@ -75,8 +97,10 @@ const SystemAnnouncements = () => {
         announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         announcement.content.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesStatus = statusFilter === "all" || announcement.status === statusFilter;
-      const matchesPriority = priorityFilter === "all" || announcement.priority === priorityFilter;
+      const matchesStatus =
+        statusFilter === "all" || announcement.status === statusFilter;
+      const matchesPriority =
+        priorityFilter === "all" || announcement.priority === priorityFilter;
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
@@ -86,6 +110,10 @@ const SystemAnnouncements = () => {
 
   // Create announcement
   const handleCreateAnnouncement = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     try {
       await apiService.announcements.create(formData);
@@ -297,11 +325,7 @@ const SystemAnnouncements = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-            >
+            <Button variant="outline" size="sm" className="flex-1">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
@@ -320,17 +344,25 @@ const SystemAnnouncements = () => {
               exit={{ opacity: 0, y: -20 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className={`p-4 md:p-6 hover:shadow-lg transition-all duration-300 ${
-                announcement.isPinned ? "ring-2 ring-yellow-400 bg-yellow-50 dark:bg-yellow-900/10" : ""
-              }`}>
+              <Card
+                className={`p-4 md:p-6 hover:shadow-lg transition-all duration-300 ${
+                  announcement.isPinned
+                    ? "ring-2 ring-yellow-400 bg-yellow-50 dark:bg-yellow-900/10"
+                    : ""
+                }`}
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-4 flex-1 min-w-0">
                     <div className="flex-shrink-0">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        announcement.priority === "high" ? "bg-red-100 dark:bg-red-900/20" :
-                        announcement.priority === "medium" ? "bg-yellow-100 dark:bg-yellow-900/20" :
-                        "bg-green-100 dark:bg-green-900/20"
-                      }`}>
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          announcement.priority === "high"
+                            ? "bg-red-100 dark:bg-red-900/20"
+                            : announcement.priority === "medium"
+                            ? "bg-yellow-100 dark:bg-yellow-900/20"
+                            : "bg-green-100 dark:bg-green-900/20"
+                        }`}
+                      >
                         {getPriorityIcon(announcement.priority)}
                       </div>
                     </div>
@@ -388,8 +420,11 @@ const SystemAnnouncements = () => {
                   <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
                     {announcement.isScheduled && (
                       <div className="flex items-center">
-                        <Schedule className="w-4 h-4 mr-1" />
-                        <span>{formatDate(announcement.scheduledDate)} {formatTime(announcement.scheduledTime)}</span>
+                        <Clock className="w-4 h-4 mr-1" />
+                        <span>
+                          {formatDate(announcement.scheduledDate)}{" "}
+                          {formatTime(announcement.scheduledTime)}
+                        </span>
                       </div>
                     )}
                     <div className="flex items-center">
@@ -402,7 +437,9 @@ const SystemAnnouncements = () => {
                       ) : (
                         <EyeOff className="w-4 h-4 mr-1" />
                       )}
-                      <span>{announcement.isVisible ? "Visible" : "Hidden"}</span>
+                      <span>
+                        {announcement.isVisible ? "Visible" : "Hidden"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -462,11 +499,20 @@ const SystemAnnouncements = () => {
                   </label>
                   <Input
                     value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, title: e.target.value });
+                      if (formErrors.title) {
+                        setFormErrors({ ...formErrors, title: "" });
+                      }
+                    }}
                     placeholder="Enter announcement title"
+                    className={formErrors.title ? "border-red-500" : ""}
                   />
+                  {formErrors.title && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.title}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -509,7 +555,10 @@ const SystemAnnouncements = () => {
                     <select
                       value={formData.targetAudience}
                       onChange={(e) =>
-                        setFormData({ ...formData, targetAudience: e.target.value })
+                        setFormData({
+                          ...formData,
+                          targetAudience: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
@@ -527,7 +576,10 @@ const SystemAnnouncements = () => {
                       type="checkbox"
                       checked={formData.isScheduled}
                       onChange={(e) =>
-                        setFormData({ ...formData, isScheduled: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          isScheduled: e.target.checked,
+                        })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -555,7 +607,10 @@ const SystemAnnouncements = () => {
                       type="checkbox"
                       checked={formData.isVisible}
                       onChange={(e) =>
-                        setFormData({ ...formData, isVisible: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          isVisible: e.target.checked,
+                        })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -575,7 +630,10 @@ const SystemAnnouncements = () => {
                         type="date"
                         value={formData.scheduledDate}
                         onChange={(e) =>
-                          setFormData({ ...formData, scheduledDate: e.target.value })
+                          setFormData({
+                            ...formData,
+                            scheduledDate: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -587,7 +645,10 @@ const SystemAnnouncements = () => {
                         type="time"
                         value={formData.scheduledTime}
                         onChange={(e) =>
-                          setFormData({ ...formData, scheduledTime: e.target.value })
+                          setFormData({
+                            ...formData,
+                            scheduledTime: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -691,7 +752,10 @@ const SystemAnnouncements = () => {
                     <select
                       value={formData.targetAudience}
                       onChange={(e) =>
-                        setFormData({ ...formData, targetAudience: e.target.value })
+                        setFormData({
+                          ...formData,
+                          targetAudience: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
@@ -709,7 +773,10 @@ const SystemAnnouncements = () => {
                       type="checkbox"
                       checked={formData.isScheduled}
                       onChange={(e) =>
-                        setFormData({ ...formData, isScheduled: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          isScheduled: e.target.checked,
+                        })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -737,7 +804,10 @@ const SystemAnnouncements = () => {
                       type="checkbox"
                       checked={formData.isVisible}
                       onChange={(e) =>
-                        setFormData({ ...formData, isVisible: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          isVisible: e.target.checked,
+                        })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -757,7 +827,10 @@ const SystemAnnouncements = () => {
                         type="date"
                         value={formData.scheduledDate}
                         onChange={(e) =>
-                          setFormData({ ...formData, scheduledDate: e.target.value })
+                          setFormData({
+                            ...formData,
+                            scheduledDate: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -769,7 +842,10 @@ const SystemAnnouncements = () => {
                         type="time"
                         value={formData.scheduledTime}
                         onChange={(e) =>
-                          setFormData({ ...formData, scheduledTime: e.target.value })
+                          setFormData({
+                            ...formData,
+                            scheduledTime: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -823,7 +899,8 @@ const SystemAnnouncements = () => {
                   Delete Announcement
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Are you sure you want to delete "{selectedAnnouncement?.title}"? This action cannot be undone.
+                  Are you sure you want to delete "{selectedAnnouncement?.title}
+                  "? This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <Button
