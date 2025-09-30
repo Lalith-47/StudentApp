@@ -61,6 +61,10 @@ import Input from "../UI/Input";
 import Card from "../UI/Card";
 import FacultyAdminManagement from "./FacultyAdminManagement";
 import AuditLogs from "./AuditLogs";
+import CourseManagement from "./CourseManagement";
+import SystemAnnouncements from "./SystemAnnouncements";
+import AnalyticsReports from "./AnalyticsReports";
+import SystemSettings from "./SystemSettings";
 
 const ModernAdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -786,6 +790,32 @@ const ModernAdminDashboard = () => {
         return <FacultyAdminManagement />;
       case "audit-logs":
         return <AuditLogs />;
+      case "all-courses":
+        return <CourseManagement />;
+      case "course-assignments":
+        return <CourseManagement />;
+      case "course-archive":
+        return <CourseManagement />;
+      case "create-announcement":
+        return <SystemAnnouncements />;
+      case "manage-announcements":
+        return <SystemAnnouncements />;
+      case "system-analytics":
+        return <AnalyticsReports />;
+      case "user-analytics":
+        return <AnalyticsReports />;
+      case "course-analytics":
+        return <AnalyticsReports />;
+      case "system-settings":
+        return <SystemSettings />;
+      case "theme-settings":
+        return <SystemSettings />;
+      case "notification-settings":
+        return <SystemSettings />;
+      case "security-settings":
+        return <SystemSettings />;
+      case "integration-settings":
+        return <SystemSettings />;
       default:
         return (
           <div className="flex items-center justify-center h-64">

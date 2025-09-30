@@ -42,6 +42,9 @@ const enhancedStudentRoutes = require("./routes/enhancedStudent");
 const enhancedAdminRoutes = require("./routes/enhancedAdmin");
 const portfolioRoutes = require("./routes/portfolio");
 const dashboardRoutes = require("./routes/dashboard");
+const courseRoutes = require("./routes/courses");
+const announcementRoutes = require("./routes/announcements");
+const systemSettingsRoutes = require("./routes/systemSettings");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -106,6 +109,9 @@ app.use("/api/student-enhanced", enhancedStudentRoutes);
 app.use("/api/admin-enhanced", enhancedAdminRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/announcements", announcementRoutes);
+app.use("/api/admin/system-settings", systemSettingsRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

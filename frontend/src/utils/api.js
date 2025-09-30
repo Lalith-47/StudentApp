@@ -136,6 +136,44 @@ const apiService = {
     },
   },
 
+  // Course endpoints
+  courses: {
+    getAll: (params = {}) => api.get("/courses", { params }),
+    getById: (id) => api.get(`/courses/${id}`),
+    create: (data) => api.post("/courses", data),
+    update: (id, data) => api.put(`/courses/${id}`, data),
+    delete: (id) => api.delete(`/courses/${id}`),
+    getByInstructor: (instructorId) => api.get(`/courses/instructor/${instructorId}`),
+    getActive: () => api.get("/courses/active"),
+    enroll: (courseId, data) => api.post(`/courses/${courseId}/enroll`, data),
+    unenroll: (courseId, userId) => api.delete(`/courses/${courseId}/enroll/${userId}`),
+  },
+
+  // Announcement endpoints
+  announcements: {
+    getAll: (params = {}) => api.get("/announcements", { params }),
+    getById: (id) => api.get(`/announcements/${id}`),
+    create: (data) => api.post("/announcements", data),
+    update: (id, data) => api.put(`/announcements/${id}`, data),
+    delete: (id) => api.delete(`/announcements/${id}`),
+    getPublished: (targetAudience) => api.get(`/announcements/published?audience=${targetAudience}`),
+    getScheduled: () => api.get("/announcements/scheduled"),
+    markAsRead: (id) => api.post(`/announcements/${id}/read`),
+    getUnread: () => api.get("/announcements/unread"),
+  },
+
+  // Admin endpoints
+  admin: {
+    getSystemSettings: () => api.get("/admin/system-settings"),
+    updateSystemSettings: (settings) => api.put("/admin/system-settings", settings),
+    resetSystemSettings: () => api.post("/admin/system-settings/reset"),
+    getBackupStatus: () => api.get("/admin/backup/status"),
+    createBackup: () => api.post("/admin/backup/create"),
+    getSystemHealth: () => api.get("/admin/system-health"),
+    getLogs: (params = {}) => api.get("/admin/logs", { params }),
+    clearLogs: () => api.delete("/admin/logs"),
+  },
+
   // Faculty endpoints
   faculty: {
     getDashboard: () => api.get("/faculty/dashboard"),
