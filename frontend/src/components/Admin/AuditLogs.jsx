@@ -168,8 +168,8 @@ const AuditLogs = () => {
       </div>
 
       {/* Filters */}
-      <Card className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Search
@@ -236,7 +236,7 @@ const AuditLogs = () => {
       </Card>
 
       {/* Audit Logs List */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {filteredLogs.length === 0 ? (
           <Card className="p-8 text-center">
             <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />

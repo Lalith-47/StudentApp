@@ -340,48 +340,49 @@ const ModernAdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-white shadow-lg"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2 leading-tight">
                 Welcome back, {user?.name || "Admin"}!
               </h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-100 text-base md:text-lg leading-relaxed">
                 Here's what's happening with your platform today.
               </p>
             </div>
-            <div className="hidden md:block">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                <Shield className="w-10 h-10 text-white" />
+            <div className="hidden md:block flex-shrink-0">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <Shield className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
             </div>
           </div>
         </motion.div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="h-full"
           >
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs md:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
                     Total Users
                   </p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {overview.totalUsers}
                   </p>
-                  <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    {overview.activeUsers} active
+                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
+                    <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{overview.activeUsers} active</span>
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
+                  <Users className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </Card>
@@ -391,23 +392,24 @@ const ModernAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
+            className="h-full"
           >
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400 mb-1">
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs md:text-sm font-medium text-green-600 dark:text-green-400 mb-1">
                     Total Courses
                   </p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {overview.totalCourses}
                   </p>
-                  <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
-                    <Check className="w-4 h-4 mr-1" />
-                    {overview.activeCourses} active
+                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 flex items-center">
+                    <Check className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{overview.activeCourses} active</span>
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
+                  <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </Card>
@@ -417,23 +419,24 @@ const ModernAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="h-full"
           >
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs md:text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">
                     Assignments
                   </p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {overview.totalAssignments}
                   </p>
-                  <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center mt-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {overview.pendingGrading} pending
+                  <p className="text-xs md:text-sm text-orange-600 dark:text-orange-400 flex items-center">
+                    <Clock className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{overview.pendingGrading} pending</span>
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
+                  <Activity className="w-5 h-5 md:w-6 md:h-6 text-orange-600 dark:text-orange-400" />
                 </div>
               </div>
             </Card>
@@ -443,25 +446,26 @@ const ModernAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            className="h-full"
           >
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs md:text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">
                     System Health
                   </p>
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                  <p className="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                     {overview.databaseStatus === "connected"
                       ? "100%"
                       : "Offline"}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
-                    <Server className="w-4 h-4 mr-1" />
-                    Uptime: {Math.floor(overview.systemUptime / 3600)}h
+                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                    <Server className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">Uptime: {Math.floor(overview.systemUptime / 3600)}h</span>
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                  <Server className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
+                  <Server className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
                 </div>
               </div>
             </Card>
@@ -469,51 +473,52 @@ const ModernAdminDashboard = () => {
         </div>
 
         {/* Charts and Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* User Distribution Chart */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
+            className="h-full"
           >
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <Card className="p-4 md:p-6 h-full">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                   User Distribution
                 </h3>
-                <PieChart className="w-5 h-5 text-gray-400" />
+                <PieChart className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="space-y-3 md:space-y-4">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center min-w-0 flex-1">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
                       Students
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
                     {userStatistics?.students || 1156}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center min-w-0 flex-1">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
                       Faculty
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
                     {userStatistics?.faculty || 78}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center min-w-0 flex-1">
+                    <div className="w-3 h-3 bg-purple-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
                       Admins
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
                     {userStatistics?.admins || 13}
                   </span>
                 </div>
@@ -526,23 +531,24 @@ const ModernAdminDashboard = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
+            className="h-full"
           >
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <Card className="p-4 md:p-6 h-full">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                   Recent Activities
                 </h3>
-                <Activity className="w-5 h-5 text-gray-400" />
+                <Activity className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4 max-h-80 overflow-y-auto">
                 {recentActivities.slice(0, 5).map((activity, index) => (
                   <div
                     key={index}
                     className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white">
+                      <p className="text-sm text-gray-900 dark:text-white leading-relaxed">
                         {activity.description}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -801,52 +807,52 @@ const ModernAdminDashboard = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 lg:static lg:inset-0`}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+        <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex items-center space-x-3 min-w-0">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <span className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
               Yukti Admin
             </span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="mt-6 px-3">
-          <div className="space-y-2">
+        <nav className="mt-4 md:mt-6 px-3 flex-1 overflow-y-auto">
+          <div className="space-y-1 md:space-y-2">
             {sidebarItems.map((item) => (
               <div key={item.id}>
                 <button
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  className={`w-full flex items-center px-3 md:px-4 py-2.5 md:py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                     activeTab === item.id
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                       : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`}
                 >
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.label}
+                  <item.icon className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
                 </button>
               </div>
             ))}
           </div>
         </nav>
 
-        <div className="absolute bottom-0 w-full p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium text-sm">
+        <div className="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex items-center space-x-3 mb-3 md:mb-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-medium text-xs md:text-sm">
                 {user?.name?.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-white truncate">
                 {user?.name}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -860,8 +866,8 @@ const ModernAdminDashboard = () => {
             size="sm"
             className="w-full hover:bg-red-50 hover:border-red-300 hover:text-red-600"
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            <LogOut className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+            <span className="text-xs md:text-sm">Logout</span>
           </Button>
         </div>
       </motion.div>
@@ -873,25 +879,28 @@ const ModernAdminDashboard = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
+          className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30"
         >
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center">
+          <div className="flex items-center justify-between h-14 md:h-16 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center min-w-0 flex-1">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mr-2"
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white ml-2 lg:ml-0">
+              <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white truncate">
                 {sidebarItems.find((item) => item.id === activeTab)?.label ||
                   "Dashboard"}
               </h1>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Input placeholder="Search..." className="w-64" />
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <div className="relative hidden sm:block">
+                <Input 
+                  placeholder="Search..." 
+                  className="w-48 md:w-64 text-sm" 
+                />
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
               <Button
@@ -900,8 +909,8 @@ const ModernAdminDashboard = () => {
                 onClick={loadDashboardData}
                 className="hover:bg-blue-50 hover:border-blue-300"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Refresh</span>
               </Button>
             </div>
           </div>

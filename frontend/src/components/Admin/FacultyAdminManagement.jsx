@@ -304,13 +304,13 @@ const FacultyAdminManagement = () => {
       </div>
 
       {/* Filters */}
-      <Card className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
+      <Card className="p-4 md:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search by name, email, or department..."
-              className="pl-10"
+              className="pl-10 text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -318,7 +318,7 @@ const FacultyAdminManagement = () => {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           >
             <option value="">All Roles</option>
             <option value="faculty">Faculty</option>
@@ -327,7 +327,7 @@ const FacultyAdminManagement = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -336,7 +336,7 @@ const FacultyAdminManagement = () => {
           <Button
             variant="outline"
             onClick={loadUsers}
-            className="flex items-center space-x-2"
+            className="flex items-center justify-center space-x-2 text-sm"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
@@ -345,7 +345,7 @@ const FacultyAdminManagement = () => {
       </Card>
 
       {/* Users Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         <AnimatePresence>
           {filteredUsers.map((user, index) => {
             const RoleIcon = getRoleIcon(user.role);
@@ -355,26 +355,29 @@ const FacultyAdminManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.05 }}
+                className="h-full"
               >
-                <Card className="p-6 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-medium text-lg">
-                          {user.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {user.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {user.email}
-                        </p>
+                <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                  <div className="flex flex-col space-y-4 mb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-3 min-w-0 flex-1">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-medium text-sm md:text-lg">
+                            {user.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                            {user.name}
+                          </h3>
+                          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">
+                            {user.email}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap gap-2">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(
                           user.role
@@ -400,38 +403,38 @@ const FacultyAdminManagement = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-2 mb-4 flex-1">
                     {user.department && (
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {user.department}
+                      <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                        <GraduationCap className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
+                        <span className="truncate">{user.department}</span>
                       </div>
                     )}
                     {user.phone && (
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                        <Phone className="w-4 h-4 mr-2" />
-                        {user.phone}
+                      <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                        <Phone className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
+                        <span className="truncate">{user.phone}</span>
                       </div>
                     )}
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Joined: {user.createdAtFormatted}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                      <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Joined: {user.createdAtFormatted}</span>
                     </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Last login: {user.lastLoginFormatted}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                      <Eye className="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Last login: {user.lastLoginFormatted}</span>
                     </div>
                   </div>
 
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2 mt-auto">
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => openEditModal(user)}
-                      className="flex-1 hover:bg-blue-50 hover:border-blue-300"
+                      className="flex-1 min-w-0 hover:bg-blue-50 hover:border-blue-300 text-xs"
                     >
-                      <Edit className="w-4 h-4 mr-1" />
-                      Edit
+                      <Edit className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                      <span className="hidden sm:inline">Edit</span>
                     </Button>
                     <Button
                       size="sm"
@@ -442,11 +445,12 @@ const FacultyAdminManagement = () => {
                           ? "hover:bg-red-50 hover:border-red-300"
                           : "hover:bg-green-50 hover:border-green-300"
                       }`}
+                      title={user.isActive ? "Deactivate" : "Activate"}
                     >
                       {user.isActive ? (
-                        <UserX className="w-4 h-4" />
+                        <UserX className="w-3 h-3 md:w-4 md:h-4" />
                       ) : (
-                        <UserCheck className="w-4 h-4" />
+                        <UserCheck className="w-3 h-3 md:w-4 md:h-4" />
                       )}
                     </Button>
                     <Button
@@ -454,16 +458,18 @@ const FacultyAdminManagement = () => {
                       variant="outline"
                       onClick={() => handleResetPassword(user)}
                       className="hover:bg-yellow-50 hover:border-yellow-300"
+                      title="Reset Password"
                     >
-                      <Key className="w-4 h-4" />
+                      <Key className="w-3 h-3 md:w-4 md:h-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => openDeleteModal(user)}
                       className="hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                      title="Delete User"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                     </Button>
                   </div>
                 </Card>
@@ -486,17 +492,17 @@ const FacultyAdminManagement = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                   Create New User
                 </h3>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
-                  <XCircle className="w-5 h-5 text-gray-400" />
+                  <XCircle className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                 </button>
               </div>
 
@@ -603,10 +609,10 @@ const FacultyAdminManagement = () => {
                 </div>
               </div>
 
-              <div className="flex space-x-3 mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
                 <Button
                   onClick={handleCreateUser}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm"
                   disabled={loading}
                 >
                   {loading ? "Creating..." : "Create User"}
@@ -614,7 +620,7 @@ const FacultyAdminManagement = () => {
                 <Button
                   variant="outline"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1"
+                  className="flex-1 text-sm"
                 >
                   Cancel
                 </Button>
