@@ -345,7 +345,7 @@ const FacultyAdminManagement = () => {
       </Card>
 
       {/* Users Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
         <AnimatePresence>
           {filteredUsers.map((user, index) => {
             const RoleIcon = getRoleIcon(user.role);
@@ -358,7 +358,7 @@ const FacultyAdminManagement = () => {
                 transition={{ delay: index * 0.05 }}
                 className="h-full"
               >
-                <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                <Card className="p-4 md:p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 h-full flex flex-col group cursor-pointer">
                   <div className="flex flex-col space-y-4 mb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-3 min-w-0 flex-1">
