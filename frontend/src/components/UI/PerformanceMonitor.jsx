@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import {
+  collectPerformanceMetrics,
+  getMemoryUsage,
+} from "../../utils/performance";
 
 const PerformanceMonitor = ({ enabled = false }) => {
   const [metrics, setMetrics] = useState({
@@ -7,6 +11,8 @@ const PerformanceMonitor = ({ enabled = false }) => {
     fid: 0,
     cls: 0,
     ttfb: 0,
+    memory: null,
+    resources: null,
   });
 
   useEffect(() => {
@@ -79,6 +85,19 @@ const PerformanceMonitor = ({ enabled = false }) => {
     measureCLS();
     measureTTFB();
 
+    // Collect additional metrics
+    const collectMetrics = () => {
+      const additionalMetrics = collectPerformanceMetrics();
+      setMetrics((prev) => ({
+        ...prev,
+        memory: additionalMetrics.memory,
+        resources: additionalMetrics.resources,
+      }));
+    };
+
+    // Collect metrics after page load
+    setTimeout(collectMetrics, 2000);
+
     // Cleanup
     return () => {
       // PerformanceObserver cleanup is handled automatically
@@ -88,16 +107,29 @@ const PerformanceMonitor = ({ enabled = false }) => {
   if (!enabled) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50">
+    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs">
       <div className="mb-2 font-bold">Performance Metrics</div>
       <div>FCP: {metrics.fcp.toFixed(2)}ms</div>
       <div>LCP: {metrics.lcp.toFixed(2)}ms</div>
       <div>FID: {metrics.fid.toFixed(2)}ms</div>
       <div>CLS: {metrics.cls.toFixed(4)}</div>
       <div>TTFB: {metrics.ttfb.toFixed(2)}ms</div>
+      {metrics.memory && (
+        <>
+          <div className="mt-2 pt-2 border-t border-gray-600">Memory:</div>
+          <div>Used: {metrics.memory.used}MB</div>
+          <div>Total: {metrics.memory.total}MB</div>
+        </>
+      )}
+      {metrics.resources && (
+        <>
+          <div className="mt-2 pt-2 border-t border-gray-600">Resources:</div>
+          <div>Count: {metrics.resources.total}</div>
+          <div>Avg: {metrics.resources.averageLoadTime?.toFixed(2)}ms</div>
+        </>
+      )}
     </div>
   );
 };
 
 export default PerformanceMonitor;
-

@@ -340,14 +340,25 @@ const Home = () => {
                 Take Career Quiz
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => navigate("/dashboard")}
-                className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
-              >
-                Explore Dashboard
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/dashboard")}
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
+                >
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/login")}
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
+                >
+                  Get Started
+                </Button>
+              )}
             </div>
           </motion.div>
         </ResponsiveContainer>

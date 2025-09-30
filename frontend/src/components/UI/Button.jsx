@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../utils/helpers";
 import LoadingSpinner from "./LoadingSpinner";
@@ -15,8 +15,41 @@ const Button = ({
   animation = true,
   fullWidth = false,
   align = "center",
+  ripple = true,
   ...props
 }) => {
+  const [ripples, setRipples] = useState([]);
+  const buttonRef = useRef(null);
+
+  const createRipple = (event) => {
+    if (!ripple || !buttonRef.current) return;
+
+    const rect = buttonRef.current.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    const newRipple = {
+      x,
+      y,
+      size,
+      id: Date.now(),
+    };
+
+    setRipples((prev) => [...prev, newRipple]);
+
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
+    }, 600);
+  };
+
+  const handleClick = (event) => {
+    createRipple(event);
+    if (onClick && !disabled && !loading) {
+      onClick(event);
+    }
+  };
+
   const baseClasses = cn(
     "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden touch-manipulation",
     fullWidth && "w-full",
@@ -51,10 +84,11 @@ const Button = ({
 
   return (
     <MotionButton
+      ref={buttonRef}
       type={type}
       className={cn(baseClasses, variants[variant], sizes[size], className)}
       disabled={disabled || loading}
-      onClick={onClick}
+      onClick={handleClick}
       whileHover={
         animation && !disabled && !loading
           ? {
@@ -80,6 +114,23 @@ const Button = ({
       }}
       {...props}
     >
+      {/* Ripple effects */}
+      {ripples.map((ripple) => (
+        <motion.span
+          key={ripple.id}
+          className="absolute pointer-events-none bg-white/30 rounded-full"
+          style={{
+            left: ripple.x,
+            top: ripple.y,
+            width: ripple.size,
+            height: ripple.size,
+          }}
+          initial={{ scale: 0, opacity: 1 }}
+          animate={{ scale: 1, opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+      ))}
+
       {loading && <LoadingSpinner size="sm" className="mr-2" text="" />}
       <motion.span
         className="relative z-10 flex items-center justify-center"

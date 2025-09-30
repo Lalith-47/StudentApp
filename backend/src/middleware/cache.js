@@ -72,24 +72,28 @@ const createCacheMiddleware = (cacheInstance, keyGenerator, ttl) => {
 const generateAnalyticsKey = (req) => {
   const { facultyId, courseId, startDate, endDate } = req.params;
   const query = req.query;
-  return `analytics:${facultyId || "all"}:${courseId || "all"}:${
-    startDate || "all"
-  }:${endDate || "all"}:${JSON.stringify(query)}`;
+  const userId = req.user?.id || "anonymous";
+  const userRole = req.user?.role || "guest";
+  return `analytics:${userRole}:${userId}:${facultyId || "all"}:${
+    courseId || "all"
+  }:${startDate || "all"}:${endDate || "all"}:${JSON.stringify(query)}`;
 };
 
 const generateCourseKey = (req) => {
-  const { facultyId } = req.user || {};
+  const { facultyId, id: userId, role: userRole } = req.user || {};
   const { courseId } = req.params;
   const query = req.query;
-  return `course:${facultyId || "all"}:${courseId || "list"}:${JSON.stringify(
-    query
-  )}`;
+  return `course:${userRole || "guest"}:${userId || "anonymous"}:${
+    facultyId || "all"
+  }:${courseId || "list"}:${JSON.stringify(query)}`;
 };
 
 const generateAssignmentKey = (req) => {
   const { courseId, assignmentId } = req.params;
   const query = req.query;
-  return `assignment:${courseId || "all"}:${
+  const userId = req.user?.id || "anonymous";
+  const userRole = req.user?.role || "guest";
+  return `assignment:${userRole}:${userId}:${courseId || "all"}:${
     assignmentId || "list"
   }:${JSON.stringify(query)}`;
 };
@@ -97,30 +101,40 @@ const generateAssignmentKey = (req) => {
 const generateAttendanceKey = (req) => {
   const { courseId, attendanceId } = req.params;
   const query = req.query;
-  return `attendance:${courseId || "all"}:${
+  const userId = req.user?.id || "anonymous";
+  const userRole = req.user?.role || "guest";
+  return `attendance:${userRole}:${userId}:${courseId || "all"}:${
     attendanceId || "list"
   }:${JSON.stringify(query)}`;
 };
 
 const generateContentKey = (req) => {
-  const { facultyId } = req.user || {};
+  const { facultyId, id: userId, role: userRole } = req.user || {};
   const { contentId } = req.params;
   const query = req.query;
-  return `content:${facultyId || "all"}:${contentId || "list"}:${JSON.stringify(
-    query
-  )}`;
+  return `content:${userRole || "guest"}:${userId || "anonymous"}:${
+    facultyId || "all"
+  }:${contentId || "list"}:${JSON.stringify(query)}`;
 };
 
 const generateUserKey = (req) => {
   const { userId } = req.params;
   const query = req.query;
-  return `users:${userId || "list"}:${JSON.stringify(query)}`;
+  const currentUserId = req.user?.id || "anonymous";
+  const userRole = req.user?.role || "guest";
+  return `users:${userRole}:${currentUserId}:${
+    userId || "list"
+  }:${JSON.stringify(query)}`;
 };
 
 const generateAnnouncementKey = (req) => {
   const { announcementId } = req.params;
   const query = req.query;
-  return `announcements:${announcementId || "list"}:${JSON.stringify(query)}`;
+  const userId = req.user?.id || "anonymous";
+  const userRole = req.user?.role || "guest";
+  return `announcements:${userRole}:${userId}:${
+    announcementId || "list"
+  }:${JSON.stringify(query)}`;
 };
 
 // Cache middleware instances
