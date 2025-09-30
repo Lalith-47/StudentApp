@@ -283,7 +283,7 @@ const FacultyAdminManagement = () => {
   };
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -305,7 +305,7 @@ const FacultyAdminManagement = () => {
 
       {/* Filters */}
       <Card className="p-4 md:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -345,7 +345,7 @@ const FacultyAdminManagement = () => {
       </Card>
 
       {/* Users Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
         <AnimatePresence>
           {filteredUsers.map((user, index) => {
             const RoleIcon = getRoleIcon(user.role);
