@@ -17,7 +17,7 @@ const mockStudents = [
       guardianName: "Rajesh Sharma",
       guardianPhone: "+91 98765 43211",
       bloodGroup: "B+",
-      emergencyContact: "+91 98765 43212"
+      emergencyContact: "+91 98765 43212",
     },
     academicRecords: [
       {
@@ -26,9 +26,9 @@ const mockStudents = [
           { name: "Mathematics-I", grade: "A", credits: 4 },
           { name: "Physics", grade: "A-", credits: 3 },
           { name: "Chemistry", grade: "B+", credits: 3 },
-          { name: "Programming Fundamentals", grade: "A", credits: 4 }
+          { name: "Programming Fundamentals", grade: "A", credits: 4 },
         ],
-        sgpa: 8.2
+        sgpa: 8.2,
       },
       {
         semester: 2,
@@ -36,10 +36,10 @@ const mockStudents = [
           { name: "Mathematics-II", grade: "A", credits: 4 },
           { name: "Data Structures", grade: "A-", credits: 4 },
           { name: "Digital Electronics", grade: "B+", credits: 3 },
-          { name: "Communication Skills", grade: "A", credits: 2 }
+          { name: "Communication Skills", grade: "A", credits: 2 },
         ],
-        sgpa: 8.7
-      }
+        sgpa: 8.7,
+      },
     ],
     assignments: [
       {
@@ -49,7 +49,7 @@ const mockStudents = [
         dueDate: "2024-10-15",
         status: "submitted",
         grade: "A-",
-        submissionDate: "2024-10-14"
+        submissionDate: "2024-10-14",
       },
       {
         id: "assign_002",
@@ -58,8 +58,8 @@ const mockStudents = [
         dueDate: "2024-10-20",
         status: "pending",
         grade: null,
-        submissionDate: null
-      }
+        submissionDate: null,
+      },
     ],
     enrolledCourses: [
       {
@@ -69,7 +69,7 @@ const mockStudents = [
         credits: 4,
         instructor: "Dr. Priya Singh",
         schedule: "Mon, Wed, Fri - 10:00 AM",
-        room: "Lab-101"
+        room: "Lab-101",
       },
       {
         id: "course_002",
@@ -78,8 +78,8 @@ const mockStudents = [
         credits: 3,
         instructor: "Prof. Amit Kumar",
         schedule: "Tue, Thu - 2:00 PM",
-        room: "Room-205"
-      }
+        room: "Room-205",
+      },
     ],
     achievements: [
       {
@@ -87,8 +87,8 @@ const mockStudents = [
         title: "Best Project Award",
         description: "Won first prize in college hackathon",
         date: "2024-09-15",
-        category: "Academic"
-      }
+        category: "Academic",
+      },
     ],
     notifications: [
       {
@@ -97,9 +97,9 @@ const mockStudents = [
         message: "Database Design Project is due tomorrow",
         type: "assignment",
         date: "2024-10-19",
-        isRead: false
-      }
-    ]
+        isRead: false,
+      },
+    ],
   },
   {
     id: "student_002",
@@ -118,7 +118,7 @@ const mockStudents = [
       guardianName: "Suresh Patel",
       guardianPhone: "+91 98765 43221",
       bloodGroup: "O+",
-      emergencyContact: "+91 98765 43222"
+      emergencyContact: "+91 98765 43222",
     },
     academicRecords: [
       {
@@ -127,10 +127,10 @@ const mockStudents = [
           { name: "Mathematics-I", grade: "A+", credits: 4 },
           { name: "Physics", grade: "A", credits: 3 },
           { name: "Chemistry", grade: "A", credits: 3 },
-          { name: "Basic Electronics", grade: "A+", credits: 4 }
+          { name: "Basic Electronics", grade: "A+", credits: 4 },
         ],
-        sgpa: 9.3
-      }
+        sgpa: 9.3,
+      },
     ],
     assignments: [
       {
@@ -140,8 +140,8 @@ const mockStudents = [
         dueDate: "2024-10-18",
         status: "submitted",
         grade: "A+",
-        submissionDate: "2024-10-17"
-      }
+        submissionDate: "2024-10-17",
+      },
     ],
     enrolledCourses: [
       {
@@ -151,8 +151,8 @@ const mockStudents = [
         credits: 4,
         instructor: "Dr. Sunita Reddy",
         schedule: "Mon, Wed, Fri - 11:00 AM",
-        room: "Lab-203"
-      }
+        room: "Lab-203",
+      },
     ],
     achievements: [
       {
@@ -160,10 +160,10 @@ const mockStudents = [
         title: "Academic Excellence",
         description: "Topper of the batch for 3 consecutive semesters",
         date: "2024-09-01",
-        category: "Academic"
-      }
+        category: "Academic",
+      },
     ],
-    notifications: []
+    notifications: [],
   },
   {
     id: "student_003",
@@ -182,7 +182,7 @@ const mockStudents = [
       guardianName: "Vikram Singh",
       guardianPhone: "+91 98765 43231",
       bloodGroup: "AB+",
-      emergencyContact: "+91 98765 43232"
+      emergencyContact: "+91 98765 43232",
     },
     academicRecords: [],
     assignments: [
@@ -193,8 +193,8 @@ const mockStudents = [
         dueDate: "2024-10-25",
         status: "pending",
         grade: null,
-        submissionDate: null
-      }
+        submissionDate: null,
+      },
     ],
     enrolledCourses: [
       {
@@ -204,11 +204,11 @@ const mockStudents = [
         credits: 3,
         instructor: "Prof. Ravi Kumar",
         schedule: "Tue, Thu - 9:00 AM",
-        room: "Room-301"
-      }
+        room: "Room-301",
+      },
     ],
     achievements: [],
-    notifications: []
+    notifications: [],
   },
   {
     id: "student_004",
@@ -227,7 +227,7 @@ const mockStudents = [
       guardianName: "Anil Gupta",
       guardianPhone: "+91 98765 43241",
       bloodGroup: "A+",
-      emergencyContact: "+91 98765 43242"
+      emergencyContact: "+91 98765 43242",
     },
     academicRecords: [],
     assignments: [],
@@ -239,12 +239,12 @@ const mockStudents = [
         credits: 3,
         instructor: "Dr. Meera Joshi",
         schedule: "Mon, Wed, Fri - 1:00 PM",
-        room: "Room-102"
-      }
+        room: "Room-102",
+      },
     ],
     achievements: [],
-    notifications: []
-  }
+    notifications: [],
+  },
 ];
 
 module.exports = mockStudents;

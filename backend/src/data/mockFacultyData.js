@@ -16,7 +16,7 @@ const mockFaculty = [
       address: "101, Tech Park, Bangalore, Karnataka",
       joiningDate: "2020-01-15",
       bloodGroup: "A+",
-      emergencyContact: "+91 98765 44101"
+      emergencyContact: "+91 98765 44101",
     },
     courses: [
       {
@@ -28,7 +28,7 @@ const mockFaculty = [
         enrolledStudents: 45,
         schedule: "Mon, Wed, Fri - 10:00 AM",
         room: "Lab-101",
-        status: "active"
+        status: "active",
       },
       {
         id: "course_002",
@@ -39,8 +39,8 @@ const mockFaculty = [
         enrolledStudents: 32,
         schedule: "Tue, Thu - 2:00 PM",
         room: "Room-205",
-        status: "active"
-      }
+        status: "active",
+      },
     ],
     assignments: [
       {
@@ -51,7 +51,7 @@ const mockFaculty = [
         totalSubmissions: 45,
         gradedSubmissions: 42,
         averageGrade: "A-",
-        status: "grading_complete"
+        status: "grading_complete",
       },
       {
         id: "assign_002",
@@ -61,8 +61,8 @@ const mockFaculty = [
         totalSubmissions: 0,
         gradedSubmissions: 0,
         averageGrade: null,
-        status: "pending"
-      }
+        status: "pending",
+      },
     ],
     students: [
       {
@@ -72,7 +72,7 @@ const mockFaculty = [
         course: "Computer Science Engineering",
         semester: 3,
         attendance: 92,
-        currentGrade: "A-"
+        currentGrade: "A-",
       },
       {
         id: "student_002",
@@ -81,8 +81,8 @@ const mockFaculty = [
         course: "Electronics and Communication Engineering",
         semester: 5,
         attendance: 96,
-        currentGrade: "A+"
-      }
+        currentGrade: "A+",
+      },
     ],
     announcements: [
       {
@@ -91,8 +91,8 @@ const mockFaculty = [
         message: "Mid-term exams will be conducted from Nov 1-15, 2024",
         priority: "high",
         date: "2024-10-10",
-        isPublished: true
-      }
+        isPublished: true,
+      },
     ],
     achievements: [
       {
@@ -100,9 +100,9 @@ const mockFaculty = [
         title: "Best Teacher Award",
         description: "Recognized for excellence in teaching",
         date: "2024-08-15",
-        category: "Teaching"
-      }
-    ]
+        category: "Teaching",
+      },
+    ],
   },
   {
     id: "faculty_002",
@@ -120,7 +120,7 @@ const mockFaculty = [
       address: "202, IT Corridor, Chennai, Tamil Nadu",
       joiningDate: "2018-06-01",
       bloodGroup: "B+",
-      emergencyContact: "+91 98765 44201"
+      emergencyContact: "+91 98765 44201",
     },
     courses: [
       {
@@ -132,8 +132,8 @@ const mockFaculty = [
         enrolledStudents: 48,
         schedule: "Tue, Thu - 2:00 PM",
         room: "Room-205",
-        status: "active"
-      }
+        status: "active",
+      },
     ],
     assignments: [
       {
@@ -144,8 +144,8 @@ const mockFaculty = [
         totalSubmissions: 0,
         gradedSubmissions: 0,
         averageGrade: null,
-        status: "pending"
-      }
+        status: "pending",
+      },
     ],
     students: [
       {
@@ -155,8 +155,8 @@ const mockFaculty = [
         course: "Computer Science Engineering",
         semester: 3,
         attendance: 92,
-        currentGrade: "A"
-      }
+        currentGrade: "A",
+      },
     ],
     announcements: [],
     achievements: [
@@ -165,9 +165,9 @@ const mockFaculty = [
         title: "Research Excellence",
         description: "Published 15 papers in international journals",
         date: "2024-07-20",
-        category: "Research"
-      }
-    ]
+        category: "Research",
+      },
+    ],
   },
   {
     id: "faculty_003",
@@ -185,7 +185,7 @@ const mockFaculty = [
       address: "303, Electronic City, Hyderabad, Telangana",
       joiningDate: "2021-08-15",
       bloodGroup: "O+",
-      emergencyContact: "+91 98765 44301"
+      emergencyContact: "+91 98765 44301",
     },
     courses: [
       {
@@ -197,8 +197,8 @@ const mockFaculty = [
         enrolledStudents: 35,
         schedule: "Mon, Wed, Fri - 11:00 AM",
         room: "Lab-203",
-        status: "active"
-      }
+        status: "active",
+      },
     ],
     assignments: [
       {
@@ -209,8 +209,8 @@ const mockFaculty = [
         totalSubmissions: 35,
         gradedSubmissions: 35,
         averageGrade: "A",
-        status: "grading_complete"
-      }
+        status: "grading_complete",
+      },
     ],
     students: [
       {
@@ -220,11 +220,11 @@ const mockFaculty = [
         course: "Electronics and Communication Engineering",
         semester: 5,
         attendance: 96,
-        currentGrade: "A+"
-      }
+        currentGrade: "A+",
+      },
     ],
     announcements: [],
-    achievements: []
+    achievements: [],
   },
   {
     id: "faculty_004",
@@ -235,14 +235,15 @@ const mockFaculty = [
     designation: "Professor",
     specialization: "Thermodynamics, Heat Transfer",
     experience: 18,
-    qualification: "Ph.D. in Mechanical Engineering, M.Tech in Thermal Engineering",
+    qualification:
+      "Ph.D. in Mechanical Engineering, M.Tech in Thermal Engineering",
     profile: {
       dateOfBirth: "1975-09-14",
       phone: "+91 98765 44400",
       address: "404, Industrial Area, Pune, Maharashtra",
       joiningDate: "2015-03-01",
       bloodGroup: "AB+",
-      emergencyContact: "+91 98765 44401"
+      emergencyContact: "+91 98765 44401",
     },
     courses: [
       {
@@ -254,8 +255,8 @@ const mockFaculty = [
         enrolledStudents: 28,
         schedule: "Tue, Thu - 9:00 AM",
         room: "Room-301",
-        status: "active"
-      }
+        status: "active",
+      },
     ],
     assignments: [
       {
@@ -266,8 +267,8 @@ const mockFaculty = [
         totalSubmissions: 0,
         gradedSubmissions: 0,
         averageGrade: null,
-        status: "pending"
-      }
+        status: "pending",
+      },
     ],
     students: [
       {
@@ -277,20 +278,21 @@ const mockFaculty = [
         course: "Mechanical Engineering",
         semester: 7,
         attendance: 88,
-        currentGrade: "B+"
-      }
+        currentGrade: "B+",
+      },
     ],
     announcements: [],
     achievements: [
       {
         id: "achieve_003",
         title: "Distinguished Professor",
-        description: "Recognized for outstanding contribution to mechanical engineering",
+        description:
+          "Recognized for outstanding contribution to mechanical engineering",
         date: "2024-06-10",
-        category: "Academic"
-      }
-    ]
-  }
+        category: "Academic",
+      },
+    ],
+  },
 ];
 
 module.exports = mockFaculty;

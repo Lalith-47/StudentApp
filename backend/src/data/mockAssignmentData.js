@@ -3,15 +3,16 @@ const mockAssignments = [
   {
     id: "assign_001",
     title: "Array Implementation in C++",
-    description: "Implement various array operations including insertion, deletion, and searching algorithms",
+    description:
+      "Implement various array operations including insertion, deletion, and searching algorithms",
     course: {
       id: "course_001",
       name: "Data Structures and Algorithms",
-      code: "CS-301"
+      code: "CS-301",
     },
     instructor: {
       id: "faculty_001",
-      name: "Dr. Priya Singh"
+      name: "Dr. Priya Singh",
     },
     dueDate: "2024-10-15T23:59:59Z",
     maxMarks: 100,
@@ -20,7 +21,7 @@ const mockAssignments = [
       "Submit only .cpp files",
       "Include proper comments",
       "Test with provided test cases",
-      "No plagiarism allowed"
+      "No plagiarism allowed",
     ],
     allowedFileTypes: ["cpp", "txt"],
     maxFileSize: "10MB",
@@ -34,8 +35,9 @@ const mockAssignments = [
         submittedAt: "2024-10-14T15:30:00Z",
         files: ["assignment1.cpp", "test_results.txt"],
         grade: 85,
-        feedback: "Good implementation. Consider optimizing the search algorithm.",
-        status: "graded"
+        feedback:
+          "Good implementation. Consider optimizing the search algorithm.",
+        status: "graded",
       },
       {
         id: "sub_002",
@@ -45,22 +47,23 @@ const mockAssignments = [
         files: ["array_operations.cpp"],
         grade: 92,
         feedback: "Excellent work! Clean code and efficient algorithms.",
-        status: "graded"
-      }
-    ]
+        status: "graded",
+      },
+    ],
   },
   {
     id: "assign_002",
     title: "Database Design Project",
-    description: "Design and implement a database schema for a library management system",
+    description:
+      "Design and implement a database schema for a library management system",
     course: {
       id: "course_002",
       name: "Database Management Systems",
-      code: "CS-302"
+      code: "CS-302",
     },
     instructor: {
       id: "faculty_002",
-      name: "Prof. Amit Kumar"
+      name: "Prof. Amit Kumar",
     },
     dueDate: "2024-10-20T23:59:59Z",
     maxMarks: 100,
@@ -69,13 +72,13 @@ const mockAssignments = [
       "Create ER diagram",
       "Design normalized database schema",
       "Implement using MySQL",
-      "Include sample data"
+      "Include sample data",
     ],
     allowedFileTypes: ["sql", "pdf", "docx"],
     maxFileSize: "25MB",
     status: "active",
     createdAt: "2024-10-05T09:00:00Z",
-    submissions: []
+    submissions: [],
   },
   {
     id: "assign_003",
@@ -84,11 +87,11 @@ const mockAssignments = [
     course: {
       id: "course_003",
       name: "Digital Signal Processing",
-      code: "EC-401"
+      code: "EC-401",
     },
     instructor: {
       id: "faculty_003",
-      name: "Dr. Sunita Reddy"
+      name: "Dr. Sunita Reddy",
     },
     dueDate: "2024-10-18T23:59:59Z",
     maxMarks: 100,
@@ -97,7 +100,7 @@ const mockAssignments = [
       "Include MATLAB code",
       "Provide analysis and results",
       "Add graphs and plots",
-      "Submit as PDF"
+      "Submit as PDF",
     ],
     allowedFileTypes: ["pdf", "m"],
     maxFileSize: "50MB",
@@ -112,9 +115,9 @@ const mockAssignments = [
         files: ["signal_analysis.pdf", "matlab_code.m"],
         grade: 95,
         feedback: "Outstanding analysis! Very thorough work.",
-        status: "graded"
-      }
-    ]
+        status: "graded",
+      },
+    ],
   },
   {
     id: "assign_004",
@@ -123,11 +126,11 @@ const mockAssignments = [
     course: {
       id: "course_004",
       name: "Applied Thermodynamics",
-      code: "ME-401"
+      code: "ME-401",
     },
     instructor: {
       id: "faculty_004",
-      name: "Prof. Ravi Kumar"
+      name: "Prof. Ravi Kumar",
     },
     dueDate: "2024-10-25T23:59:59Z",
     maxMarks: 100,
@@ -136,14 +139,14 @@ const mockAssignments = [
       "Include design calculations",
       "Provide CAD drawings",
       "Perform thermal analysis",
-      "Submit comprehensive report"
+      "Submit comprehensive report",
     ],
     allowedFileTypes: ["pdf", "docx", "dwg"],
     maxFileSize: "100MB",
     status: "active",
     createdAt: "2024-10-08T08:00:00Z",
-    submissions: []
-  }
+    submissions: [],
+  },
 ];
 
 module.exports = mockAssignments;

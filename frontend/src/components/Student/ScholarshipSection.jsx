@@ -33,7 +33,8 @@ const ScholarshipSection = () => {
       amount: "₹25,000 - ₹1,25,000",
       deadline: "2024-12-31",
       eligibility: "Class 9 to Post Graduation",
-      description: "Merit-cum-means scholarship for students from economically weaker sections",
+      description:
+        "Merit-cum-means scholarship for students from economically weaker sections",
       category: "Merit-cum-Means",
       status: "active",
       applicationUrl: "https://scholarships.gov.in",
@@ -61,7 +62,8 @@ const ScholarshipSection = () => {
       amount: "₹10,000 - ₹20,000 per annum",
       deadline: "2024-12-15",
       eligibility: "Class 12 pass with 80% marks",
-      description: "Scholarship for meritorious students pursuing higher education",
+      description:
+        "Scholarship for meritorious students pursuing higher education",
       category: "Merit-based",
       status: "active",
       applicationUrl: "https://scholarships.gov.in",
@@ -141,16 +143,15 @@ const ScholarshipSection = () => {
   ];
 
   const filteredScholarships = scholarships.filter((scholarship) => {
-    const matchesSearch = scholarship.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      scholarship.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       scholarship.provider.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = 
-      filterType === "all" || 
+
+    const matchesFilter =
+      filterType === "all" ||
       scholarship.type === filterType ||
       scholarship.category.toLowerCase().includes(filterType.toLowerCase());
-    
+
     return matchesSearch && matchesFilter;
   });
 
@@ -186,7 +187,7 @@ const ScholarshipSection = () => {
     const now = new Date();
     const diffTime = date - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return "Expired";
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Tomorrow";
@@ -198,7 +199,7 @@ const ScholarshipSection = () => {
     const now = new Date();
     const diffTime = date - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return "text-red-600";
     if (diffDays <= 7) return "text-orange-600";
     return "text-green-600";
@@ -269,7 +270,7 @@ const ScholarshipSection = () => {
                   </span>
                 </div>
               )}
-              
+
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 leading-tight">
@@ -282,7 +283,11 @@ const ScholarshipSection = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(scholarship.type)}`}>
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(
+                    scholarship.type
+                  )}`}
+                >
                   {scholarship.type === "government" ? "Government" : "Private"}
                 </span>
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 flex items-center gap-1">
@@ -300,13 +305,19 @@ const ScholarshipSection = () => {
                 </div>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span className={`font-medium ${getDeadlineColor(scholarship.deadline)}`}>
+                  <span
+                    className={`font-medium ${getDeadlineColor(
+                      scholarship.deadline
+                    )}`}
+                  >
                     {formatDeadline(scholarship.deadline)}
                   </span>
                 </div>
                 <div className="flex items-start text-sm text-gray-600 dark:text-gray-400">
                   <CheckCircle className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="line-clamp-2">{scholarship.eligibility}</span>
+                  <span className="line-clamp-2">
+                    {scholarship.eligibility}
+                  </span>
                 </div>
               </div>
 
@@ -319,7 +330,9 @@ const ScholarshipSection = () => {
                   variant="primary"
                   size="sm"
                   className="flex-1"
-                  onClick={() => window.open(scholarship.applicationUrl, '_blank')}
+                  onClick={() =>
+                    window.open(scholarship.applicationUrl, "_blank")
+                  }
                 >
                   Apply Now
                   <ExternalLink className="w-3 h-3 ml-1" />
