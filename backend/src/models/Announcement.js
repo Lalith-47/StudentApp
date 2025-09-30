@@ -23,10 +23,12 @@ const announcementSchema = new mongoose.Schema(
       enum: ["all", "students", "faculty", "admin", "specific"],
       default: "all",
     },
-    targetUsers: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    }],
+    targetUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     status: {
       type: String,
       enum: ["draft", "published", "scheduled", "archived"],
@@ -57,23 +59,27 @@ const announcementSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
     },
-    attachments: [{
-      filename: String,
-      originalName: String,
-      mimetype: String,
-      size: Number,
-      url: String,
-    }],
-    readBy: [{
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+    attachments: [
+      {
+        filename: String,
+        originalName: String,
+        mimetype: String,
+        size: Number,
+        url: String,
       },
-      readAt: {
-        type: Date,
-        default: Date.now,
+    ],
+    readBy: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        readAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
-    }],
+    ],
     readCount: {
       type: Number,
       default: 0,
@@ -81,7 +87,14 @@ const announcementSchema = new mongoose.Schema(
     tags: [String],
     category: {
       type: String,
-      enum: ["general", "academic", "administrative", "maintenance", "security", "event"],
+      enum: [
+        "general",
+        "academic",
+        "administrative",
+        "maintenance",
+        "security",
+        "event",
+      ],
       default: "general",
     },
     author: {
@@ -127,7 +140,9 @@ announcementSchema.virtual("readPercentage").get(function () {
 announcementSchema.virtual("timeUntilScheduled").get(function () {
   if (!this.scheduledDate || !this.isScheduled) return null;
   const now = new Date();
-  const scheduled = new Date(`${this.scheduledDate}T${this.scheduledTime || "00:00"}`);
+  const scheduled = new Date(
+    `${this.scheduledDate}T${this.scheduledTime || "00:00"}`
+  );
   return scheduled - now;
 });
 
@@ -140,18 +155,30 @@ announcementSchema.virtual("isExpired").get(function () {
 // Pre-save middleware
 announcementSchema.pre("save", function (next) {
   // Set published date when status changes to published
-  if (this.isModified("status") && this.status === "published" && !this.publishedAt) {
+  if (
+    this.isModified("status") &&
+    this.status === "published" &&
+    !this.publishedAt
+  ) {
     this.publishedAt = new Date();
   }
 
   // Validate scheduled date
-  if (this.isScheduled && this.scheduledDate && this.scheduledDate <= new Date()) {
+  if (
+    this.isScheduled &&
+    this.scheduledDate &&
+    this.scheduledDate <= new Date()
+  ) {
     const error = new Error("Scheduled date must be in the future");
     return next(error);
   }
 
   // Validate expiry date
-  if (this.expiresAt && this.publishedAt && this.expiresAt <= this.publishedAt) {
+  if (
+    this.expiresAt &&
+    this.publishedAt &&
+    this.expiresAt <= this.publishedAt
+  ) {
     const error = new Error("Expiry date must be after published date");
     return next(error);
   }
@@ -197,27 +224,30 @@ announcementSchema.statics.findByPriority = function (priority) {
 
 // Instance method to mark as read
 announcementSchema.methods.markAsRead = function (userId) {
-  const existingRead = this.readBy.find(read => read.user.toString() === userId.toString());
-  
+  const existingRead = this.readBy.find(
+    (read) => read.user.toString() === userId.toString()
+  );
+
   if (!existingRead) {
     this.readBy.push({ user: userId, readAt: new Date() });
     this.readCount = this.readBy.length;
     return this.save();
   }
-  
+
   return Promise.resolve(this);
 };
 
 // Instance method to check if user has read
 announcementSchema.methods.hasUserRead = function (userId) {
-  return this.readBy.some(read => read.user.toString() === userId.toString());
+  return this.readBy.some((read) => read.user.toString() === userId.toString());
 };
 
 // Instance method to get unread users
 announcementSchema.methods.getUnreadUsers = function () {
   if (this.targetAudience === "all" || this.targetAudience === "specific") {
-    return this.targetUsers.filter(userId => 
-      !this.readBy.some(read => read.user.toString() === userId.toString())
+    return this.targetUsers.filter(
+      (userId) =>
+        !this.readBy.some((read) => read.user.toString() === userId.toString())
     );
   }
   return [];
