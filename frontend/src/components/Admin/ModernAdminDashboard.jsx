@@ -335,7 +335,7 @@ const ModernAdminDashboard = () => {
       dashboardData;
 
     return (
-      <div className="space-y-1 lg:space-y-2">
+      <div className="space-y-0 lg:space-y-1">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -360,7 +360,7 @@ const ModernAdminDashboard = () => {
         </motion.div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 md:gap-1">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -805,7 +805,7 @@ const ModernAdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 -m-2 sm:-m-4 lg:-m-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 -m-1 sm:-m-2 lg:-m-3">
       {/* Sidebar */}
       <motion.div
         initial={{ x: -300 }}
@@ -885,7 +885,7 @@ const ModernAdminDashboard = () => {
       {/* Main Content */}
       <div className="lg:pl-64">
         {/* Page Content */}
-        <main className="p-1 sm:p-2 lg:p-2">
+        <main className="p-0 sm:p-1 lg:p-1">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
