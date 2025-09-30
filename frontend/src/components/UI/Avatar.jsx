@@ -129,3 +129,4 @@ export const AvatarGroup = ({
 };
 
 export default Avatar;
+

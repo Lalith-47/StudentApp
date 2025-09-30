@@ -153,8 +153,14 @@ router.post(
 
       const { email, password, role } = req.body;
 
-      // Ensure database connection is available
-      ensureDbConnection();
+      // Check database connection
+      if (!ensureDbConnection()) {
+        return res.status(503).json({
+          success: false,
+          message:
+            "Database service temporarily unavailable. Please try again later.",
+        });
+      }
 
       // Use MongoDB only
       const user = await User.findOne({ email }).select("+password");

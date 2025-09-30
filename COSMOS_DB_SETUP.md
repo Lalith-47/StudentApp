@@ -318,3 +318,5 @@ CMD ["npm", "start"]
 **🎉 Your Smart Student Hub is now configured with Azure Cosmos DB!**
 
 For any issues or questions, refer to the troubleshooting section or contact support.
+
+

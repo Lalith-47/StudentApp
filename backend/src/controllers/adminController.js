@@ -6,8 +6,13 @@ const bcrypt = require("bcrypt");
 const getDashboardStats = async (req, res) => {
   try {
     // Always try to fetch real data from database
-    let userStats, userGrowth, platformStats, engagementData, deviceData, recentActivities;
-    
+    let userStats,
+      userGrowth,
+      platformStats,
+      engagementData,
+      deviceData,
+      recentActivities;
+
     try {
       // Fetch real user statistics
       const totalUsers = await User.countDocuments();
@@ -15,20 +20,20 @@ const getDashboardStats = async (req, res) => {
       const adminUsers = await User.countDocuments({ role: "admin" });
       const studentUsers = await User.countDocuments({ role: "student" });
       const facultyUsers = await User.countDocuments({ role: "faculty" });
-      
+
       // Calculate new users this month
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
-      const newUsersThisMonth = await User.countDocuments({ 
-        createdAt: { $gte: startOfMonth } 
+      const newUsersThisMonth = await User.countDocuments({
+        createdAt: { $gte: startOfMonth },
       });
-      
+
       // Calculate new users today
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
-      const newUsersToday = await User.countDocuments({ 
-        createdAt: { $gte: startOfDay } 
+      const newUsersToday = await User.countDocuments({
+        createdAt: { $gte: startOfDay },
       });
 
       userStats = {
@@ -48,20 +53,20 @@ const getDashboardStats = async (req, res) => {
         date.setMonth(date.getMonth() - i);
         const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
         const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        
+
         const monthUsers = await User.countDocuments({
-          createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+          createdAt: { $gte: startOfMonth, $lte: endOfMonth },
         });
-        
+
         const monthActive = await User.countDocuments({
           createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-          isActive: true
+          isActive: true,
         });
-        
+
         userGrowthData.push({
-          month: date.toLocaleString('default', { month: 'short' }),
+          month: date.toLocaleString("default", { month: "short" }),
           users: monthUsers,
-          active: monthActive
+          active: monthActive,
         });
       }
       userGrowth = userGrowthData;
@@ -77,13 +82,41 @@ const getDashboardStats = async (req, res) => {
 
       // Generate engagement data (mock for now, can be replaced with real analytics)
       engagementData = [
-        { name: "Mon", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Tue", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Wed", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Thu", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Fri", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Sat", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
-        { name: "Sun", sessions: Math.floor(Math.random() * 1000) + 2000, pageViews: Math.floor(Math.random() * 2000) + 3000 },
+        {
+          name: "Mon",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Tue",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Wed",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Thu",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Fri",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Sat",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
+        {
+          name: "Sun",
+          sessions: Math.floor(Math.random() * 1000) + 2000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        },
       ];
 
       deviceData = [
@@ -96,17 +129,16 @@ const getDashboardStats = async (req, res) => {
       const recentUsers = await User.find()
         .sort({ createdAt: -1 })
         .limit(10)
-        .select('name email role createdAt isActive');
+        .select("name email role createdAt isActive");
 
-      recentActivities = recentUsers.map(user => ({
+      recentActivities = recentUsers.map((user) => ({
         id: user._id,
         type: "user_registration",
         user: user.name,
         action: `New ${user.role} registered`,
         timestamp: user.createdAt,
-        status: user.isActive ? "active" : "inactive"
+        status: user.isActive ? "active" : "inactive",
       }));
-
     } catch (dbError) {
       console.log("Database error, using fallback data:", dbError.message);
       // Fallback to dummy data if database query fails
@@ -119,7 +151,7 @@ const getDashboardStats = async (req, res) => {
         newUsersThisMonth: 156,
         newUsersToday: 23,
       };
-      
+
       userGrowth = [
         { month: "Apr", users: 400, active: 320 },
         { month: "May", users: 500, active: 400 },
@@ -128,7 +160,7 @@ const getDashboardStats = async (req, res) => {
         { month: "Aug", users: 800, active: 640 },
         { month: "Sep", users: 900, active: 720 },
       ];
-      
+
       platformStats = {
         totalQuizzes: 89,
         totalRoadmaps: 45,
@@ -136,7 +168,7 @@ const getDashboardStats = async (req, res) => {
         totalStories: 156,
         totalFaqs: 78,
       };
-      
+
       engagementData = [
         { name: "Mon", sessions: 2400, pageViews: 4000 },
         { name: "Tue", sessions: 1398, pageViews: 3000 },
@@ -146,92 +178,92 @@ const getDashboardStats = async (req, res) => {
         { name: "Sat", sessions: 3800, pageViews: 2390 },
         { name: "Sun", sessions: 4300, pageViews: 3490 },
       ];
-      
+
       deviceData = [
         { name: "Desktop", value: 45 },
         { name: "Mobile", value: 35 },
         { name: "Tablet", value: 20 },
       ];
-      
+
       recentActivities = [
         {
           id: 1,
           user: "John Doe",
           action: "completed Know-Me",
-            time: "2 minutes ago",
-            type: "quiz",
-          },
-          {
-            id: 2,
-            user: "Jane Smith",
-            action: "viewed software engineering roadmap",
-            time: "5 minutes ago",
-            type: "roadmap",
-          },
-          {
-            id: 3,
-            user: "Mike Johnson",
-            action: "applied for internship",
-            time: "10 minutes ago",
-            type: "application",
-          },
-          {
-            id: 4,
-            user: "Sarah Wilson",
-            action: "shared success story",
-            time: "15 minutes ago",
-            type: "story",
-          },
-        ];
-        
-        recentUsers = [
-          {
-            id: "admin-001",
-            name: "System Administrator",
-            email: "admin@adhyayanmarg.com",
-            role: "admin",
-            isActive: true,
-            lastLogin: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: "user-001",
-            name: "John Doe",
-            email: "john@example.com",
-            role: "student",
-            isActive: true,
-            lastLogin: new Date(Date.now() - 86400000).toISOString(),
-            createdAt: new Date(Date.now() - 2592000000).toISOString(),
-          },
-          {
-            id: "user-002",
-            name: "Jane Smith",
-            email: "jane@example.com",
-            role: "student",
-            isActive: true,
-            lastLogin: new Date(Date.now() - 172800000).toISOString(),
-            createdAt: new Date(Date.now() - 5184000000).toISOString(),
-          },
-          {
-            id: "user-003",
-            name: "Mike Johnson",
-            email: "mike@example.com",
-            role: "student",
-            isActive: false,
-            lastLogin: new Date(Date.now() - 604800000).toISOString(),
-            createdAt: new Date(Date.now() - 7776000000).toISOString(),
-          },
-          {
-            id: "user-004",
-            name: "Sarah Wilson",
-            email: "sarah@example.com",
-            role: "student",
-            isActive: true,
-            lastLogin: new Date(Date.now() - 3600000).toISOString(),
-            createdAt: new Date(Date.now() - 10368000000).toISOString(),
-          },
-        ];
-      }
+          time: "2 minutes ago",
+          type: "quiz",
+        },
+        {
+          id: 2,
+          user: "Jane Smith",
+          action: "viewed software engineering roadmap",
+          time: "5 minutes ago",
+          type: "roadmap",
+        },
+        {
+          id: 3,
+          user: "Mike Johnson",
+          action: "applied for internship",
+          time: "10 minutes ago",
+          type: "application",
+        },
+        {
+          id: 4,
+          user: "Sarah Wilson",
+          action: "shared success story",
+          time: "15 minutes ago",
+          type: "story",
+        },
+      ];
+
+      recentUsers = [
+        {
+          id: "admin-001",
+          name: "System Administrator",
+          email: "admin@adhyayanmarg.com",
+          role: "admin",
+          isActive: true,
+          lastLogin: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "user-001",
+          name: "John Doe",
+          email: "john@example.com",
+          role: "student",
+          isActive: true,
+          lastLogin: new Date(Date.now() - 86400000).toISOString(),
+          createdAt: new Date(Date.now() - 2592000000).toISOString(),
+        },
+        {
+          id: "user-002",
+          name: "Jane Smith",
+          email: "jane@example.com",
+          role: "student",
+          isActive: true,
+          lastLogin: new Date(Date.now() - 172800000).toISOString(),
+          createdAt: new Date(Date.now() - 5184000000).toISOString(),
+        },
+        {
+          id: "user-003",
+          name: "Mike Johnson",
+          email: "mike@example.com",
+          role: "student",
+          isActive: false,
+          lastLogin: new Date(Date.now() - 604800000).toISOString(),
+          createdAt: new Date(Date.now() - 7776000000).toISOString(),
+        },
+        {
+          id: "user-004",
+          name: "Sarah Wilson",
+          email: "sarah@example.com",
+          role: "student",
+          isActive: true,
+          lastLogin: new Date(Date.now() - 3600000).toISOString(),
+          createdAt: new Date(Date.now() - 10368000000).toISOString(),
+        },
+      ];
+    }
 
     // Return the data (either real or fallback)
     res.json({

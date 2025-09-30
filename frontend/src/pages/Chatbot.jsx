@@ -24,7 +24,7 @@ import { useMutation, useQuery } from "react-query";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
 import Input from "../components/UI/Input";
-import { apiService } from "../utils/api";
+import apiService from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 

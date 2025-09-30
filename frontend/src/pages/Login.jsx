@@ -14,7 +14,7 @@ import {
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
 import Input from "../components/UI/Input";
-import { apiService } from "../utils/api";
+import apiService from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 

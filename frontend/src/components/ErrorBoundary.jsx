@@ -140,3 +140,4 @@ export const useErrorHandler = () => {
 };
 
 export default ErrorBoundary;
+

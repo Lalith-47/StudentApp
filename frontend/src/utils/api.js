@@ -1,44 +1,21 @@
 import axios from "axios";
-import toast from "react-hot-toast";
-import {
-  handleApiError,
-  getErrorType,
-  ERROR_TYPES,
-  withRetry,
-} from "./errorHandler";
 
-// Simple cache for API responses
-const apiCache = new Map();
-const CACHE_DURATION = 30 * 1000; // 30 seconds
-
-// Create axios instance
+// Create axios instance with default config
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  timeout: 8000, // Reduced from 10 seconds to 8 seconds
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor
+// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    // Add auth token if available
     const token = localStorage.getItem("authToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // Add cache busting headers for quiz data requests
-    if (config.url?.includes("/admin/quiz-data")) {
-      config.headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-      config.headers["Pragma"] = "no-cache";
-      config.headers["Expires"] = "0";
-    }
-
-    // Add request timestamp for debugging
-    config.metadata = { startTime: new Date() };
-
     return config;
   },
   (error) => {
@@ -46,254 +23,207 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
+// Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => {
-    // Log response time for debugging
-    if (response.config.metadata) {
-      const endTime = new Date();
-      const duration = endTime - response.config.metadata.startTime;
-      console.log(
-        `API ${response.config.method?.toUpperCase()} ${
-          response.config.url
-        } - ${duration}ms`
-      );
-    }
-
-    // For quiz questions, log the response data
-    if (response.config.url?.includes("/quiz/questions")) {
-      console.log("Quiz questions API response:", response.data);
-    }
-
     return response;
   },
   (error) => {
-    // Use the new error handling system
-    const errorInfo = handleApiError(error, {
-      showToast: false, // Let components handle their own error messages
-      logError: true,
-      redirectOnAuth: true,
-    });
-
-    // Add error info to the error object for components to use
-    error.errorInfo = errorInfo;
-
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 );
 
-// API endpoints
-export const endpoints = {
-  // Quiz
-  quiz: {
-    questions: "/quiz/questions",
-    submit: "/quiz",
-    results: "/quiz/results",
-  },
-
-  // Roadmap
-  roadmap: {
-    list: "/roadmap",
-    get: (course) => `/roadmap/${course}`,
-    search: "/roadmap/search",
-    categories: "/roadmap/categories",
-  },
-
-  // Colleges
-  colleges: {
-    list: "/colleges",
-    get: (id) => `/colleges/${id}`,
-    search: "/colleges/search",
-    compare: "/colleges/compare",
-    stats: "/colleges/stats",
-  },
-
-  // Stories
-  stories: {
-    list: "/stories",
-    get: (id) => `/stories/${id}`,
-    search: "/stories/search",
-    featured: "/stories/featured",
-    categories: "/stories/categories",
-    like: (id) => `/stories/${id}/like`,
-    comment: (id) => `/stories/${id}/comments`,
-  },
-
-  // FAQ
-  faq: {
-    list: "/faq",
-    get: (id) => `/faq/${id}`,
-    search: "/faq/search",
-    categories: "/faq/categories",
-    query: "/faq/query",
-    aiProviders: "/faq/ai-providers",
-    helpful: (id) => `/faq/${id}/helpful`,
-  },
-
-  // Analytics
-  analytics: {
-    dashboard: "/analytics",
-    engagement: "/analytics/engagement",
-    performance: "/analytics/performance",
-    health: "/analytics/health",
-    user: "/analytics/user",
-    update: "/analytics/user/update",
-    reset: "/analytics/user/reset",
-  },
-
-  // Admin
-  admin: {
-    dashboard: "/admin/dashboard",
-    users: "/admin/users",
-    createUser: "/admin/users",
-    updateUserStatus: (userId) => `/admin/users/${userId}/status`,
-    resetUserPassword: (userId) => `/admin/users/${userId}/password`,
-    deleteUser: (userId) => `/admin/users/${userId}`,
-    quizData: "/admin/quiz-data",
-  },
-
-  // Auth
+// API Service object
+const apiService = {
+  // Auth endpoints
   auth: {
-    login: "/auth/login",
-    register: "/auth/register",
-    me: "/auth/me",
-    logout: "/auth/logout",
-    verify: "/auth/verify",
+    login: (credentials) => api.post("/auth/login", credentials),
+    register: (userData) => api.post("/auth/register", userData),
+    logout: () => api.post("/auth/logout"),
+    getProfile: () => api.get("/auth/profile"),
+    updateProfile: (data) => api.put("/auth/profile", data),
   },
 
-  // Mentor
-  mentor: {
-    students: "/mentor/students",
-    assignedStudents: "/mentor/assigned-students",
-    assignStudents: "/mentor/assign-students",
-    unassignStudents: "/mentor/unassign-students",
-    sendMessage: "/mentor/send-message",
-    dashboardStats: "/mentor/dashboard-stats",
-    studentProfile: (studentId) => `/mentor/student/${studentId}/profile`,
-    studentAptitude: (studentId) => `/mentor/student/${studentId}/aptitude`,
-    careerRecommendations: (studentId) =>
-      `/mentor/student/${studentId}/career-recommendations`,
-    guidanceSession: "/mentor/guidance-session",
-    performanceFeedback: "/mentor/performance-feedback",
-    analytics: "/mentor/analytics",
-    studentTimeline: (studentId) => `/mentor/student/${studentId}/timeline`,
-    sessions: "/mentor/sessions",
-    messages: "/mentor/messages",
-    sendMessageToStudent: "/mentor/send-message-to-student",
+  // User analytics
+  getUserAnalytics: () => api.get("/analytics/user"),
+  updateUserAnalytics: (data) => api.put("/analytics/user", data),
+  resetUserAnalytics: () => api.post("/analytics/user/reset"),
+
+  // Quiz endpoints
+  quiz: {
+    getQuestions: (type = "detailed") =>
+      api.get(`/quiz/questions?type=${type}`),
+    submitQuiz: (answers) => api.post("/quiz/submit", answers),
+    getResults: (id) => api.get(`/quiz/results/${id}`),
+    getHistory: () => api.get("/quiz/history"),
   },
+
+  // Roadmap endpoints
+  roadmap: {
+    getAll: () => api.get("/roadmap"),
+    getById: (id) => api.get(`/roadmap/${id}`),
+    search: (query) => api.get(`/roadmap/search?q=${query}`),
+    getByCategory: (category) => api.get(`/roadmap/category/${category}`),
+  },
+
+  // College endpoints
+  colleges: {
+    getAll: (params = {}) => api.get("/colleges", { params }),
+    getById: (id) => api.get(`/colleges/${id}`),
+    search: (query) => api.get(`/colleges/search?q=${query}`),
+    getByLocation: (location) => api.get(`/colleges/location/${location}`),
+    getByCourse: (course) => api.get(`/colleges/course/${course}`),
+  },
+
+  // Story endpoints
+  stories: {
+    getAll: (params = {}) => api.get("/stories", { params }),
+    getById: (id) => api.get(`/stories/${id}`),
+    getFeatured: () => api.get("/stories/featured"),
+    getByCategory: (category) => api.get(`/stories/category/${category}`),
+    create: (data) => api.post("/stories", data),
+    update: (id, data) => api.put(`/stories/${id}`, data),
+    delete: (id) => api.delete(`/stories/${id}`),
+  },
+
+  // FAQ endpoints
+  faq: {
+    getAll: (params = {}) => api.get("/faq", { params }),
+    getByCategory: (category) => api.get(`/faq/category/${category}`),
+    search: (query) => api.get(`/faq/search?q=${query}`),
+    create: (data) => api.post("/faq", data),
+    update: (id, data) => api.put(`/faq/${id}`, data),
+    delete: (id) => api.delete(`/faq/${id}`),
+  },
+
+  // Analytics endpoints
+  analytics: {
+    getDashboard: () => api.get("/analytics/dashboard"),
+    getReports: (params = {}) => api.get("/analytics/reports", { params }),
+    generateReport: (data) => api.post("/analytics/reports", data),
+    getNAACReport: () => api.get("/analytics/naac"),
+    getAICTEReport: () => api.get("/analytics/aicte"),
+    getNIRFReport: () => api.get("/analytics/nirf"),
+  },
+
+  // Activity endpoints
+  activities: {
+    getAll: (params = {}) => api.get("/activities", { params }),
+    getById: (id) => api.get(`/activities/${id}`),
+    create: (data) => api.post("/activities", data),
+    update: (id, data) => api.put(`/activities/${id}`, data),
+    delete: (id) => api.delete(`/activities/${id}`),
+    uploadAttachment: (id, file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return api.post(`/activities/${id}/attachments`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
+  },
+
+  // Faculty endpoints
+  faculty: {
+    getPending: () => api.get("/faculty/pending"),
+    approve: (id, data) => api.post(`/faculty/approve/${id}`, data),
+    reject: (id, data) => api.post(`/faculty/reject/${id}`, data),
+    getHistory: () => api.get("/faculty/history"),
+  },
+
+  // Portfolio endpoints
+  portfolio: {
+    get: () => api.get("/portfolio"),
+    create: (data) => api.post("/portfolio", data),
+    update: (data) => api.put("/portfolio", data),
+    generatePDF: () => api.get("/portfolio/pdf", { responseType: "blob" }),
+    generateShareLink: () => api.post("/portfolio/share"),
+    getByShareId: (id) => api.get(`/portfolio/share/${id}`),
+  },
+
+  // Dashboard endpoints
+  dashboard: {
+    getStudent: () => api.get("/dashboard/student"),
+    getFaculty: () => api.get("/dashboard/faculty"),
+    getAdmin: () => api.get("/dashboard/admin"),
+  },
+
+  // Admin endpoints
+  admin: {
+    getDashboard: () => api.get("/admin/dashboard"),
+    getUsers: (params) => api.get("/admin/users", { params }),
+    createUser: (userData) => api.post("/admin/users", userData),
+    updateUserStatus: (userId, data) =>
+      api.patch(`/admin/users/${userId}/status`, data),
+    resetUserPassword: (userId, data) =>
+      api.patch(`/admin/users/${userId}/password`, data),
+    deleteUser: (userId, data) =>
+      api.delete(`/admin/users/${userId}`, { data }),
+    getQuizData: (forceRefresh) =>
+      api.get("/admin/quiz-data", {
+        params: forceRefresh ? { refresh: true } : {},
+      }),
+  },
+
+  // File upload
+  upload: {
+    image: (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return api.post("/upload/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
+    document: (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return api.post("/upload/document", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
+  },
+
+  // Health check
+  health: () => api.get("/health"),
 };
 
-// API functions
-export const apiService = {
-  // Quiz
-  getQuizQuestions: () => api.get(endpoints.quiz.questions),
-  submitQuiz: (data) => api.post(endpoints.quiz.submit, data),
-  getQuizResults: () => api.get(endpoints.quiz.results),
-
-  // Roadmap
-  getRoadmaps: (params) => api.get(endpoints.roadmap.list, { params }),
-  getRoadmap: (course) => api.get(endpoints.roadmap.get(course)),
-  searchRoadmaps: (params) => api.get(endpoints.roadmap.search, { params }),
-  getRoadmapCategories: () => api.get(endpoints.roadmap.categories),
-
-  // Colleges
-  getColleges: (params) => api.get(endpoints.colleges.list, { params }),
-  getCollege: (id) => api.get(endpoints.colleges.get(id)),
-  searchColleges: (params) => api.get(endpoints.colleges.search, { params }),
-  compareColleges: (data) => api.post(endpoints.colleges.compare, data),
-  getCollegeStats: () => api.get(endpoints.colleges.stats),
-
-  // Stories
-  getStories: (params) => api.get(endpoints.stories.list, { params }),
-  getStory: (id) => api.get(endpoints.stories.get(id)),
-  searchStories: (params) => api.get(endpoints.stories.search, { params }),
-  getFeaturedStories: (params) =>
-    api.get(endpoints.stories.featured, { params }),
-  getStoryCategories: () => api.get(endpoints.stories.categories),
-  likeStory: (id) => api.post(endpoints.stories.like(id)),
-  addComment: (id, data) => api.post(endpoints.stories.comment(id), data),
-
-  // FAQ
-  getFaqs: (params) => api.get(endpoints.faq.list, { params }),
-  getFaq: (id) => api.get(endpoints.faq.get(id)),
-  searchFaqs: (params) => api.get(endpoints.faq.search, { params }),
-  getFaqCategories: () => api.get(endpoints.faq.categories),
-  submitFaqQuery: (data) => api.post(endpoints.faq.query, data),
-  getAIProviders: () => api.get(endpoints.faq.aiProviders),
-  markFaqHelpful: (id, data) => api.post(endpoints.faq.helpful(id), data),
-
-  // Analytics
-  getAnalytics: () => api.get(endpoints.analytics.dashboard),
-  getUserEngagement: (params) =>
-    api.get(endpoints.analytics.engagement, { params }),
-  getContentPerformance: () => api.get(endpoints.analytics.performance),
-  getSystemHealth: () => api.get(endpoints.analytics.health),
-  getUserAnalytics: () => api.get(endpoints.analytics.user),
-  updateUserAnalytics: (data) => api.post(endpoints.analytics.update, data),
-  resetUserAnalytics: () => api.post(endpoints.analytics.reset),
-
-  // Auth
-  login: (credentials) => api.post(endpoints.auth.login, credentials),
-  register: (userData) => api.post(endpoints.auth.register, userData),
-  getCurrentUser: () => api.get(endpoints.auth.me),
-  logout: () => api.post(endpoints.auth.logout),
-  verifyToken: (token) => api.post(endpoints.auth.verify, { token }),
-
-  // Admin with caching
-  getAdminDashboard: () => {
-    const cacheKey = "admin-dashboard";
-    const cached = apiCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return Promise.resolve(cached.response);
+// Helper functions
+export const handleApiError = (error) => {
+  if (error.response) {
+    // Server responded with error status
+    const { status, data } = error.response;
+    switch (status) {
+      case 400:
+        return data.message || "Bad request. Please check your input.";
+      case 401:
+        return "Unauthorized. Please login again.";
+      case 403:
+        return "Forbidden. You don't have permission to perform this action.";
+      case 404:
+        return "Resource not found.";
+      case 422:
+        return data.message || "Validation error. Please check your input.";
+      case 429:
+        return "Too many requests. Please try again later.";
+      case 500:
+        return "Internal server error. Please try again later.";
+      default:
+        return data.message || "An error occurred. Please try again.";
     }
-    return api.get(endpoints.admin.dashboard).then((response) => {
-      apiCache.set(cacheKey, { response, timestamp: Date.now() });
-      return response;
-    });
-  },
-  getAdminUsers: (params) => api.get(endpoints.admin.users, { params }),
-  updateUserStatus: (userId, data) =>
-    api.patch(endpoints.admin.updateUserStatus(userId), data),
-  resetUserPassword: (userId, data) =>
-    api.patch(endpoints.admin.resetUserPassword(userId), data),
-  deleteUser: (userId, data) =>
-    api.delete(endpoints.admin.deleteUser(userId), { data }),
-  getAdminQuizData: (forceRefresh = false) => {
-    const url = forceRefresh
-      ? `${endpoints.admin.quizData}?t=${Date.now()}`
-      : endpoints.admin.quizData;
-    return api.get(url);
-  },
-  createUser: (userData) => api.post(endpoints.admin.createUser, userData),
-
-  // Mentor
-  getMentorStudents: (params) => api.get(endpoints.mentor.students, { params }),
-  getMentorAssignedStudents: () => api.get(endpoints.mentor.assignedStudents),
-  assignStudents: (data) => api.post(endpoints.mentor.assignStudents, data),
-  unassignStudents: (data) => api.post(endpoints.mentor.unassignStudents, data),
-  sendMessageToStudents: (data) => api.post(endpoints.mentor.sendMessage, data),
-  getMentorDashboardStats: () => api.get(endpoints.mentor.dashboardStats),
-
-  // New mentor functionalities
-  getStudentProfile: (studentId) =>
-    api.get(endpoints.mentor.studentProfile(studentId)),
-  getStudentAptitude: (studentId) =>
-    api.get(endpoints.mentor.studentAptitude(studentId)),
-  getCareerRecommendations: (studentId) =>
-    api.get(endpoints.mentor.careerRecommendations(studentId)),
-  recordGuidanceSession: (data) =>
-    api.post(endpoints.mentor.guidanceSession, data),
-  submitPerformanceFeedback: (data) =>
-    api.post(endpoints.mentor.performanceFeedback, data),
-
-  // Enhanced mentor functionalities
-  getMentorAnalytics: () => api.get(endpoints.mentor.analytics),
-  getStudentTimeline: (studentId) =>
-    api.get(endpoints.mentor.studentTimeline(studentId)),
-  getSessionHistory: (params) => api.get(endpoints.mentor.sessions, { params }),
-  getMessages: (params) => api.get(endpoints.mentor.messages, { params }),
-  sendMessageToStudent: (data) =>
-    api.post(endpoints.mentor.sendMessageToStudent, data),
+  } else if (error.request) {
+    // Network error
+    return "Network error. Please check your connection.";
+  } else {
+    // Other error
+    return error.message || "An unexpected error occurred.";
+  }
 };
 
-export default api;
+// Export the API service
+export default apiService;
+export { api };

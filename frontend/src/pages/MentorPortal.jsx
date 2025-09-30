@@ -50,7 +50,7 @@ import Card from "../components/UI/Card";
 import Button from "../components/UI/Button";
 import Input from "../components/UI/Input";
 import { useAuth } from "../contexts/AuthContext";
-import { apiService } from "../utils/api";
+import apiService from "../utils/api";
 
 const MentorPortal = () => {
   const { t } = useTranslation();

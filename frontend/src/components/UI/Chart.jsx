@@ -331,3 +331,4 @@ export const StatsCard = ({
 };
 
 export default Chart;
+

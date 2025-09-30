@@ -117,14 +117,12 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
-// Indexes for performance
+// Indexes for performance - only define once
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ lastLogin: -1 });
-
-// Compound indexes
 userSchema.index({ role: 1, isActive: 1 });
 userSchema.index({ email: 1, role: 1 });
 

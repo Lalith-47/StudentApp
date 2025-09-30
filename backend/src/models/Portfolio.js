@@ -6,7 +6,6 @@ const portfolioSchema = new mongoose.Schema({
     ref: "User",
     required: true,
     unique: true,
-    index: true,
   },
   personalInfo: {
     fullName: {
@@ -270,7 +269,6 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     enum: ["draft", "published", "archived"],
     default: "draft",
-    index: true,
   },
   createdAt: {
     type: Date,
@@ -399,3 +397,4 @@ portfolioSchema.index({ studentId: 1, status: 1 });
 portfolioSchema.index({ status: 1, updatedAt: -1 });
 
 module.exports = mongoose.model("Portfolio", portfolioSchema);
+

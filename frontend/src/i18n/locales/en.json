@@ -6,6 +6,11 @@
     "colleges": "Colleges",
     "chatbot": "Chatbot",
     "dashboard": "Dashboard",
+    "admin": "Admin Portal",
+    "mentor": "Mentor Portal",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
     "language": "Language"
   },
   "home": {

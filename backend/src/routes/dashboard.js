@@ -16,3 +16,4 @@ router.get("/faculty", getFacultyDashboard);
 router.get("/admin", getAdminDashboard);
 
 module.exports = router;
+

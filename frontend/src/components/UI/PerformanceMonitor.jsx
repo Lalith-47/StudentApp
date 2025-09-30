@@ -100,3 +100,4 @@ const PerformanceMonitor = ({ enabled = false }) => {
 };
 
 export default PerformanceMonitor;
+

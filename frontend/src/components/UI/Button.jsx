@@ -18,7 +18,7 @@ const Button = ({
   ...props
 }) => {
   const baseClasses = cn(
-    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden",
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden touch-manipulation",
     fullWidth && "w-full",
     align === "left" && "justify-start",
     align === "right" && "justify-end",
@@ -27,24 +27,24 @@ const Button = ({
 
   const variants = {
     primary:
-      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg hover:shadow-xl hover:scale-105",
+      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg hover:shadow-xl active:scale-95",
     secondary:
-      "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-primary-500 shadow-md hover:shadow-lg hover:scale-105",
+      "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-primary-500 shadow-md hover:shadow-lg active:scale-95",
     outline:
-      "border-2 border-primary-600 dark:border-primary-400 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900 focus:ring-primary-500 hover:scale-105",
+      "border-2 border-primary-600 dark:border-primary-400 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900 focus:ring-primary-500 active:scale-95",
     ghost:
-      "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500 hover:scale-105",
+      "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500 active:scale-95",
     danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl hover:scale-105",
+      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl active:scale-95",
     success:
-      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-lg hover:shadow-xl hover:scale-105",
+      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-lg hover:shadow-xl active:scale-95",
   };
 
   const sizes = {
-    sm: "px-3 py-2 text-sm min-h-[40px]",
-    md: "px-4 py-2.5 text-sm min-h-[44px]",
-    lg: "px-6 py-3 text-base min-h-[48px]",
-    xl: "px-8 py-4 text-lg min-h-[52px]",
+    sm: "px-3 py-2 text-sm min-h-[44px] min-w-[44px]", // Touch-friendly minimum size
+    md: "px-4 py-2.5 text-sm min-h-[48px] min-w-[48px]",
+    lg: "px-6 py-3 text-base min-h-[52px] min-w-[52px]",
+    xl: "px-8 py-4 text-lg min-h-[56px] min-w-[56px]",
   };
 
   const MotionButton = motion.button;
@@ -59,7 +59,7 @@ const Button = ({
         animation && !disabled && !loading
           ? {
               scale: 1.02,
-              y: -2,
+              y: -1,
               transition: { duration: 0.2, ease: "easeOut" },
             }
           : {}
@@ -82,7 +82,7 @@ const Button = ({
     >
       {loading && <LoadingSpinner size="sm" className="mr-2" text="" />}
       <motion.span
-        className="relative z-10"
+        className="relative z-10 flex items-center justify-center"
         initial={false}
         animate={loading ? { opacity: 0.7 } : { opacity: 1 }}
       >

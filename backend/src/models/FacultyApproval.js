@@ -5,26 +5,22 @@ const facultyApprovalSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Activity",
     required: true,
-    index: true,
   },
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    index: true,
   },
   facultyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    index: true,
   },
   department: {
     type: String,
     required: true,
     trim: true,
     maxlength: [100, "Department name cannot exceed 100 characters"],
-    index: true,
   },
   category: {
     type: String,
@@ -46,7 +42,6 @@ const facultyApprovalSchema = new mongoose.Schema({
       "cultural",
       "other",
     ],
-    index: true,
   },
   status: {
     type: String,
@@ -58,7 +53,6 @@ const facultyApprovalSchema = new mongoose.Schema({
       "requires_changes",
     ],
     default: "pending",
-    index: true,
   },
   reviewDetails: {
     submittedAt: {
@@ -461,3 +455,4 @@ facultyApprovalSchema.index({ status: 1, "workflow.dueDate": 1 });
 facultyApprovalSchema.index({ facultyId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("FacultyApproval", facultyApprovalSchema);
+

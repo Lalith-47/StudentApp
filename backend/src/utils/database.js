@@ -10,12 +10,16 @@ const isDbConnected = () => {
 
 /**
  * Ensure database connection before operations
- * @throws {Error} If database is not connected
+ * @returns {boolean} True if database is connected, false otherwise
  */
 const ensureDbConnection = () => {
   if (!isDbConnected()) {
-    throw new Error("Database connection required but not available");
+    console.warn(
+      "⚠️ Database connection not available, but continuing with limited functionality"
+    );
+    return false;
   }
+  return true;
 };
 
 /**
@@ -44,4 +48,3 @@ module.exports = {
   ensureDbConnection,
   getDbStatus,
 };
-

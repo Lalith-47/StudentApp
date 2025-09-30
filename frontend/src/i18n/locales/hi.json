@@ -6,6 +6,11 @@
     "colleges": "कॉलेज",
     "chatbot": "चैटबॉट",
     "dashboard": "डैशबोर्ड",
+    "admin": "एडमिन पोर्टल",
+    "mentor": "मेंटर पोर्टल",
+    "login": "लॉगिन",
+    "signup": "साइन अप",
+    "logout": "लॉगआउट",
     "language": "भाषा"
   },
   "home": {

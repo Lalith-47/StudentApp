@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
-import { apiService } from "../utils/api";
+import apiService from "../utils/api";
 import Button from "../components/UI/Button";
 import {
   Shield,
@@ -234,7 +234,7 @@ const AdminDashboard = () => {
       });
 
       const response = await Promise.race([
-        apiService.getAdminDashboard(),
+        apiService.admin.getDashboard(),
         timeoutPromise,
       ]);
 
@@ -296,7 +296,7 @@ const AdminDashboard = () => {
       });
 
       const response = await Promise.race([
-        apiService.getAdminUsers(params),
+        apiService.admin.getUsers(params),
         timeoutPromise,
       ]);
 
@@ -360,7 +360,7 @@ const AdminDashboard = () => {
       );
 
       // Add cache busting parameter for force refresh
-      const response = await apiService.getAdminQuizData(forceRefresh);
+      const response = await apiService.admin.getQuizData(forceRefresh);
       console.log("Quiz data response:", response.data);
       console.log("Quiz data response status:", response.status);
       console.log("Quiz data response success:", response.data.success);
@@ -443,7 +443,7 @@ const AdminDashboard = () => {
 
   const handleUserStatusUpdate = async (userId, isActive) => {
     try {
-      await apiService.updateUserStatus(userId, { isActive });
+      await apiService.admin.updateUserStatus(userId, { isActive });
       // Refresh users list
       fetchUsers(currentPage, searchTerm, roleFilter, statusFilter);
     } catch (error) {
@@ -483,7 +483,7 @@ const AdminDashboard = () => {
 
     setCreateUserLoading(true);
     try {
-      const response = await apiService.createUser({
+      const response = await apiService.admin.createUser({
         name: createUserForm.name,
         email: createUserForm.email,
         password: createUserForm.password,
@@ -567,9 +567,12 @@ const AdminDashboard = () => {
       console.log("API endpoint:", endpoint);
       console.log("Request data:", { newPassword });
 
-      const response = await apiService.resetUserPassword(selectedUser.id, {
-        newPassword,
-      });
+      const response = await apiService.admin.resetUserPassword(
+        selectedUser.id,
+        {
+          newPassword,
+        }
+      );
       console.log("Password reset response:", response);
 
       // Show success popup
@@ -634,7 +637,7 @@ const AdminDashboard = () => {
 
     setDeleteUserLoading(true);
     try {
-      await apiService.deleteUser(userToDelete.id, { adminPassword });
+      await apiService.admin.deleteUser(userToDelete.id, { adminPassword });
 
       // Show success popup
       setSuccessMessage(`User ${userToDelete.name} deleted successfully!`);

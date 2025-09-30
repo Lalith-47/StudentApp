@@ -5,13 +5,11 @@ const analyticsSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Institution",
     required: true,
-    index: true,
   },
   reportType: {
     type: String,
     required: true,
     enum: ["naac", "aicte", "nirf", "custom", "annual", "quarterly", "monthly"],
-    index: true,
   },
   period: {
     startDate: {
@@ -25,7 +23,6 @@ const analyticsSchema = new mongoose.Schema({
     academicYear: {
       type: String,
       required: true,
-      index: true,
     },
   },
   studentMetrics: {
@@ -494,3 +491,4 @@ analyticsSchema.index({ institutionId: 1, generatedAt: -1 });
 analyticsSchema.index({ reportType: 1, status: 1 });
 
 module.exports = mongoose.model("Analytics", analyticsSchema);
+

@@ -42,18 +42,18 @@ const Card = ({
   return (
     <MotionCard
       className={cn(
-        "bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-100 dark:border-gray-700",
+        "bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-100 dark:border-gray-700 transition-all duration-300",
         paddingClasses[padding],
         hover &&
-          "transition-all duration-300 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer",
+          "hover:shadow-lg hover:-translate-y-1 hover:scale-[1.01] cursor-pointer",
         className
       )}
       {...animations[animation]}
       whileHover={
         hover
           ? {
-              scale: 1.02,
-              y: -4,
+              scale: 1.01,
+              y: -2,
               transition: { duration: 0.2, ease: "easeOut" },
             }
           : {}
@@ -61,7 +61,7 @@ const Card = ({
       whileTap={
         hover
           ? {
-              scale: 0.98,
+              scale: 0.99,
               transition: { duration: 0.1, ease: "easeIn" },
             }
           : {}
@@ -82,7 +82,7 @@ const CardHeader = ({ children, className = "", ...props }) => (
 const CardTitle = ({ children, className = "", ...props }) => (
   <h3
     className={cn(
-      "text-lg font-semibold text-gray-900 dark:text-white",
+      "text-lg font-semibold text-gray-900 dark:text-white leading-tight",
       className
     )}
     {...props}
@@ -93,7 +93,10 @@ const CardTitle = ({ children, className = "", ...props }) => (
 
 const CardDescription = ({ children, className = "", ...props }) => (
   <p
-    className={cn("text-sm text-gray-600 dark:text-gray-300 mt-1", className)}
+    className={cn(
+      "text-sm text-gray-600 dark:text-gray-300 mt-1 leading-relaxed",
+      className
+    )}
     {...props}
   >
     {children}

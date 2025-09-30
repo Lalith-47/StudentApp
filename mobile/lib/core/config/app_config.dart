@@ -66,3 +66,5 @@ class AppConfig {
   static const Duration mediumAnimation = Duration(milliseconds: 300);
   static const Duration longAnimation = Duration(milliseconds: 500);
 }
+
+

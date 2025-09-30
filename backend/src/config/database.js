@@ -5,17 +5,11 @@ const connectionOptions = {
   serverSelectionTimeoutMS: 30000,
   connectTimeoutMS: 30000,
   maxIdleTimeMS: 120000,
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   // Azure Cosmos DB specific options
   retryWrites: false, // Cosmos DB doesn't support retryable writes
   maxPoolSize: 10, // Limit connection pool size for Cosmos DB
   minPoolSize: 1,
-  maxIdleTimeMS: 120000,
-  serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000,
-  bufferMaxEntries: 0, // Disable mongoose buffering
-  bufferCommands: false, // Disable mongoose buffering
 };
 
 class DatabaseManager {
@@ -183,6 +177,11 @@ class DatabaseManager {
   }
 
   // Get connection status
+  isConnected() {
+    return this.isConnected;
+  }
+
+  // Get connection status
   getStatus() {
     const states = {
       0: "disconnected",
@@ -199,21 +198,6 @@ class DatabaseManager {
       name: mongoose.connection.name,
       retries: this.connectionRetries,
     };
-  }
-
-  isHealthy() {
-    return this.isConnected();
-  }
-
-  async gracefulShutdown() {
-    try {
-      if (mongoose.connection.readyState !== 0) {
-        await mongoose.connection.close();
-        console.log("✅ Database connection closed gracefully");
-      }
-    } catch (error) {
-      console.error("❌ Error during database shutdown:", error.message);
-    }
   }
 }
 

@@ -425,3 +425,5 @@ DEBUG=mongoose* npm run dev
 ---
 
 **🎉 Your Smart Student Hub is now deployed and ready to serve students, faculty, and institutions!**
+
+

@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, Globe, User, LogOut, Shield } from "lucide-react";
+import {
+  Menu,
+  X,
+  Globe,
+  User,
+  LogOut,
+  Shield,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "../../utils/helpers";
 import Button from "../UI/Button";
 import ThemeToggle from "../UI/ThemeToggle";
@@ -10,6 +18,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,30 +52,24 @@ const Navbar = () => {
   const navigation = isAuthenticated
     ? [
         ...baseNavigation,
-        // Add role-specific navigation
-        ...(user?.role === "student"
-          ? [
-              {
-                name: t("nav.dashboard"),
-                href: "/dashboard",
-                current: location.pathname === "/dashboard",
-              },
-            ]
-          : []),
+        {
+          name: t("nav.dashboard"),
+          href: "/dashboard",
+          current: location.pathname === "/dashboard",
+        },
         ...(user?.role === "mentor"
           ? [
               {
-                name: "Mentor Portal",
+                name: t("nav.mentor"),
                 href: "/mentor",
                 current: location.pathname === "/mentor",
               },
             ]
           : []),
-        // Add admin link only for admin users
         ...(user?.role === "admin"
           ? [
               {
-                name: "Admin",
+                name: t("nav.admin"),
                 href: "/admin",
                 current: location.pathname === "/admin",
               },
@@ -78,90 +81,50 @@ const Navbar = () => {
   const languages = [
     { code: "en", name: "English", flag: "🇺🇸" },
     { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
-    { code: "kn", name: "ಕನ್ನಡ", flag: "🇮🇳" },
   ];
 
-  const changeLanguage = (langCode) => {
+  const handleLanguageChange = (langCode) => {
     i18n.changeLanguage(langCode);
     setIsLanguageOpen(false);
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/");
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
-    <nav className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300">
-      <div className="container-wide">
-        <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18 transition-all duration-300">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 group"
-          >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 transition-transform duration-300 group-hover:scale-105">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full"
-              >
-                <defs>
-                  <linearGradient
-                    id="mainGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#1e40af" />
-                    <stop offset="25%" stopColor="#0ea5e9" />
-                    <stop offset="50%" stopColor="#06b6d4" />
-                    <stop offset="75%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#22c55e" />
-                  </linearGradient>
-                  <linearGradient
-                    id="starGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#fbbf24" />
-                    <stop offset="50%" stopColor="#f59e0b" />
-                    <stop offset="100%" stopColor="#d97706" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M6 24 Q8 20 10 18 Q12 16 14 18 Q16 20 18 18 Q20 16 22 18 Q24 20 26 24 Q24 26 22 28 Q20 30 18 28 Q16 26 14 28 Q12 30 10 28 Q8 26 6 24 Z"
-                  fill="url(#mainGradient)"
-                />
-                <path
-                  d="M20 8 L22 12 L26 12 L23 15 L24 19 L20 17 L16 19 L17 15 L14 12 L18 12 Z"
-                  fill="url(#starGradient)"
-                />
-              </svg>
-            </div>
-            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-300">
-              <span className="hidden sm:inline">Yukti</span>
-              <span className="sm:hidden">Y</span>
-            </span>
-          </Link>
+          <div className="flex-shrink-0">
+            <Link
+              to="/"
+              className="flex items-center space-x-2 text-xl font-bold text-primary-600 dark:text-primary-400"
+            >
+              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">AM</span>
+              </div>
+              <span className="hidden sm:block">AdhyayanMarg</span>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation - Hidden on smaller screens */}
-          <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium transition-all duration-200 whitespace-nowrap rounded-md touch-target",
+                  "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200",
                   item.current
-                    ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-sm"
+                    ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                    : "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                 )}
               >
                 {item.name}
@@ -169,221 +132,156 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right side actions */}
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
-            {/* Theme Toggle */}
-            <div className="touch-target">
-              <ThemeToggle />
-            </div>
-
-            {/* Language Selector - Responsive visibility */}
-            <div className="relative hidden sm:block">
-              <Button
-                variant="ghost"
-                size="sm"
+          {/* Right side items */}
+          <div className="flex items-center space-x-4">
+            {/* Language Selector */}
+            <div className="relative">
+              <button
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center space-x-1 px-3 py-2 touch-target min-h-[44px] min-w-[44px]"
+                className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <Globe className="w-4 h-4" />
-                <span className="hidden md:block text-sm">
+                <span className="hidden sm:block">
                   {languages.find((lang) => lang.code === i18n.language)?.flag}
                 </span>
-              </Button>
+                <ChevronDown className="w-3 h-3" />
+              </button>
 
               {isLanguageOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-in slide-in-from-top-2 duration-200">
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        changeLanguage(language.code);
-                        setIsLanguageOpen(false);
-                      }}
-                      className={cn(
-                        "w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2 text-gray-900 dark:text-gray-100 touch-target transition-colors duration-200",
-                        i18n.language === language.code &&
-                          "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400"
-                      )}
-                    >
-                      <span>{language.flag}</span>
-                      <span>{language.name}</span>
-                    </button>
-                  ))}
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="py-1">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={cn(
+                          "flex items-center space-x-3 w-full px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors",
+                          i18n.language === lang.code
+                            ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                            : "text-gray-700 dark:text-gray-300"
+                        )}
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Authentication Buttons */}
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* User Info - Responsive */}
-                <div className="flex items-center space-x-1 sm:space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg touch-target">
-                  <User className="w-4 h-4 flex-shrink-0" />
-                  <span
-                    className="hidden sm:block truncate max-w-20 md:max-w-32 lg:max-w-40 font-medium"
-                    title={user?.name}
-                  >
-                    {user?.name}
-                  </span>
-                </div>
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
-                {/* Logout Button - Responsive */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 touch-target transition-all duration-200"
-                  title="Sign Out"
+            {/* User Menu */}
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden md:block font-medium">
-                    {t("auth.signOut")}
-                  </span>
-                </Button>
+                  <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="hidden sm:block">{user?.name}</span>
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                    <div className="py-1">
+                      <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.name}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {user?.email}
+                        </p>
+                        <p className="text-xs text-primary-600 dark:text-primary-400 capitalize">
+                          {user?.role}
+                        </p>
+                      </div>
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        <span>{t("nav.dashboard")}</span>
+                      </Link>
+                      {user?.role === "admin" && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Shield className="w-4 h-4" />
+                          <span>{t("nav.admin")}</span>
+                        </Link>
+                      )}
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>{t("nav.logout")}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* Admin Login Button - Responsive */}
+              <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/admin/login")}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 font-medium touch-target transition-all duration-200"
+                  onClick={() => navigate("/login")}
                 >
-                  <Shield className="w-4 h-4" />
-                  <span className="hidden sm:block font-medium">
-                    Admin Login
-                  </span>
+                  {t("nav.login")}
                 </Button>
-
-                {/* Login Button - Responsive */}
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 font-medium touch-target transition-all duration-200"
                 >
-                  <span className="font-medium">Login/Signup</span>
+                  {t("nav.signup")}
                 </Button>
               </div>
             )}
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden ml-1 touch-target min-h-[44px] min-w-[44px] p-2"
+              className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               {isOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-6 h-6" />
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-in slide-in-from-top-2 duration-300 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
-            <div className="flex flex-col space-y-2">
+          <div className="lg:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 dark:border-gray-700">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={() => setIsOpen(false)}
                   className={cn(
-                    "px-4 py-4 text-base font-medium rounded-lg transition-all duration-200 touch-target min-h-[48px] flex items-center",
+                    "block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200",
                     item.current
-                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900 shadow-sm"
-                      : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-sm"
+                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                      : "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                   )}
+                  onClick={() => setIsOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-
-              {/* Mobile Language Selector */}
-              <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">
-                  Language
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        changeLanguage(language.code);
-                        setIsOpen(false);
-                      }}
-                      className={cn(
-                        "px-4 py-3 text-sm rounded-md border transition-all duration-200 touch-target min-h-[56px] flex flex-col items-center justify-center",
-                        i18n.language === language.code
-                          ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700 shadow-sm"
-                          : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-sm"
-                      )}
-                    >
-                      <span className="text-xl mb-1">{language.flag}</span>
-                      <span className="text-xs font-medium">
-                        {language.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mobile Auth Buttons */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
-                {isAuthenticated ? (
-                  <div className="space-y-3 px-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg">
-                      <User className="w-4 h-4" />
-                      <span className="font-medium">{user?.name}</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        handleLogout();
-                        setIsOpen(false);
-                      }}
-                      className="flex items-center space-x-2 w-full justify-start touch-target hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>{t("auth.signOut")}</span>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 px-4">
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      fullWidth
-                      onClick={() => {
-                        navigate("/login");
-                        setIsOpen(false);
-                      }}
-                      className="touch-target min-h-[48px] text-base"
-                    >
-                      Login/Signup
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="lg"
-                      fullWidth
-                      onClick={() => {
-                        navigate("/admin/login");
-                        setIsOpen(false);
-                      }}
-                      className="touch-target min-h-[48px] text-base text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
-                    >
-                      <Shield className="w-4 h-4 mr-2" />
-                      <span>Admin Login</span>
-                    </Button>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         )}

@@ -5,7 +5,6 @@ const activitySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    index: true,
   },
   title: {
     type: String,
@@ -39,7 +38,6 @@ const activitySchema = new mongoose.Schema({
       "cultural",
       "other",
     ],
-    index: true,
   },
   subcategory: {
     type: String,
@@ -126,7 +124,6 @@ const activitySchema = new mongoose.Schema({
     type: String,
     enum: ["draft", "pending", "approved", "rejected", "under_review"],
     default: "draft",
-    index: true,
   },
   approval: {
     approvedBy: {
@@ -222,7 +219,7 @@ const activitySchema = new mongoose.Schema({
   },
 });
 
-// Indexes for better performance
+// Indexes for better performance - defined once
 activitySchema.index({ studentId: 1, status: 1 });
 activitySchema.index({ category: 1, status: 1 });
 activitySchema.index({ startDate: -1 });
@@ -310,15 +307,7 @@ activitySchema.statics.getStudentSummary = function (studentId) {
   ]);
 };
 
-// Indexes for performance (only compound and text indexes)
-
-// Compound indexes
-activitySchema.index({ studentId: 1, status: 1 });
-activitySchema.index({ studentId: 1, category: 1 });
-activitySchema.index({ status: 1, createdAt: -1 });
-activitySchema.index({ category: 1, status: 1 });
-
-// Text search index
+// Text search index for full-text search
 activitySchema.index({
   title: "text",
   description: "text",

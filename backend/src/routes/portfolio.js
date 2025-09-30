@@ -40,3 +40,4 @@ router.get("/pdf", generatePDFPortfolio);
 router.get("/analytics", getPortfolioAnalytics);
 
 module.exports = router;
+

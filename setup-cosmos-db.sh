@@ -345,3 +345,5 @@ echo "- Monitor RU consumption in Azure portal"
 echo "- Check logs for connection issues"
 echo ""
 print_success "Setup completed! Your Smart Student Hub is ready with Azure Cosmos DB! 🚀"
+
+

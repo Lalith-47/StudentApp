@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import Button from "../components/UI/Button";
 import Card from "../components/UI/Card";
+import Grid from "../components/UI/Grid";
+import ResponsiveContainer from "../components/Layout/ResponsiveContainer";
 import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
@@ -63,723 +65,292 @@ const Home = () => {
     },
     {
       icon: <MessageCircle className="w-8 h-8" />,
-      title: "AI Career Counselor",
-      description:
-        "Get personalized career guidance from our intelligent AI assistant",
+      title: t("home.features.chatbot.title"),
+      description: t("home.features.chatbot.description"),
       link: "/chatbot",
       color: "text-orange-600 bg-orange-100 dark:bg-orange-900/20",
       gradient: "from-orange-500 to-orange-600",
     },
-    {
-      icon: <Activity className="w-8 h-8" />,
-      title: "Activity Tracker",
-      description:
-        "Track your academic activities and progress with detailed analytics",
-      link: "/activity-tracker",
-      color: "text-indigo-600 bg-indigo-100 dark:bg-indigo-900/20",
-      gradient: "from-indigo-500 to-indigo-600",
-    },
-    {
-      icon: <BarChart3 className="w-8 h-8" />,
-      title: "Analytics Dashboard",
-      description:
-        "Comprehensive insights into your academic performance and growth",
-      link: "/dashboard",
-      color: "text-teal-600 bg-teal-100 dark:bg-teal-900/20",
-      gradient: "from-teal-500 to-teal-600",
-    },
   ];
 
   const stats = [
-    {
-      label: "Students Helped",
-      value: "25,847",
-      icon: <Users className="w-6 h-6" />,
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-100 dark:bg-blue-900",
-      trend: "+12%",
-      description: "Active users this month",
-    },
-    {
-      label: "Career Paths",
-      value: "150+",
-      icon: <Map className="w-6 h-6" />,
-      color: "text-green-600 dark:text-green-400",
-      bgColor: "bg-green-100 dark:bg-green-900",
-      trend: "+8%",
-      description: "Detailed roadmaps available",
-    },
-    {
-      label: "Colleges Listed",
-      value: "2,500+",
-      icon: <Building2 className="w-6 h-6" />,
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-100 dark:bg-purple-900",
-      trend: "+15%",
-      description: "Institutions across India",
-    },
-    {
-      label: "Success Stories",
-      value: "1,200+",
-      icon: <Star className="w-6 h-6" />,
-      color: "text-orange-600 dark:text-orange-400",
-      bgColor: "bg-orange-100 dark:bg-orange-900",
-      trend: "+25%",
-      description: "Inspiring journeys shared",
-    },
-    {
-      label: "AI Queries",
-      value: "50,000+",
-      icon: <MessageCircle className="w-6 h-6" />,
-      color: "text-indigo-600 dark:text-indigo-400",
-      bgColor: "bg-indigo-100 dark:bg-indigo-900",
-      trend: "+45%",
-      description: "Answered by our AI assistant",
-    },
-    {
-      label: "Scholarships",
-      value: "500+",
-      icon: <Award className="w-6 h-6" />,
-      color: "text-pink-600 dark:text-pink-400",
-      bgColor: "bg-pink-100 dark:bg-pink-900",
-      trend: "+20%",
-      description: "Funding opportunities listed",
-    },
-  ];
-
-  const achievements = [
-    {
-      icon: <GraduationCap className="w-8 h-8 text-blue-600" />,
-      title: "95% Success Rate",
-      description:
-        "Students who follow our guidance get placed in top companies",
-      color: "border-blue-200 dark:border-blue-800",
-    },
-    {
-      icon: <Target className="w-8 h-8 text-green-600" />,
-      title: "98% Accuracy",
-      description:
-        "Career assessment quiz accuracy in matching students with right paths",
-      color: "border-green-200 dark:border-green-800",
-    },
-    {
-      icon: <Zap className="w-8 h-8 text-yellow-600" />,
-      title: "24/7 AI Support",
-      description:
-        "Round-the-clock assistance from our intelligent career counselor",
-      color: "border-yellow-200 dark:border-yellow-800",
-    },
-    {
-      icon: <Globe className="w-8 h-8 text-purple-600" />,
-      title: "Multi-Language",
-      description:
-        "Available in English, Hindi, and Kannada for better accessibility",
-      color: "border-purple-200 dark:border-purple-800",
-    },
-  ];
-
-  const platformStats = [
-    {
-      category: "User Engagement",
-      metrics: [
-        {
-          label: "Average Session Time",
-          value: "12.5 min",
-          icon: <TrendingUp className="w-4 h-4" />,
-        },
-        {
-          label: "Page Views",
-          value: "2.1M+",
-          icon: <Globe className="w-4 h-4" />,
-        },
-        {
-          label: "Return Users",
-          value: "78%",
-          icon: <Heart className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      category: "Career Success",
-      metrics: [
-        {
-          label: "Job Placements",
-          value: "8,500+",
-          icon: <Briefcase className="w-4 h-4" />,
-        },
-        {
-          label: "Top Companies",
-          value: "200+",
-          icon: <Building2 className="w-4 h-4" />,
-        },
-        {
-          label: "Average Salary",
-          value: "₹12.5L",
-          icon: <Award className="w-4 h-4" />,
-        },
-      ],
-    },
+    { label: "Students Helped", value: "10,000+", icon: Users },
+    { label: "Career Paths", value: "50+", icon: Map },
+    { label: "Colleges Listed", value: "500+", icon: Building2 },
+    { label: "Success Rate", value: "95%", icon: TrendingUp },
   ];
 
   const testimonials = [
     {
       name: "Priya Sharma",
-      role: "Software Engineer at Google",
+      role: "Computer Science Student",
       content:
-        "Yukti helped me discover my passion for technology and guided me through the entire journey from college selection to landing my dream job.",
+        "This platform helped me discover my passion for data science and guided me to the right career path.",
       rating: 5,
-      image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+      avatar:
+        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
     },
     {
-      name: "Rahul Kumar",
-      role: "Data Scientist at Microsoft",
+      name: "Raj Patel",
+      role: "Engineering Graduate",
       content:
-        "The career assessment quiz was incredibly accurate. It helped me understand my strengths and choose the right path in data science.",
+        "The career guidance was spot-on. I landed my dream job at a top tech company thanks to their roadmap.",
       rating: 5,
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     },
     {
       name: "Anita Singh",
-      role: "Doctor at AIIMS",
+      role: "MBA Student",
       content:
-        "The roadmap feature provided me with a clear path to achieve my medical career goals. Highly recommended for aspiring doctors.",
+        "The scholarship database helped me find funding for my education. Highly recommended!",
       rating: 5,
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      avatar:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     },
   ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container-wide relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center py-12 sm:py-16 lg:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <ResponsiveContainer className="py-16 sm:py-20 lg:py-24">
+          <div className="text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.8 }}
             >
-              <h1 className="text-responsive-3xl font-bold text-white mb-6 sm:mb-8 leading-tight">
-                {t("home.title")}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                Your Career Journey
+                <span className="block text-primary-600 dark:text-primary-400">
+                  Starts Here
+                </span>
               </h1>
-              <p className="text-responsive-lg text-primary-100 mb-8 sm:mb-10 leading-relaxed">
-                {t("home.subtitle")}
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Discover your perfect career path with AI-powered guidance,
+                explore top colleges, find scholarships, and connect with
+                mentors who can help you succeed.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
-                <Link to="/quiz" className="flex-1 sm:flex-none">
-                  <Button
-                    size="lg"
-                    fullWidth
-                    className="bg-white text-primary-600 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 touch-target min-h-[52px] text-base sm:text-lg"
-                  >
-                    {t("home.cta")}
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link to="/roadmap" className="flex-1 sm:flex-none">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    fullWidth
-                    className="border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105 touch-target min-h-[52px] text-base sm:text-lg"
-                  >
-                    Explore Roadmaps
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 lg:mt-0 lg:ml-8 xl:ml-12"
-            >
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    <span className="text-sm">Career Assessment Complete</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-400 rounded-full w-3/4"></div>
-                    </div>
-                    <p className="text-sm text-primary-100">
-                      Recommended: Software Engineering
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>95% Match with your interests</span>
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  onClick={() => navigate("/quiz")}
+                  className="text-lg px-8 py-4"
+                >
+                  Start Your Journey
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigate("/dashboard")}
+                  className="text-lg px-8 py-4"
+                >
+                  Explore Dashboard
+                </Button>
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Enhanced Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="heading-2 mb-4">Platform Statistics</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Empowering students with data-driven career guidance and
-              comprehensive resources
-            </p>
-          </motion.div>
-
-          {/* Main Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group"
-              >
-                <Card className="p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                      <div className={stat.color}>{stat.icon}</div>
-                    </div>
-                    <div className="text-right">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        {stat.trend}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                      {stat.value}
-                    </div>
-                    <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                      {stat.label}
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {stat.description}
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Platform Achievements */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-16"
-          >
-            <h3 className="heading-3 text-center mb-12">
-              Platform Achievements
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {achievements.map((achievement, index) => (
-                <motion.div
-                  key={achievement.title}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                  className="group"
-                >
-                  <Card
-                    className={`p-6 text-center border-2 ${achievement.color} hover:shadow-lg transition-all duration-300 group-hover:scale-105`}
-                  >
-                    <div className="flex justify-center mb-4">
-                      {achievement.icon}
-                    </div>
-                    <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      {achievement.title}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      {achievement.description}
-                    </p>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Detailed Platform Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <h3 className="heading-3 text-center mb-12">Detailed Analytics</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {platformStats.map((category, categoryIndex) => (
-                <motion.div
-                  key={category.category}
-                  initial={{
-                    opacity: 0,
-                    x: categoryIndex % 2 === 0 ? -20 : 20,
-                  }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.6 + categoryIndex * 0.1,
-                  }}
-                >
-                  <Card className="p-6">
-                    <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-                      {category.category}
-                    </h4>
-                    <div className="space-y-4">
-                      {category.metrics.map((metric, metricIndex) => (
-                        <div
-                          key={metric.label}
-                          className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div className="text-primary-600 dark:text-primary-400">
-                              {metric.icon}
-                            </div>
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                              {metric.label}
-                            </span>
-                          </div>
-                          <span className="text-lg font-bold text-gray-900 dark:text-white">
-                            {metric.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        </ResponsiveContainer>
       </section>
 
       {/* Features Section */}
-      <section className="section-padding bg-gray-50 dark:bg-gray-800">
-        <div className="container-custom">
+      <section className="py-16 sm:py-20">
+        <ResponsiveContainer>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
           >
-            <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Everything You Need for Career Success
             </h2>
-            <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Our comprehensive platform provides all the tools and resources
-              you need to make informed career decisions and achieve your goals.
+              you need to make informed career decisions.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          <Grid cols={{ sm: 1, md: 2, lg: 4 }} gap="lg">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.1,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 15,
-                }}
-                whileHover={{
-                  y: -8,
-                  scale: 1.02,
-                  transition: { duration: 0.2, ease: "easeOut" },
-                }}
-                className="group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
               >
                 <Card
                   hover
-                  className="h-full text-center flex flex-col relative overflow-hidden"
-                  animation="scaleIn"
-                  delay={index * 0.1}
+                  className="p-6 text-center h-full"
+                  onClick={() => navigate(feature.link)}
                 >
-                  {/* Gradient Background */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-                  />
-
-                  <div className="relative z-10">
-                    <motion.div
-                      className={`inline-flex items-center justify-center w-16 h-16 ${feature.color} rounded-xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}
-                      whileHover={{ rotate: 5 }}
-                    >
-                      {feature.icon}
-                    </motion.div>
-
-                    <h3 className="heading-4 mb-3 text-gray-900 dark:text-white flex-grow-0 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
-                      {feature.title}
-                    </h3>
-
-                    <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow text-sm sm:text-base leading-relaxed">
-                      {feature.description}
-                    </p>
-
-                    <div className="mt-auto">
-                      <Link to={feature.link} className="block">
-                        <Button
-                          variant="outline"
-                          fullWidth
-                          className="min-h-[44px] group-hover:bg-primary-600 group-hover:text-white group-hover:border-primary-600 transition-all duration-300"
-                          animation={true}
-                        >
-                          Get Started
-                          <motion.div
-                            animate={{ x: [0, 4, 0] }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              delay: index * 0.2,
-                            }}
-                          >
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </motion.div>
-                        </Button>
-                      </Link>
-                    </div>
+                    className={`w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center ${feature.color}`}
+                  >
+                    {feature.icon}
                   </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </Card>
               </motion.div>
             ))}
-          </div>
-        </div>
+          </Grid>
+        </ResponsiveContainer>
       </section>
 
-      {/* How It Works Section */}
-      <section className="section-padding bg-white dark:bg-gray-800">
-        <div className="container-custom">
+      {/* Stats Section */}
+      <section className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800">
+        <ResponsiveContainer>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
           >
-            <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
-              How Yukti Works
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Trusted by Thousands
             </h2>
-            <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
-              Our proven 3-step process helps you discover, plan, and achieve
-              your career goals with confidence.
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Join the community of successful students and professionals
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                  1
-                </span>
-              </div>
-              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
-                Discover Your Path
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Take our comprehensive career assessment quiz to understand your
-                interests, strengths, and personality type.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  2
-                </span>
-              </div>
-              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
-                Plan Your Journey
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Get detailed roadmaps, course recommendations, and step-by-step
-                guidance tailored to your career goals.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-center"
-            >
-              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  3
-                </span>
-              </div>
-              <h3 className="heading-4 mb-4 text-gray-900 dark:text-white">
-                Achieve Success
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Find the right colleges, apply for scholarships, and connect
-                with opportunities that match your aspirations.
-              </p>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-12"
-          >
-            <Link to="/quiz">
-              <Button size="lg" className="min-h-[52px] text-lg px-8">
-                Start Your Journey Today
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
+          <Grid cols={{ sm: 2, lg: 4 }} gap="lg">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <div className="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg">
+                  <div className="w-12 h-12 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+                    <stat.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-300">
+                    {stat.label}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </Grid>
+        </ResponsiveContainer>
       </section>
 
       {/* Testimonials Section */}
-      <section className="section-padding bg-white dark:bg-gray-800">
-        <div className="container-custom">
+      <section className="py-16 sm:py-20">
+        <ResponsiveContainer>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
           >
-            <h2 className="heading-2 mb-4 text-gray-900 dark:text-white">
-              What Our Users Say
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              What Our Students Say
             </h2>
-            <p className="text-body max-w-3xl mx-auto text-gray-600 dark:text-gray-300">
-              Join thousands of students who have found their perfect career
-              path with our guidance.
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Real stories from students who transformed their careers
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <Grid cols={{ sm: 1, lg: 3 }} gap="lg">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
               >
-                <Card className="h-full flex flex-col">
+                <Card className="p-6 h-full">
                   <div className="flex items-center mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-5 h-5 text-yellow-400 fill-current"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 italic flex-grow leading-relaxed">
-                    "{testimonial.content}"
-                  </p>
-                  <div className="flex items-center mt-auto">
                     <img
-                      src={testimonial.image}
+                      src={testimonial.avatar}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full object-cover mr-4"
                     />
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">
                         {testimonial.name}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         {testimonial.role}
-                      </div>
+                      </p>
                     </div>
                   </div>
+                  <div className="flex items-center mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 text-yellow-500 fill-current"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    "{testimonial.content}"
+                  </p>
                 </Card>
               </motion.div>
             ))}
-          </div>
-        </div>
+          </Grid>
+        </ResponsiveContainer>
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-primary text-white">
-        <div className="container-custom text-center">
+      <section className="py-16 sm:py-20 bg-primary-600 dark:bg-primary-700">
+        <ResponsiveContainer>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center"
           >
-            <h2 className="heading-2 text-white mb-4">
-              {isAuthenticated
-                ? "Welcome to Your Career Dashboard!"
-                : "Ready to Start Your Career Journey?"}
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Ready to Start Your Career Journey?
             </h2>
-            <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              {isAuthenticated
-                ? "Access your personalized dashboard to track your progress, view recommendations, and continue your career development journey."
-                : "Take our comprehensive career assessment quiz and discover your ideal career path in just 10 minutes."}
+            <p className="text-lg text-primary-100 mb-8 max-w-2xl mx-auto">
+              Join thousands of students who have already discovered their
+              perfect career path with our platform.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-4xl mx-auto">
-              {isAuthenticated ? (
-                <Link to="/dashboard">
-                  <Button
-                    size="lg"
-                    className="bg-white text-primary-600 hover:bg-gray-50 min-h-[52px] text-lg"
-                  >
-                    Go to Dashboard
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Link to="/quiz">
-                    <Button
-                      size="lg"
-                      className="bg-white text-primary-600 hover:bg-gray-50 min-h-[52px] text-lg"
-                    >
-                      Take Know-Me
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-white text-white hover:bg-white hover:text-primary-600 min-h-[52px] text-lg"
-                    onClick={() => navigate("/login")}
-                  >
-                    Login/Signup to Get Started
-                  </Button>
-                </>
-              )}
-              <Link to="/stories">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-white text-white hover:bg-white hover:text-primary-600 min-h-[52px] text-lg"
-                >
-                  Read Success Stories
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate("/quiz")}
+                className="text-lg px-8 py-4"
+              >
+                Take Career Quiz
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => navigate("/dashboard")}
+                className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-600"
+              >
+                Explore Dashboard
+              </Button>
             </div>
           </motion.div>
-        </div>
+        </ResponsiveContainer>
       </section>
     </div>
   );
