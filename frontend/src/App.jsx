@@ -85,7 +85,7 @@ function App() {
                   />
                   <Route path="*" element={<NotFound />} />
                 </Route>
-                
+
                 {/* Admin Portal - Outside Layout to avoid Navbar and padding */}
                 <Route
                   path="admin"
