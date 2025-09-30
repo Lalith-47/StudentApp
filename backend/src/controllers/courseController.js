@@ -149,11 +149,10 @@ const updateCourse = async (req, res) => {
       lastModifiedBy: req.user.id,
     };
 
-    const course = await Course.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    )
+    const course = await Course.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    })
       .populate("instructorId", "name email")
       .populate("createdBy", "name email")
       .populate("lastModifiedBy", "name email");
