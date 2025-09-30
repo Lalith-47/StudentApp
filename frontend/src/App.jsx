@@ -83,16 +83,18 @@ function App() {
                       </RoleProtectedRoute>
                     }
                   />
-                  <Route
-                    path="admin"
-                    element={
-                      <RoleProtectedRoute allowedRoles={["admin"]}>
-                        <EnhancedAdminPortal />
-                      </RoleProtectedRoute>
-                    }
-                  />
                   <Route path="*" element={<NotFound />} />
                 </Route>
+                
+                {/* Admin Portal - Outside Layout to avoid Navbar and padding */}
+                <Route
+                  path="admin"
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                      <EnhancedAdminPortal />
+                    </RoleProtectedRoute>
+                  }
+                />
               </Routes>
             </Suspense>
           </ErrorBoundary>
